@@ -56,7 +56,8 @@ class Context {
     VkPhysicalDeviceMemoryProperties memory_properties{};
     bool cooperative_matrix{}; // experimental opt-in; tensors/accumulators stay FP32
     bool required_subgroup_size{};
-    bool gpu_profile{}; // engineering diagnostics only; default off
+    bool gpu_profile{};        // engineering diagnostics only; default off
+    bool gpu_det_preprocess{}; // opt-in FP64 resize/normalization, network remains FP32
     uint32_t timestamp_valid_bits{};
 
   private:

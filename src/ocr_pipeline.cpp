@@ -22,6 +22,10 @@ std::string OcrEngine::run(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_
     // 同一 OCR 句柄串行，保护复用的 DB 工作区与三个图；等待锁也计入流水线耗时。
     std::lock_guard<std::mutex> lock(mutex_);
     OcrGraphs graphs;
+    if (det_->gpu_det_preprocess_enabled())
+        graphs.det_bgr = [&](const uint8_t* in, uint64_t n, uint32_t sw, uint32_t sh, uint32_t ss, uint32_t ih,
+                             uint32_t iw, float* out,
+                             uint64_t capacity) { return det_->run_det_bgr(in, n, sw, sh, ss, ih, iw, out, capacity); };
     graphs.det = [&](const float* in, uint32_t ih, uint32_t iw, float* out, uint64_t n) {
         return det_->run(in, ih, iw, out, n);
     };

@@ -15,6 +15,8 @@ void validate_bgr(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t);
 // Backends own synchronization and probabilities/CTC execution; no ABI exposure.
 struct OcrGraphs {
     std::function<double(const float*, uint32_t, uint32_t, float*, uint64_t)> det, cls;
+    std::function<double(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, float*, uint64_t)>
+        det_bgr;
     std::function<TextResult(const float*, uint32_t, double&)> rec;
 };
 std::string run_ocr_host(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, const lwvk_ocr_config&,

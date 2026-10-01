@@ -76,11 +76,14 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
     uint32_t rw = 0, rh = 0;
     float wr = 0, hr = 0;
     host_check(lw_det_compute_size(w, h, config.det_limit_side, &rw, &rh, &wr, &hr), "DET size");
-    auto input = preprocess_det_bgr(p, bytes, w, h, stride, rw, rh);
+    std::vector<float> input;
+    if (!graphs.det_bgr)
+        input = preprocess_det_bgr(p, bytes, w, h, stride, rw, rh);
     std::vector<float> map(uint64_t(rw) * rh);
     profile.end(0);
     profile.begin();
-    const double det_ms = graphs.det(input.data(), rh, rw, map.data(), map.size());
+    const double det_ms = graphs.det_bgr ? graphs.det_bgr(p, bytes, w, h, stride, rh, rw, map.data(), map.size())
+                                         : graphs.det(input.data(), rh, rw, map.data(), map.size());
     profile.end(1);
     profile.begin();
     for (float v : map)

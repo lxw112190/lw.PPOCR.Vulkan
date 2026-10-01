@@ -104,6 +104,28 @@ Context::Context(uint32_t index) {
         VkDeviceCreateInfo ci{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
         ci.queueCreateInfoCount = 1;
         ci.pQueueCreateInfos = &qi;
+        VkPhysicalDeviceFeatures enabled{};
+#ifdef _MSC_VER
+        char det_value[2]{};
+        size_t det_length{};
+        getenv_s(&det_length, nullptr, 0, "LWVK_GPU_DET_PREPROCESS");
+        if (det_length == 2)
+            getenv_s(&det_length, det_value, sizeof(det_value), "LWVK_GPU_DET_PREPROCESS");
+        gpu_det_preprocess = det_value[0] == '1';
+#else
+        const char* det_value = std::getenv("LWVK_GPU_DET_PREPROCESS");
+        gpu_det_preprocess = det_value && std::strcmp(det_value, "1") == 0;
+#endif
+        if (gpu_det_preprocess) {
+            VkPhysicalDeviceFeatures available{};
+            vkGetPhysicalDeviceFeatures(physical, &available);
+            if (!available.shaderFloat64)
+                throw std::runtime_error("experimental GPU DET preprocessing requires shaderFloat64");
+            if (gpu_profile)
+                throw std::invalid_argument("disable LWVK_GPU_PROFILE for GPU DET preprocessing experiment");
+            enabled.shaderFloat64 = VK_TRUE;
+            ci.pEnabledFeatures = &enabled;
+        }
         // FP32 baseline deliberately requires no optional device features/extensions.
 #ifdef LWVK_EXPERIMENTAL_COOP
 #ifdef _MSC_VER

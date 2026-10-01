@@ -38,6 +38,8 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 速度、RAM/GPU 内存和正确率比较见 [三项目 100 图测试报告](docs/THREE-PROJECT-100.md)。
 这与使用统一预处理的 DML 对拍器报告不同；原项目批处理/REC 宽度策略有差异，不能只看后端名称作性能归因。
 最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
+
+新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。**默认关闭**，通过 `LWVK_GPU_DET_PREPROCESS=1` 或独立 Demo 实验启动脚本开启；额外要求 `shaderFloat64`，不支持时明确报错。
 此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
 
 ## 项目原理：C++ 如何使用 Vulkan 推理 OCR

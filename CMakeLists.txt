@@ -99,6 +99,13 @@ foreach(name IN LISTS shader_names)
   list(APPEND derived_sources "${derived_dir}/${name}.comp")
   list(APPEND spirv_files "${derived_dir}/${name}.spv")
 endforeach()
+add_custom_command(OUTPUT "${derived_dir}/bgr_det_preprocess.comp"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "${derived_dir}"
+  COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/bgr_det_preprocess.comp" "${derived_dir}/bgr_det_preprocess.comp"
+  DEPENDS src/shaders/bgr_det_preprocess.comp VERBATIM)
+list(APPEND shader_names bgr_det_preprocess)
+list(APPEND spirv_files "${derived_dir}/bgr_det_preprocess.spv")
 add_custom_command(OUTPUT ${derived_sources}
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/prepare_shaders.py"
     "${CMAKE_CURRENT_SOURCE_DIR}/third_party/simd-paddleocr/shaders" "${derived_dir}"
@@ -119,6 +126,10 @@ add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/embedded_spirv.
 add_custom_target(lwvk_embedded_shaders DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/generated/embedded_spirv.hpp")
 if(BUILD_TESTING)
   # Shares the command/buffer/canary harness, but needs no optional GPU features.
+  add_executable(lwvk_det_gpu_preprocess_probe tests/det_gpu_preprocess_probe.cpp src/vulkan_context.cpp src/det_preprocess.cpp)
+  add_dependencies(lwvk_det_gpu_preprocess_probe lwvk_embedded_shaders)
+  target_include_directories(lwvk_det_gpu_preprocess_probe PRIVATE src "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  target_link_libraries(lwvk_det_gpu_preprocess_probe PRIVATE Vulkan::Vulkan)
   add_executable(lwvk_gelu_probe tests/coop_probe.cpp src/vulkan_context.cpp)
   add_dependencies(lwvk_gelu_probe lwvk_embedded_shaders)
   target_compile_definitions(lwvk_gelu_probe PRIVATE LWVK_GELU_PROBE=1)

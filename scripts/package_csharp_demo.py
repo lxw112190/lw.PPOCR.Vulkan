@@ -72,7 +72,7 @@ def prepare(a):
     shutil.copytree(ROOT/'models/onnx',a.staging/'models/onnx',ignore=SKIP)
     for file in ('LICENSE','NOTICE','RELEASE_VERSION','dependencies.lock.json'):
         shutil.copyfile(ROOT/file,a.staging/file)
-    for file in ('Start-CSharp-Demo.bat','Check-GPU.bat'):
+    for file in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Check-GPU.bat'):
         shutil.copyfile(ROOT/'deploy/windows'/file,a.staging/file)
     (a.staging/'sdk/include').mkdir(parents=True)
     shutil.copyfile(ROOT/'include/lw_ppocr_vulkan.h',a.staging/'sdk/include/lw_ppocr_vulkan.h')
@@ -130,7 +130,7 @@ def archive(a):
         if sha(a.staging/name)!=digest:raise ValueError('application changed after preparation: '+name)
     if {p.name for p in a.staging.glob('*.dll')}!={'lw.PPOCR.Vulkan.dll','vulkan-1.dll'}:
         raise ValueError('unexpected runtime DLL; do not bundle benchmark/driver libraries')
-    for name in ('Start-CSharp-Demo.bat','Check-GPU.bat','lw.PPOCR.Vulkan.WinFormsDemo.exe',
+    for name in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Check-GPU.bat','lw.PPOCR.Vulkan.WinFormsDemo.exe',
                  'lw.PPOCR.Vulkan.WinFormsDemo.exe.config','test-images/sample.jpg','prerequisites/VulkanRT-License.txt'):
         if not (a.staging/name).is_file():raise ValueError('missing package file: '+name)
     a.output.mkdir(parents=True,exist_ok=True)

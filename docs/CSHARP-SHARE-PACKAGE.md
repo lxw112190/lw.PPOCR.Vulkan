@@ -14,6 +14,8 @@
 
 双显卡电脑建议手动选 NVIDIA/AMD 独显；**设备编号以目标电脑实际枚举为准**，不要照抄开发机编号 1。切换 GPU、模型或参数后需要重新初始化。默认 DET 长边上限 960、每张模型图工作区预算 512 MiB，按需分配；Medium 更占内存。
 
+新增 GPU DET 前处理实验：关闭已有 Demo，双击 `Start-CSharp-Demo-GPU-DET-Experiment.bat`，再选 GPU/模型初始化。普通 `Start-CSharp-Demo.bat` 保持默认 CPU 前处理；直接运行 EXE 会继承当前进程环境。实验额外要求 `shaderFloat64`，前处理用 FP64、网络仍用 FP32；不支持时明确报错。结果和计时口径见包内 `docs/GPU-DET-PREPROCESS-EXPERIMENT.md`。
+
 ## 对方电脑需要什么
 
 - Windows 10/11 **64 位**；本机实测 Windows 10，Windows 11 是目标平台，尚未独立实机验证。
@@ -87,6 +89,6 @@ English: OCR-call time includes managed pixel conversion, native inference and r
 
 ZIP 旁边 `.sha256` 用于校验压缩包；包内 `FILES.sha256` 是解压后文件清单，检测传输损坏，不是数字签名。LunarG loader/安装器保留官方数字签名；本项目 Demo/原生库未作代码签名，可能遇到下载来源提示。
 
-最新 `pipeline-opt2` 核心 DLL SHA-256 为 `91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee`，包含此前缓存回读、持久映射、DET 优化与最新 CLS/REC 缩放、裁剪优化。100 图三模型完整预测对象与上一轮一致，性能与局限见 `docs/PIPELINE-OPTIMIZATION.md`。`PACKAGE-INFO.json` 和 `validation/native-qualification.json` 标明实际包版本与 DLL 哈希；最终解压包的 C# GUI/整图/框选证据单独保留，不把旧包长测当作本包新长测结果。
+历史 `pipeline-opt2` 核心 DLL SHA-256 为 `91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee`，其性能与局限见 `docs/PIPELINE-OPTIMIZATION.md`。新 `gpu-det-experiment1` DLL 为 `c509c8162f863b6b5aa45e02a9fe02f99cb75cec8f66c05877348ff0a631fdd4`，保留前述优化并增加默认关闭的 GPU DET 前处理。`PACKAGE-INFO.json` 和 `validation/native-qualification.json` 标明实际包版本与 DLL 哈希；最终解压包的 C# GUI/整图/框选证据单独保留，不把旧包长测当作本包新长测结果。
 
 English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. All application-native DLLs and three models are included. A compatible installed GPU vendor driver and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is required to run. This is a preview, not a universal compatibility/performance guarantee.

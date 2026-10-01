@@ -29,6 +29,8 @@ records mean Tiny/Small/Medium latency of 41.04/50.53/98.98 ms on the same 100-i
 with identical prediction objects. Results apply to the measured local conditions, not every GPU/image.
 The earlier [host/readback report](docs/HOST-TRANSFER-OPTIMIZATION.md) remains a historical comparison.
 
+The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md) fuses resize, normalization and input packing directly into the DET arena. It is **off by default**, requires `shaderFloat64`, and keeps FP32 networks/DET cap 960. Enable `LWVK_GPU_DET_PREPROCESS=1` before launching a new process, or use the separate experimental Demo launcher. On RTX 4060, paired 100-image mean latency fell by 18.0%/12.1%/5.9% for Tiny/Small/Medium with every prediction field unchanged; this is not a universal speed or DML-superiority claim.
+
 Also implemented: Tiny CLS/REC GPU graphs, native greedy CTC decoding,
 length/stride-checked BGR recognition-only, adaptive width and C#/Python image examples.
 Full OCR now composes DB boxes, reading order, perspective crops, tall-region rotation,

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "version": "0.5.0-dev.2",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "library_sha256": "c509c8162f863b6b5aa45e02a9fe02f99cb75cec8f66c05877348ff0a631fdd4",
+  "model_tests": [
+    {
+      "model": "tiny",
+      "det_960": "passed",
+      "rec_growth_ctc_and_40_shapes": "passed",
+      "smaller_readback_canaries": "passed"
+    },
+    {
+      "model": "small",
+      "det_960": "passed",
+      "rec_growth_ctc_and_40_shapes": "passed",
+      "smaller_readback_canaries": "passed"
+    },
+    {
+      "model": "medium",
+      "det_960": "passed",
+      "rec_growth_ctc_and_40_shapes": "passed",
+      "smaller_readback_canaries": "passed"
+    }
+  ],
+  "low_budget_rejection": "lwvk error 4: max_workspace_bytes exceeded: arena needs 335462400 bytes; budget 134217728",
+  "low_budget_recovery": "passed",
+  "private_image": null,
+  "note": "Functional regression, not a VRAM measurement or leak proof."
+}

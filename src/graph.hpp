@@ -43,6 +43,8 @@ class Plan {
     Plan(const Plan&) = delete;
     Plan& operator=(const Plan&) = delete;
     double run(const float* input, float* output, bool ctc = false);
+    double run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride,
+                   float* output);
     std::array<uint64_t, 4> workspace_requirements() const {
         return {arena_bytes_, input_bytes_, output_bytes_, ctc_bytes_};
     }
@@ -65,7 +67,8 @@ class Plan {
         uint32_t capacity{}, samples{};
     };
     void profile_result(bool ctc);
-    void record(const Model& model, bool ctc = false);
+    void record(const Model& model, bool ctc = false, bool bgr = false);
+    void submit_readback(VkCommandBuffer cmd, float* output, bool ctc);
     void dispatch(const std::string& shader, const std::vector<VkDescriptorBufferInfo>& bindings,
                   const std::vector<uint32_t>& push, uint32_t groups, uint32_t groups_y = 1);
     VkDescriptorBufferInfo binding(uint32_t tensor) const;
@@ -79,6 +82,7 @@ class Plan {
     VkDescriptorPool descriptor_pool_{};
     VkCommandBuffer command_{};
     VkCommandBuffer ctc_command_{};
+    VkCommandBuffer bgr_command_{};
     VkFence fence_{};
     Profile profile_, ctc_profile_;
     Profile* recording_profile_{};
@@ -91,6 +95,11 @@ class GraphEngine {
     GraphEngine(const std::filesystem::path& model_path, uint32_t index, uint64_t max_bytes,
                 const std::string& required_task = "det");
     double run(const float* input, uint32_t height, uint32_t width, float* output, uint64_t capacity = UINT64_MAX);
+    double run_det_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
+                       uint32_t out_height, uint32_t out_width, float* output, uint64_t capacity);
+    bool gpu_det_preprocess_enabled() const {
+        return context_.gpu_det_preprocess;
+    }
     Shape output_shape(uint32_t height, uint32_t width);
     TextResult recognize(const float* input, uint32_t width, double& ms);
     const std::string& task() const {
@@ -101,8 +110,8 @@ class GraphEngine {
     }
 
   private:
-    void prepare(uint32_t height, uint32_t width);
-    void ensure_workspace(Plan& plan);
+    void prepare(uint32_t height, uint32_t width, uint64_t min_upload = 0);
+    void ensure_workspace(Plan& plan, uint64_t min_upload = 0);
     Model model_;
     Context context_;
     std::unique_ptr<Buffer> constants_;

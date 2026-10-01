@@ -23,6 +23,7 @@ def main():
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--devices',type=int,nargs='+',default=[1])
     p.add_argument('--require-manifest',action='store_true')
+    p.add_argument('--gpu-det-preprocess',action='store_true')
     a=p.parse_args()
     root=a.package.resolve()
     info=json.loads((root/'PACKAGE-INFO.json').read_text(encoding='utf-8'))
@@ -61,6 +62,8 @@ def main():
     for key in list(env):
         if key.upper()=='PATH':env.pop(key)
     env['PATH']=system+'\\System32;'+system+';'+system+'\\System32\\Wbem'
+    if a.gpu_det_preprocess:
+        env['LWVK_GPU_DET_PREPROCESS']='1'
     rows=[]
     with tempfile.TemporaryDirectory(prefix='lwvk-csharp-share-') as working:
         probe=subprocess.run([str(root/'lw-ppocr-vulkan-probe.exe')],cwd=working,env=env,
@@ -89,6 +92,7 @@ def main():
         loader_origin='package directory verified via GetModuleFileNameW',
         development_path_removed=True,working_directory='outside package',
         checked_manifest_files=count,models_and_devices=rows,
+        gpu_det_preprocess_experiment=a.gpu_det_preprocess,
         limitations='Installed local GPU drivers and .NET Framework are still present; not a clean OS VM, universal compatibility or a leak proof.')
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

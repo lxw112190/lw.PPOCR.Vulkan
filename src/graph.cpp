@@ -2,6 +2,7 @@
 #include "onnx_import.hpp"
 #include "workspace_planner.hpp"
 #include "graph_optimizer.hpp"
+#include "ocr_host.hpp"
 #include <algorithm>
 #include <fstream>
 #include <chrono>
@@ -586,7 +587,8 @@ void Plan::attach(SharedWorkspace& workspace) {
         uint32_t dispatches = 1;
         for (auto& node : model.nodes)
             dispatches += node.op == "Concat" ? uint32_t(node.inputs.size()) : 1;
-        const uint32_t sets = dispatches * (ctc_bytes_ ? 2 : 1);
+        const bool bgr = c.gpu_det_preprocess && model.task == "det";
+        const uint32_t sets = dispatches * ((ctc_bytes_ ? 2 : 1) + (bgr ? 1 : 0));
         VkDescriptorPoolSize ds{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, sets * 5}; // ConvTranspose has five bindings
         VkDescriptorPoolCreateInfo dp{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
         dp.maxSets = sets;
@@ -608,6 +610,13 @@ void Plan::attach(SharedWorkspace& workspace) {
                 create(ctc_profile_);
         }
         record(model);
+        if (bgr) {
+            auto normal = command_;
+            check(vkAllocateCommandBuffers(c.device, &ca, &bgr_command_), "allocate BGR DET graph command");
+            command_ = bgr_command_;
+            record(model, false, true);
+            command_ = normal;
+        }
         if (ctc_bytes_) {
             auto normal = command_;
             check(vkAllocateCommandBuffers(c.device, &ca, &ctc_command_), "allocate CTC graph command");
@@ -641,7 +650,7 @@ void Plan::close() noexcept {
         *profile = Profile{};
     }
     recording_profile_ = nullptr;
-    command_ = ctc_command_ = VK_NULL_HANDLE;
+    command_ = ctc_command_ = bgr_command_ = VK_NULL_HANDLE;
 }
 Plan::~Plan() {
     close();
@@ -696,7 +705,7 @@ void Plan::dispatch(const std::string& shader, const std::vector<VkDescriptorBuf
     barrier(command_, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
             VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
 }
-void Plan::record(const Model& model, bool ctc) {
+void Plan::record(const Model& model, bool ctc, bool bgr) {
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     check(vkBeginCommandBuffer(command_, &bi), "begin graph recording");
     recording_profile_ = context_.gpu_profile ? (ctc ? &ctc_profile_ : &profile_) : nullptr;
@@ -707,8 +716,13 @@ void Plan::record(const Model& model, bool ctc) {
     barrier(command_, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_HOST_WRITE_BIT,
             VK_ACCESS_SHADER_READ_BIT);
     auto linear = [](uint64_t count) { return static_cast<uint32_t>((count + 255) / 256); };
-    dispatch("nchw2nhwc", {{upload_->handle, 0, input_bytes_}, binding(input_)}, {height_ * width_, 3, 3},
-             linear(uint64_t(height_) * width_ * 3));
+    if (bgr)
+        // 缩放、归一化直接写入图的 NHWC 输入，不回读中间张量。
+        dispatch("bgr_det_preprocess", {{upload_->handle, 0, upload_->size}, binding(input_)}, {height_, width_},
+                 linear(uint64_t(height_) * width_ * 3));
+    else
+        dispatch("nchw2nhwc", {{upload_->handle, 0, input_bytes_}, binding(input_)}, {height_ * width_, 3, 3},
+                 linear(uint64_t(height_) * width_ * 3));
     for (const auto& n : model.nodes) {
         uint32_t xi = n.inputs[0], yi = n.output;
         const auto& x = tensors_[xi].shape;
@@ -892,8 +906,26 @@ double Plan::run(const float* input, float* output, bool ctc) {
         throw std::runtime_error("GPU plan is poisoned; recreate detector after device failure");
     const auto start = std::chrono::steady_clock::now();
     upload_->write(input, static_cast<size_t>(input_bytes_));
+    submit_readback(ctc ? ctc_command_ : command_, output, ctc);
+    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+}
+double Plan::run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride,
+                     float* output) {
+    if (poisoned_)
+        throw std::runtime_error("GPU plan is poisoned; recreate detector after device failure");
+    const auto start = std::chrono::steady_clock::now();
+    // 动态头支持同一输出尺寸计划复用不同原图；尾部补齐避免 uint 字节提取越界。
+    std::vector<uint32_t> packed(static_cast<size_t>(8 + (span + 3) / 4), 0);
+    packed[0] = width;
+    packed[1] = height;
+    packed[2] = stride;
+    std::memcpy(packed.data() + 8, input, static_cast<size_t>(span));
+    upload_->write(packed.data(), packed.size() * sizeof(uint32_t));
+    submit_readback(bgr_command_, output, false);
+    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+}
+void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
     check(vkResetFences(context_.device, 1, &fence_), "reset graph fence");
-    VkCommandBuffer cmd = ctc ? ctc_command_ : command_;
     if (!cmd)
         throw std::runtime_error("CTC plan not available");
     VkSubmitInfo si{VK_STRUCTURE_TYPE_SUBMIT_INFO};
@@ -910,7 +942,6 @@ double Plan::run(const float* input, float* output, bool ctc) {
     buffer->read(output, static_cast<size_t>(ctc ? ctc_bytes_ : output_bytes_));
     if (context_.gpu_profile)
         profile_result(ctc);
-    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
 GraphEngine::GraphEngine(const std::filesystem::path& path, uint32_t index, uint64_t max_bytes,
                          const std::string& required_task)
@@ -969,9 +1000,20 @@ GraphEngine::GraphEngine(const std::filesystem::path& path, uint32_t index, uint
     model_.weights.clear();
     model_.weights.shrink_to_fit();
 }
-void GraphEngine::ensure_workspace(Plan& plan) {
+void GraphEngine::ensure_workspace(Plan& plan, uint64_t min_upload) {
     // 尽量保留容量高水位避免频繁分配；高水位之和超预算时回落到本次必要容量。
-    auto required = plan.workspace_requirements(), capacity = required;
+    auto required = plan.workspace_requirements();
+    required[1] = std::max(required[1], min_upload);
+    uint64_t minimum = 0;
+    // arena 的单个张量范围由 Plan 校验；整个 arena 不是单个 descriptor，不能
+    // 按 maxStorageBufferRange 限制整块 arena（会破坏部分设备的默认兼容性）。
+    if (required[1] > context_.properties.limits.maxStorageBufferRange)
+        throw std::length_error("upload storage range exceeded");
+    for (auto bytes : required)
+        minimum += bytes;
+    if (minimum > max_bytes_)
+        throw std::length_error("max_workspace_bytes exceeded (including raw BGR upload)");
+    auto capacity = required;
     std::unique_ptr<Buffer>* buffers[] = {&workspace_.arena, &workspace_.upload, &workspace_.readback, &workspace_.ctc};
     uint64_t total = 0;
     for (size_t i = 0; i < 4; ++i) {
@@ -999,7 +1041,7 @@ void GraphEngine::ensure_workspace(Plan& plan) {
     }
     plan.attach(workspace_);
 }
-void GraphEngine::prepare(uint32_t h, uint32_t w) {
+void GraphEngine::prepare(uint32_t h, uint32_t w, uint64_t min_upload) {
     // 尺寸计划按 LRU 有界缓存。GPU 故障必须先重建句柄，不能靠切换尺寸绕过。
     for (auto& entry : plans_)
         if (entry.plan->poisoned())
@@ -1010,7 +1052,7 @@ void GraphEngine::prepare(uint32_t h, uint32_t w) {
         throw std::invalid_argument("invalid input dimensions for model task");
     for (auto& entry : plans_)
         if (entry.height == h && entry.width == w) {
-            ensure_workspace(*entry.plan);
+            ensure_workspace(*entry.plan, min_upload);
             entry.stamp = ++stamp_;
             plan_ = entry.plan.get();
             return;
@@ -1023,7 +1065,7 @@ void GraphEngine::prepare(uint32_t h, uint32_t w) {
     if (plans_.size() >= 32)
         evict();
     auto next = std::make_unique<Plan>(context_, model_, *constants_, h, w, max_bytes_);
-    ensure_workspace(*next);
+    ensure_workspace(*next, min_upload);
     plan_ = next.get();
     plans_.push_back({h, w, ++stamp_, std::move(next)});
 }
@@ -1038,6 +1080,20 @@ double GraphEngine::run(const float* input, uint32_t h, uint32_t w, float* outpu
     if (capacity < elements(plan_->output_shape()))
         throw std::length_error("output capacity too small");
     return plan_->run(input, output);
+}
+double GraphEngine::run_det_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
+                                uint32_t oh, uint32_t ow, float* output, uint64_t capacity) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (model_.task != "det" || !context_.gpu_det_preprocess)
+        throw std::invalid_argument("GPU BGR preprocessing requires an enabled DET engine");
+    validate_bgr(input, bytes, width, height, stride);
+    const uint64_t span = uint64_t(height - 1) * stride + uint64_t(width) * 3;
+    if (span > UINT32_MAX - 35)
+        throw std::length_error("raw BGR upload exceeds shader address range");
+    prepare(oh, ow, 32 + ((span + 3) / 4) * 4);
+    if (!output || capacity < elements(plan_->output_shape()))
+        throw std::length_error("output capacity too small");
+    return plan_->run_bgr(input, span, width, height, stride, output);
 }
 TextResult GraphEngine::recognize(const float* input, uint32_t width, double& ms) {
     std::lock_guard<std::mutex> guard(mutex_);
