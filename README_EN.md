@@ -43,6 +43,31 @@ Not available as a release mode: automatic CPU fallback or FP16 performance mode
 A separately gated cooperative-matrix experiment exists, but fails the current real-model accuracy gate and remains off by default.
 This is not a production OCR release. The ABI and internal model format are not frozen.
 
+## How it works
+
+The C++ runtime loads supported ONNX graphs and implements their operations with
+Vulkan Compute; it does not forward OCR to another inference framework. Vulkan is
+a GPU API, not an OCR model or an automatic ONNX executor. Models determine recognition
+capability; this project supplies graph execution, image processing and integration APIs.
+
+```text
+Image / camera BGR pixels
+  → CPU: DET resize and normalization
+  → GPU: DET network and text probability map
+  → CPU: DB postprocessing, reading order and perspective crops
+  → GPU: optional CLS; CPU rotates the line if needed
+  → CPU: REC preprocessing → GPU: REC network and greedy label selection
+  → CPU: CTC repeat/blank removal, dictionary mapping and result assembly
+  → C ABI → C# WinForms / Python / HTTP and Web
+```
+
+- **Loading:** a bounded native ONNX protobuf reader normalizes/lowers supported operations and applies validated fusions. It supports the pinned PP-OCRv6 Tiny/Small/Medium assets, not arbitrary ONNX models.
+- **Execution:** compute shaders are compiled to SPIR-V and embedded at build time. Runtime pipelines execute convolution, matrix and attention operations in default FP32, with command submission and fence synchronization. No CUDA runtime is required.
+- **CPU/GPU split:** neural networks execute on the GPU; geometry and part of decoding remain on the CPU. GPU OCR is not an entirely GPU-resident pipeline.
+- **Reuse:** weights remain GPU-resident after initialization. Tensor lifetimes share workspace, and up to 32 shape plans share arena/IO buffers. Workspace limits do not cap total process/VRAM usage; weights, driver and CPU buffers are additional.
+- **Recognition-only:** pre-cropped lines and Demo selections run REC/CTC without DET or CLS. The caller handles orientation correction when needed.
+- **Devices:** selection is explicit and calls on one handle are serialized. Availability depends on capabilities and tested drivers, not a promise for every GPU. Missing devices/GPU failures are reported without silent CPU fallback. Deployment needs a matching Vulkan loader/vendor driver, but not Python or the Vulkan SDK.
+
 ## Build
 
 Windows: Visual Studio 2022 C++, CMake >=3.20, Python >=3.9, Vulkan SDK with
@@ -98,6 +123,27 @@ Windows CI performs application-owned layout/ROI smoke tests, not GPU inference.
 <a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo with GPU selection, detection boxes, OCR text and timings" width="960"></a>
 
 Actual local RTX 4060 Laptop GPU / Tiny-model demo. Timings illustrate this invocation only, not performance on all devices or images. Click to view the full-size screenshot.
+
+### Understanding Demo timings
+
+| Display | Measurement boundary |
+| --- | --- |
+| OCR call | C# Bitmap-to-BGR conversion, native OCR, JSON copy, UTF-8 decoding and C# JSON parsing; excludes model initialization and prior image-file loading |
+| UI ready | Image cloning, background scheduling, OCR call and UI result-data updates from the run handler; not completion of actual screen painting |
+| Pipeline | Native OCR from handle-lock waiting through preprocessing, inference, postprocessing and result-object assembly; excludes final JSON serialization and ABI result copying |
+| DET / CLS / REC | Accumulated network execution durations including upload, submission, GPU waiting and readback; not pure GPU shader time, and excluding execution-plan preparation |
+| Other | `max(0, pipeline − DET − CLS − REC)`: a residual, not an independently timed operation |
+
+Other includes CPU resizing/normalization/layout conversion, DB contours/box expansion/reading
+order, perspective crops and rotation, CLS/REC preprocessing, CPU CTC repeat/blank removal,
+dictionary mapping and result assembly, plus plan preparation, workspace allocation and lock waiting.
+Pipeline time therefore need not equal DET + CLS + REC. Upload/wait/readback are already counted
+in network timings, not counted again in Other. C# pixel conversion, JSON copying/parsing and
+UI updates are outside Other.
+
+First calls/new shapes may prepare plans or grow workspace; do not treat them as warmed-up
+performance. One-decimal displays can introduce rounding differences. Compare the same image,
+model, device, parameters and timing boundaries; report initialization, first and repeated calls separately.
 
 ## HTTP / Web quick start
 
