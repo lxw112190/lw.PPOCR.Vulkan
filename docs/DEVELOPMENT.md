@@ -49,3 +49,16 @@ GPU 正确性、HTTP 与部署包测试必须额外执行，不能把 host 单�
 这次文档/格式整理不会覆盖此前已验证的 `pipeline-opt2` 分享 ZIP；包内旧群信息随该历史包保留，新包应重新生成并验证。
 
 English: Format first-party C/C++ with clang-format 17 only. Keep vendored snapshots unchanged, explain ownership/synchronization/resource bounds, and rerun native plus GPU/deployment tests after code changes. Historical report hashes apply to their original binaries, not automatically to today's source.
+
+## Linux CI：Vulkan 头文件已找到但链接库缺失
+
+若 CMake 输出 `found suitable version "1.4.350"`，同时报 `missing: Vulkan_LIBRARY`，
+版本来自头文件，并不代表 Vulkan Loader 的链接库已找到。`glslc` 存在也只证明着色器编译工具可用。
+Ubuntu 的 `libvulkan1` 提供运行时库；构建需要 `libvulkan-dev` 提供的 `libvulkan.so` 链接文件。
+
+工作流安装 `libvulkan-dev`（自动带入运行依赖）和 `pkg-config`，保留固定 SDK 用于头文件与着色器工具。
+配置前通过 `pkg-config --exists vulkan` 和 `test -r "$(pkg-config --variable=libdir vulkan)/libvulkan.so"`
+检查开发链接文件。不要手工创建软链接，也不要通过修改模型或锁文件掩盖工具链问题。
+SDK 缓存不包含 runner 的 apt 安装状态，因此系统依赖安装在缓存命中时也必须执行。
+
+这是构建依赖修复，不是 GPU 驱动验证；客户运行部署包仍需要可用的 Vulkan Loader/驱动。

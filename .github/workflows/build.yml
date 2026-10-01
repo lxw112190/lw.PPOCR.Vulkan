@@ -77,7 +77,9 @@ jobs:
       - name: Software Vulkan and validation prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libvulkan1 mesa-vulkan-drivers vulkan-validationlayers
+          # libvulkan1 is runtime-only; FindVulkan needs the libvulkan.so
+          # linker file and pkg-config metadata supplied by libvulkan-dev.
+          sudo apt-get install -y ninja-build pkg-config libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
           python -m pip install -r requirements-dev.txt
       - uses: actions/cache@v4
         id: sdk
@@ -94,6 +96,11 @@ jobs:
       - name: Verify / build / ABI tests
         run: |
           test -x "$VULKAN_SDK/bin/glslc"
+          pkg-config --exists vulkan
+          vulkan_libdir="$(pkg-config --variable=libdir vulkan)"
+          test -n "$vulkan_libdir"
+          test -r "$vulkan_libdir/libvulkan.so"
+          printf 'System Vulkan loader link library: %s/libvulkan.so\n' "$vulkan_libdir"
           python scripts/verify_assets.py
           python scripts/repository_preflight.py
           python tests/test_repository_preflight.py

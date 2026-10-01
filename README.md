@@ -67,6 +67,9 @@ ctest --test-dir build/local --output-on-failure
 ./build/local/lw-ppocr-vulkan-probe
 ```
 
+Ubuntu 构建必须安装 `libvulkan-dev`：仅有运行包 `libvulkan1` 或 SDK 的头文件/`glslc`
+不代表链接库可用，可能导致 CMake 报 `missing: Vulkan_LIBRARY`。客户运行编译好的包不需要开发包。
+
 Linux 构建/运行需要验证，Windows 结果不能当作 Linux 已通过。国产 Linux/ARM64/macOS
 暂不作正式支持承诺；后续按 GPU 驱动、系统基线逐一验证。
 

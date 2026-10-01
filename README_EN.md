@@ -58,6 +58,9 @@ ctest --test-dir build/local -C Release --output-on-failure
 Linux build prerequisites: CMake, Ninja, C++17 compiler, Python/numpy,
 `libvulkan-dev`, `glslc` and optionally `spirv-tools`.
 Configure with `-G Ninja -DCMAKE_BUILD_TYPE=Release`, then build and run CTest.
+On Ubuntu, install `libvulkan-dev`, not just the runtime package `libvulkan1`.
+SDK headers and `glslc` alone do not satisfy the loader link-library requirement;
+otherwise CMake can report `missing: Vulkan_LIBRARY`. Compiled-package users do not need this development package.
 Linux, ARM64/domestic distributions and macOS require separate validation;
 a Windows test does not establish their compatibility.
 
