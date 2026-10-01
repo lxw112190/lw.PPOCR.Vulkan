@@ -23,3 +23,9 @@ el('run').addEventListener('click',async()=>{if(busy)return;if(!blob){failure(Er
  try{const headers={'Content-Type':'application/octet-stream'};if(el('key').value)headers['X-API-Key']=el('key').value;const r=await fetch(`/api/${el('operation').value}`,{method:'POST',headers,body:blob});const data=await r.json();if(!r.ok||!data.ok)throw Error(`${r.status} ${data.error_code}: ${data.error} [${data.request_id||'transport'}]`);const result=data.result;items=data.operation==='ocr'?result.items:[];draw();el('text').textContent=items.length?items.map(i=>i.text).join('\n'):(result.text||'未检测到文字');el('json').textContent=JSON.stringify(data,null,2);const timing=result.timing;el('timing').textContent=`浏览器往返 ${(performance.now()-started).toFixed(1)} ms · 服务端 ${data.server_total_ms.toFixed(1)} ms`+(timing?` · GPU DET ${timing.det_ms.toFixed(1)} / CLS ${timing.cls_ms.toFixed(1)} / REC ${timing.rec_ms.toFixed(1)} ms`:` · GPU REC ${result.gpu_rec_ms.toFixed(1)} ms`);el('status').textContent=`完成 · 请求 ${data.request_id}`;
  }catch(error){failure(error);}finally{setBusy(false);}});
 el('donate').addEventListener('click',()=>el('sponsor').showModal());el('close').addEventListener('click',()=>el('sponsor').close());
+// Native dialog handles Escape and focus restoration; click outside the card to dismiss.
+el('sponsor').addEventListener('click',event=>{
+ if(event.target!==el('sponsor'))return;
+ const rect=el('sponsor').getBoundingClientRect();
+ if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)el('sponsor').close();
+});

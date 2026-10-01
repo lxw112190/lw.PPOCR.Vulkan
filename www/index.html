@@ -10,5 +10,13 @@
 <p class="hint">API Key 通过 X-API-Key 请求头发送，不写入 URL、不存储到浏览器。GPU 在服务配置 device_index 中选择；网页不能修改服务 GPU。默认发送二进制图片。</p>
 <p id="status" role="status">请加载图片，点击开始识别。</p><p id="timing"></p>
 <section class="results"><div class="picture"><canvas id="canvas"></canvas></div><div><h2>文字结果</h2><pre id="text"></pre><details><summary>详细 JSON</summary><pre id="json"></pre></details></div></section>
-<dialog id="sponsor"><button id="close">关闭</button><h2>感谢支持开源</h2><img src="/sponsor.jpg" alt="捐赠二维码"></dialog>
+<dialog id="sponsor" aria-labelledby="sponsor-title" aria-describedby="sponsor-description">
+  <button id="close" class="dialog-close" type="button" aria-label="关闭捐赠窗口" autofocus>×</button>
+  <h2 id="sponsor-title">支持开源维护</h2>
+  <p id="sponsor-description">如果项目对你有帮助，欢迎自愿扫码支持。</p>
+  <a class="sponsor-image" href="/sponsor.jpg" target="_blank" rel="noopener" aria-label="查看捐赠二维码原图">
+    <img src="/sponsor.jpg" alt="微信捐赠二维码" width="1118" height="1526">
+  </a>
+  <p class="sponsor-footer">感谢每一份支持 · <a href="/sponsor.jpg" target="_blank" rel="noopener">查看原图</a></p>
+</dialog>
 </main></body></html>

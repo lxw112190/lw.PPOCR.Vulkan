@@ -95,6 +95,10 @@ See [usage and validation](docs/WINFORMS-DEMO.md) and
 [Visual Studio solution](examples/winforms/lw.PPOCR.Vulkan.WinFormsDemo.sln).
 Windows CI performs application-owned layout/ROI smoke tests, not GPU inference.
 
+<a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo with GPU selection, detection boxes, OCR text and timings" width="960"></a>
+
+Actual local RTX 4060 Laptop GPU / Tiny-model demo. Timings illustrate this invocation only, not performance on all devices or images. Click to view the full-size screenshot.
+
 ## HTTP / Web quick start
 
 Run the probe, set `device_index` in `http-service.json`, then launch
@@ -241,3 +245,12 @@ Initialize config with `lwvk_ocr_config_default`, then create/run the engine.
 The independently owned result survives engine destruction; query/copy JSON does
 not rerun inference. Destroy results explicitly. Never destroy engines/results
 while another call uses them. See [OCR API contract](docs/OCR-API.md).
+
+## Support the project
+
+If this project helps you, optional donations support open-source maintenance.
+Thank you for using the project, reporting issues and contributing!
+
+<a href="www/sponsor.jpg"><img src="www/sponsor.jpg" alt="WeChat donation QR code" width="240"></a>
+
+[View the full-size QR code](www/sponsor.jpg). The HTTP web page also includes a donation button.

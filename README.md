@@ -90,6 +90,10 @@ Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python
 完整说明和本机验证见 [WINFORMS-DEMO.md](docs/WINFORMS-DEMO.md)。
 源码项目：[examples/winforms/lw.PPOCR.Vulkan.WinFormsDemo.sln](examples/winforms/lw.PPOCR.Vulkan.WinFormsDemo.sln)。
 
+<a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo：GPU 选择、检测框、识别文字与耗时" width="960"></a>
+
+本机 RTX 4060 Laptop GPU / Tiny 模型实测界面；截图中的耗时仅为该次调用示例，不代表所有设备或图片的性能。点击图片查看原图。
+
 ## HTTP / Web 快速使用
 
 修改 `http-service.json` 的 `device_index` 为设备探测程序实际编号，Windows 运行 `run-http-service.bat`，
@@ -244,3 +248,11 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 下一阶段：更广的样本与显卡验证、GPU validation/sanitizer 与长期稳定性 → 性能档与正式发布包。
 
 开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。
+
+## 捐赠支持
+
+如果项目对你有帮助，欢迎自愿扫码支持开源维护。感谢你的使用、反馈和支持！
+
+<a href="www/sponsor.jpg"><img src="www/sponsor.jpg" alt="微信捐赠二维码" width="240"></a>
+
+[查看二维码原图](www/sponsor.jpg)。HTTP 网页顶部的“捐赠支持”也可打开二维码。
