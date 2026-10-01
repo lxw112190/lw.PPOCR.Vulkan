@@ -1,0 +1,303 @@
+{
+  "version": "0.2.0-dev.1",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "reference": [
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 4.547473508864641e-13,
+      "text": "0",
+      "score": 0.9999979734420776,
+      "inference_ms": 1.4897
+    },
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 1.2732925824820995e-11,
+      "text": "1",
+      "score": 0.9999982118606567,
+      "inference_ms": 1.2508
+    },
+    {
+      "task": "rec",
+      "width": 32,
+      "rows": 4,
+      "max_abs": 2.6285648345947266e-05,
+      "text": "",
+      "score": 0.0,
+      "inference_ms": 2.6448
+    },
+    {
+      "task": "rec",
+      "width": 64,
+      "rows": 8,
+      "max_abs": 1.0788440704345703e-05,
+      "text": "",
+      "score": 0.0,
+      "inference_ms": 26.8965
+    },
+    {
+      "task": "rec",
+      "width": 96,
+      "rows": 12,
+      "max_abs": 2.3603439331054688e-05,
+      "text": "[净含合量：20m",
+      "score": 0.6206870079040527,
+      "inference_ms": 4.1032
+    },
+    {
+      "task": "rec",
+      "width": 320,
+      "rows": 40,
+      "max_abs": 2.2470951080322266e-05,
+      "text": "【主要功能】：可紧致头发磷层，从而达至",
+      "score": 0.9857816100120544,
+      "inference_ms": 8.7111
+    },
+    {
+      "task": "rec",
+      "width": 640,
+      "rows": 80,
+      "max_abs": 3.165006637573242e-05,
+      "text": "纯臻营养护发素",
+      "score": 0.9996068477630615,
+      "inference_ms": 17.2902
+    },
+    {
+      "task": "rec",
+      "width": 960,
+      "rows": 120,
+      "max_abs": 4.7206878662109375e-05,
+      "text": "【产品编号】：YM-X-3011",
+      "score": 0.9436066150665283,
+      "inference_ms": 26.2269
+    },
+    {
+      "task": "rec-bgr",
+      "text": "纯臻营养护发素",
+      "score": 0.9992588758468628,
+      "cpu_score": 0.9992587906973702,
+      "inference_ms": 8.9525,
+      "stride_tests": "passed"
+    }
+  ],
+  "repeat_tests": [
+    {
+      "task": "cls",
+      "iterations": 1000,
+      "passed": true
+    },
+    {
+      "task": "rec",
+      "iterations": 1000,
+      "passed": true
+    }
+  ],
+  "rss_samples": [
+    {
+      "task": "cls",
+      "iteration": 0,
+      "rss_bytes": 172744704
+    },
+    {
+      "task": "cls",
+      "iteration": 50,
+      "rss_bytes": 172818432
+    },
+    {
+      "task": "cls",
+      "iteration": 100,
+      "rss_bytes": 172834816
+    },
+    {
+      "task": "cls",
+      "iteration": 150,
+      "rss_bytes": 172863488
+    },
+    {
+      "task": "cls",
+      "iteration": 200,
+      "rss_bytes": 172875776
+    },
+    {
+      "task": "cls",
+      "iteration": 250,
+      "rss_bytes": 172875776
+    },
+    {
+      "task": "cls",
+      "iteration": 300,
+      "rss_bytes": 172883968
+    },
+    {
+      "task": "cls",
+      "iteration": 350,
+      "rss_bytes": 172883968
+    },
+    {
+      "task": "cls",
+      "iteration": 400,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 450,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 500,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 550,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 600,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 650,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 700,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 750,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 800,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 850,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 900,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "cls",
+      "iteration": 950,
+      "rss_bytes": 172949504
+    },
+    {
+      "task": "rec",
+      "iteration": 0,
+      "rss_bytes": 218148864
+    },
+    {
+      "task": "rec",
+      "iteration": 50,
+      "rss_bytes": 219164672
+    },
+    {
+      "task": "rec",
+      "iteration": 100,
+      "rss_bytes": 219168768
+    },
+    {
+      "task": "rec",
+      "iteration": 150,
+      "rss_bytes": 219840512
+    },
+    {
+      "task": "rec",
+      "iteration": 200,
+      "rss_bytes": 220921856
+    },
+    {
+      "task": "rec",
+      "iteration": 250,
+      "rss_bytes": 222031872
+    },
+    {
+      "task": "rec",
+      "iteration": 300,
+      "rss_bytes": 218714112
+    },
+    {
+      "task": "rec",
+      "iteration": 350,
+      "rss_bytes": 216064000
+    },
+    {
+      "task": "rec",
+      "iteration": 400,
+      "rss_bytes": 213176320
+    },
+    {
+      "task": "rec",
+      "iteration": 450,
+      "rss_bytes": 219267072
+    },
+    {
+      "task": "rec",
+      "iteration": 500,
+      "rss_bytes": 220377088
+    },
+    {
+      "task": "rec",
+      "iteration": 550,
+      "rss_bytes": 221483008
+    },
+    {
+      "task": "rec",
+      "iteration": 600,
+      "rss_bytes": 218165248
+    },
+    {
+      "task": "rec",
+      "iteration": 650,
+      "rss_bytes": 218169344
+    },
+    {
+      "task": "rec",
+      "iteration": 700,
+      "rss_bytes": 218169344
+    },
+    {
+      "task": "rec",
+      "iteration": 750,
+      "rss_bytes": 219275264
+    },
+    {
+      "task": "rec",
+      "iteration": 800,
+      "rss_bytes": 220381184
+    },
+    {
+      "task": "rec",
+      "iteration": 850,
+      "rss_bytes": 221491200
+    },
+    {
+      "task": "rec",
+      "iteration": 900,
+      "rss_bytes": 218177536
+    },
+    {
+      "task": "rec",
+      "iteration": 950,
+      "rss_bytes": 218177536
+    }
+  ],
+  "rss_note": "Python/ORT/Vulkan driver combined RSS; not leak proof",
+  "stage": "CLS/REC probabilities and recognition-only; not full OCR",
+  "passed": true
+}

@@ -1,0 +1,121 @@
+#pragma once
+#include "vulkan_context.hpp"
+#include "ctc_decode.hpp"
+#include <nlohmann/json.hpp>
+#include <array>
+#include <filesystem>
+#include <mutex>
+
+namespace lwvk {
+using Json = nlohmann::json;
+using Shape = std::array<uint32_t, 4>; // logical NCHW, physical NHWC
+struct Tensor {
+    Shape shape{1, 1, 1, 1};
+    bool constant{};
+    uint64_t file_offset{}, bytes{}, offset{};
+    uint64_t packed_offset{}, packed_bytes{}; // optional K-major dense-convolution weights
+    int last_use{-1};
+};
+struct Node {
+    std::string op;
+    std::vector<uint32_t> inputs;
+    uint32_t output{};
+    Json attrs;
+};
+struct Model {
+    explicit Model(const std::filesystem::path& path);
+    std::vector<Tensor> tensors;
+    std::vector<Node> nodes;
+    std::vector<uint8_t> weights;
+    uint32_t input{}, output{};
+    std::string task;
+    std::vector<std::string> dictionary;
+};
+struct SharedWorkspace {
+    // 缓存的是尺寸计划，而非 32 份大缓冲区；所有计划复用同一组 arena/IO。
+    std::unique_ptr<Buffer> arena, upload, readback, ctc;
+};
+class Plan {
+  public:
+    // Plan 保存尺寸、张量偏移及命令；共享缓冲区替换后必须重新绑定/录制。
+    Plan(Context& context, const Model& model, Buffer& constants, uint32_t height, uint32_t width, uint64_t max_bytes);
+    ~Plan();
+    Plan(const Plan&) = delete;
+    Plan& operator=(const Plan&) = delete;
+    double run(const float* input, float* output, bool ctc = false);
+    std::array<uint64_t, 4> workspace_requirements() const {
+        return {arena_bytes_, input_bytes_, output_bytes_, ctc_bytes_};
+    }
+    void attach(SharedWorkspace& workspace);
+    void invalidate() noexcept {
+        close();
+    }
+    Shape output_shape() const {
+        return tensors_[output_].shape;
+    }
+    bool poisoned() const {
+        return poisoned_;
+    }
+
+  private:
+    void close() noexcept;
+    struct Profile {
+        VkQueryPool pool{};
+        std::vector<Json> dispatches;
+        uint32_t capacity{}, samples{};
+    };
+    void profile_result(bool ctc);
+    void record(const Model& model, bool ctc = false);
+    void dispatch(const std::string& shader, const std::vector<VkDescriptorBufferInfo>& bindings,
+                  const std::vector<uint32_t>& push, uint32_t groups, uint32_t groups_y = 1);
+    VkDescriptorBufferInfo binding(uint32_t tensor) const;
+    Context& context_;
+    const Model& model_;
+    std::vector<Tensor> tensors_;
+    Buffer *arena_{}, *upload_{}, *readback_{}, *ctc_readback_{};
+    uint64_t arena_bytes_{}, input_bytes_{}, output_bytes_{}, ctc_bytes_{};
+    Buffer& constants_;
+    VkCommandPool command_pool_{};
+    VkDescriptorPool descriptor_pool_{};
+    VkCommandBuffer command_{};
+    VkCommandBuffer ctc_command_{};
+    VkFence fence_{};
+    Profile profile_, ctc_profile_;
+    Profile* recording_profile_{};
+    uint32_t height_, width_, input_, output_;
+    bool poisoned_{};
+};
+class GraphEngine {
+  public:
+    // 权重常驻并独立限额；max_bytes 仅约束共享工作区，不代表整个进程内存。
+    GraphEngine(const std::filesystem::path& model_path, uint32_t index, uint64_t max_bytes,
+                const std::string& required_task = "det");
+    double run(const float* input, uint32_t height, uint32_t width, float* output, uint64_t capacity = UINT64_MAX);
+    Shape output_shape(uint32_t height, uint32_t width);
+    TextResult recognize(const float* input, uint32_t width, double& ms);
+    const std::string& task() const {
+        return model_.task;
+    }
+    const std::vector<std::string>& dictionary() const {
+        return model_.dictionary;
+    }
+
+  private:
+    void prepare(uint32_t height, uint32_t width);
+    void ensure_workspace(Plan& plan);
+    Model model_;
+    Context context_;
+    std::unique_ptr<Buffer> constants_;
+    SharedWorkspace workspace_;
+    struct CachedPlan {
+        uint32_t height, width;
+        uint64_t stamp;
+        std::unique_ptr<Plan> plan;
+    };
+    std::vector<CachedPlan> plans_;
+    Plan* plan_{};
+    uint64_t stamp_{};
+    uint64_t max_bytes_;
+    std::mutex mutex_;
+};
+} // namespace lwvk

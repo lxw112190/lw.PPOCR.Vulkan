@@ -1,0 +1,243 @@
+# lw.PPOCR.Vulkan
+
+[English](README_EN.md)
+
+C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web 服务与 C# WinForms 示例。
+不依赖 OpenCV DNN、ONNX Runtime 或 CUDA **运行时**。
+
+作者：天天代码码天天；QQ：819069052。
+群名称：天天代码码天天
+群号码：264292622
+
+## 当前阶段：0.5.0-dev.2
+
+当前是 **Tiny/Small/Medium Vulkan 完整 OCR 技术验证版**，同时支持完整 OCR 和裁剪文字区域仅识别，尚不是正式生产版：
+
+- Vulkan 设备枚举、明确的设备编号与能力信息；
+- C++ 原生运行时 + 实验性 C ABI；
+- 复用上游通用、注意力/LayerNorm shader，构建时派生 FP32 版本并嵌入 SPIR-V；
+- PP-OCRv6 Tiny DET 的完整 242 节点图在 Vulkan 上执行；
+- 动态高度/宽度，NHWC 中间张量、按生命周期复用的工作区；
+- 权重一次上传到 GPU 常驻；最多 32 个 LRU 尺寸计划共用一组工作区，arena/IO 合计按预算约束；
+- C++ 原生 ONNX protobuf 解析、图规范化，直接加载官方 PP-OCRv6 Tiny/Small/Medium；
+- FP32 分块 GEMM、NHWC 连续读取及预排布权重、寄存器分块 1×1 卷积、单消费者仿射/ReLU 融合、融合 LayerNorm/Attention、GPU 贪心 CTC；
+- ONNX Runtime CPU 独立对拍、异常输入及重复变尺寸测试。
+- Tiny CLS 方向分类、Tiny REC 概率输出与 CPU CTC 文字解码；
+- 带字节长度/stride 校验的 BGR 图片仅识别接口、自适应宽度、C#/Python 图片示例。
+- DB 检测框、阅读顺序、透视裁剪、竖长区域转横向、可选 CLS/180° 校正和 REC 串联；
+- 完整 OCR C ABI、独立结果句柄、坐标/文字/置信度/分阶段耗时，以及裁剪像素上限。
+- C# WinForms 测试程序：GPU 下拉选择/手填编号、整图 OCR、鼠标框选仅识别、检测框与耗时展示。
+- 单引擎 HTTP 服务与 Web 页面：二进制/Base64、完整/仅识别/批量、API Key、日志、过载保护和服务脚本。
+
+**尚未实现**：CPU 自动回退、
+协作矩阵、FP16 性能档。接口尚未冻结；性能需按同图、同模型、同参数和预热条件比较。
+
+ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)。
+本机优化前后、CPU 对照与验证范围见 [0.5 性能与验证报告](docs/LOCAL-PERFORMANCE-050.md)。
+100 张带标准答案的生成图片、Tiny/Small/Medium、实际 C/原 DML/Vulkan 三项目的
+速度、RAM/GPU 内存和正确率比较见 [三项目 100 图测试报告](docs/THREE-PROJECT-100.md)。
+这与使用统一预处理的 DML 对拍器报告不同；原项目批处理/REC 宽度策略有差异，不能只看后端名称作性能归因。
+最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
+此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
+
+## Windows 本地构建
+
+开发机安装 Visual Studio 2022 C++、CMake >=3.20、Python >=3.9、Vulkan SDK
+（本地开发使用 1.4.350.0，含 `glslc`）。Python 仅用于生成 shader 和开发测试。
+运行 CTest 的 Python 需要 NumPy，可执行 `python -m pip install numpy`。
+客户使用编译好的库不需要 Python/Vulkan SDK，但需要支持 Vulkan 1.1 的显卡驱动/loader。
+
+```powershell
+cmake -S . -B build/local -G "Visual Studio 17 2022" -A x64
+cmake --build build/local --config Release --parallel 4
+ctest --test-dir build/local -C Release --output-on-failure
+.\build\local\Release\lw-ppocr-vulkan-probe.exe
+```
+
+设备编号采用 Vulkan 枚举顺序，不会在内部悄悄把 0 改成“第一张独显”。先枚举，再指定。
+软件 Vulkan 的 device_type 为 4，只能验证兼容性，不能证明硬件加速。
+
+## Linux 源码构建
+
+```bash
+sudo apt-get install cmake ninja-build g++ python3 python3-numpy libvulkan-dev glslc spirv-tools
+cmake -S . -B build/local -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build/local --parallel 4
+ctest --test-dir build/local --output-on-failure
+./build/local/lw-ppocr-vulkan-probe
+```
+
+Linux 构建/运行需要验证，Windows 结果不能当作 Linux 已通过。国产 Linux/ARM64/macOS
+暂不作正式支持承诺；后续按 GPU 驱动、系统基线逐一验证。
+
+## WinForms 快速测试
+
+Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python 或 Vulkan SDK。
+需要 .NET Framework 4.0 或更高的兼容版本、x64 Windows 和支持 Vulkan 1.1 的显卡驱动。
+本机验证为 Windows 10；使用 .NET 4.0 **不代表原生 Vulkan 库已支持 Win7**。
+
+1. 顶部 GPU 下拉列表显示编号与名称，也可以直接填写 `0`、`1` 等编号。编号来自实际 Vulkan 枚举顺序；错误编号明确拒绝，不自动换卡或回退 CPU。
+2. 点击“初始化 / 重载”。模型和默认测试图片按程序目录定位，与启动时的工作目录无关。
+3. 点击“整图 OCR”，左侧绘制原图坐标检测框，右侧显示文字、JSON、置信度；底部显示端到端与 GPU 分阶段耗时。
+4. 图片上按住鼠标左键拖动框选，再点击“框选仅识别”：仅运行 REC + CTC，不再次检测，也不执行 CLS。拖动方向不限，缩放显示会映射到原始像素。
+5. 修改 GPU、模型目录或阈值等参数后，需要重新初始化。可选择自己的图片、复制文字或保存 JSON。
+
+模型下拉可选择随包的 PP-OCRv6 Tiny/Small/Medium 原生 ONNX；仍支持旧 Tiny 转换格式，不支持任意 ONNX。绘制与框选只改变显示层，
+不污染送入推理的原始像素。首次推理包含计划建立开销，不应当作稳态性能。
+完整说明和本机验证见 [WINFORMS-DEMO.md](docs/WINFORMS-DEMO.md)。
+源码项目：[examples/winforms/lw.PPOCR.Vulkan.WinFormsDemo.sln](examples/winforms/lw.PPOCR.Vulkan.WinFormsDemo.sln)。
+
+## HTTP / Web 快速使用
+
+修改 `http-service.json` 的 `device_index` 为设备探测程序实际编号，Windows 运行 `run-http-service.bat`，
+Linux 运行 `./run-http-service.sh`，访问 `http://127.0.0.1:8787/`。
+网页加载测试图或选择图片，显示检测框、识别文字、JSON 和耗时；仅识别请上传已裁剪文字行。
+
+`api_key` 非空时，接口必须带 `X-API-Key` 请求头，网页也填写相同值；空值关闭认证。
+`LWVK_API_KEY` 可覆盖配置，日志/启动输出不显示密钥。默认监听本机，不要无认证暴露公网。
+程序启动显示作者、QQ、配置参数与实际 GPU。模型、网页和启动/服务管理脚本均随包提供。
+
+详细接口、队列/解码/批量限制、超时原理、日志和 Windows/Linux 服务安装见 [HTTP-SERVICE.md](docs/HTTP-SERVICE.md)。
+两卡接口测试与 1000 次长测见 [LOCAL-HTTP-REPORT.md](docs/LOCAL-HTTP-REPORT.md)。
+
+## 运行真实模型对拍
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python tests/test_det_reference.py --library build/local/Release/lw.PPOCR.Vulkan.dll --device 0 --iterations 100 --report build/reports/device0.json
+python tests/test_det_reference.py --library build/local/Release/lw.PPOCR.Vulkan.dll --device 1 --iterations 100 --report build/reports/device1.json
+```
+
+测试与运行时使用同一份输入 FP32 张量，隔离图片解码/缩放差异。对照模型固定 SHA-256。
+测试比较概率图绝对误差、0.2 阈值图 IoU、反复运行的一致性，并记录 RSS 趋势。
+独立对拍依赖使用 Python >=3.10（CI 为 3.12）。本机结果见 [LOCAL-DET-REPORT.md](docs/LOCAL-DET-REPORT.md)。
+CLS/REC 的两卡对拍、CTC、并发及重复测试见 [LOCAL-TEXT-REPORT.md](docs/LOCAL-TEXT-REPORT.md)。
+完整 OCR 两卡测试见 [LOCAL-OCR-REPORT.md](docs/LOCAL-OCR-REPORT.md)。完整流程使用独立 ORT CPU
+模型、NumPy 预处理/CTC，但共享经过复用的 C 几何代码；不能称为独立 DB 算法对拍。
+RSS 不是无泄漏证明；仍需要 validation layer、ASan/UBSan 以及长时间实体机测试。
+
+`models/ppocrv6-tiny/det.json` 和 `weights.bin` 是内部 v0 格式，随开发可调整。
+这是保留兼容的旧 Tiny 转换格式；新默认路径直接使用 `models/onnx/ppocrv6-tiny` 中的 ONNX 与字典，不需要转换。旧格式重新生成：
+
+```powershell
+python scripts/export_det.py --input models/ppocrv6-tiny/det.onnx --output models/ppocrv6-tiny
+python scripts/export_text_models.py --input models/ppocrv6-tiny/cls/source.onnx --output models/ppocrv6-tiny/cls --task cls
+python scripts/export_text_models.py --input models/ppocrv6-tiny/rec/source.onnx --output models/ppocrv6-tiny/rec --task rec --dictionary models/ppocrv6-tiny/rec/dictionary.txt
+```
+
+## API 与资源约束
+
+见 `include/lw_ppocr_vulkan.h`、`examples/python/lwvk.py`。
+
+| 能力 | 输入 | 输出 |
+| --- | --- | --- |
+| DET | FP32 NCHW `[1,3,H,W]`，H/W 为 32 的倍数且在 32..960 | 检测概率图，尚不输出检测框 |
+| CLS | FP32 BGR `[-1,1]`，`[1,3,80,160]` | `[1,2]` 方向概率；0=正常、1=180° |
+| REC | FP32 BGR `[-1,1]`，`[1,3,48,W]`，W 为 8 的倍数且在 32..960 | `[T,C]` 概率或 UTF-8 文字/置信度；Tiny C=6906，Small/Medium C=18710 |
+| 仅识别 BGR | 已裁剪的一行文字，BGR8 + 宽高 + 正 stride + 缓冲区字节数 | 原生预处理 + GPU REC/贪心 CTC + CPU 字符拼接 |
+| 完整 OCR BGR | 整张 BGR8 图像 + 宽高 + 正 stride + 缓冲区字节数 | 检测框、文字、置信度、CLS 与耗时 JSON |
+
+所有接口带缓冲区长度，错误不会跨 C ABI 抛异常。`lwvk_network_shape` 返回输出行数/类别数，
+可能建立执行计划但不会提交推理；输出长度单位为 float 元素数。
+`lwvk_recognize_tensor` / `lwvk_recognize_bgr` 的文字长度单位为 UTF-8 字节，包含末尾 NUL。
+文字缓冲区不足返回 `LWVK_BUFFER_TOO_SMALL`，不返回截断文字。
+
+## 整张图片：完整 OCR
+
+Python 图片示例需要 `python -m pip install numpy pillow`（仅示例依赖，DLL 不需要）。
+
+```powershell
+python examples/python/ocr_image.py --library build/local/Release/lw.PPOCR.Vulkan.dll --models models/onnx/ppocrv6-tiny --image test-images/sample.jpg --device 1 --draw build/ocr-boxes.png
+```
+
+不需要方向分类时增加 `--no-cls`。结果 `items` 只输出一份四点坐标 `x1/y1` 到 `x4/y4`，
+以及 `text`、`score`、`det_score`、`cls_label`、`cls_score`；不重复输出 `box`。
+坐标在原图坐标系，顺序为左上、右上、右下、左下。未启用 CLS 时 label=-1、score=0。
+这是文本行 OCR，不是表格/版面/PDF 解析；识别仍可能出现错字。
+
+C/C# 调用先使用 `lwvk_ocr_config_default`，然后 `lwvk_ocr_create`、`lwvk_ocr_run_bgr`。
+结果句柄独立于引擎：查询 JSON 大小、复制到调用方缓冲区，再 `lwvk_ocr_result_destroy`；
+查询/复制不重复推理。不得在运行中销毁引擎，也不得在复制中销毁结果。
+详细默认参数、资源边界和耗时口径见 [OCR-API.md](docs/OCR-API.md)。
+
+## 已裁剪文字区域：直接识别
+
+客户已完成裁剪时使用 `lwvk_recognize_bgr`，**不会再次检测，也不会自动方向分类**。
+原始图像不是 JPEG 字节流；必须是 BGR8 像素。仅支持正 stride，至少需要
+`(height-1)*stride + width*3` 字节。源图限制 4000 万像素。
+`rec_width=0` 自动选取 32..960 的 8 倍数；保留比例、右侧填充归一化的 128 灰度。
+极长文字可能因 960 上限被压缩，建议调用方合理分行。GPU 耗时不包含图片解码、CPU 预处理或最终字符拼接。
+
+下面从示例图片**手动指定**标题 ROI（不是自动检测框），调用原生 BGR 识别路径：
+
+```powershell
+python examples/python/recognize_image.py --library build/local/Release/lw.PPOCR.Vulkan.dll --model models/onnx/ppocrv6-tiny/rec.onnx --image test-images/sample.jpg --roi 20 28 292 46 --device 1
+```
+
+本机示例输出：`纯臻营养护发素`。客户自己的裁剪图片省略 `--roi` 即可。
+原生 C ABI 和 C# 也能直接传相机得到的 BGR 缓冲区，不需要先编码 JPEG/Base64。
+
+同句柄调用串行；销毁句柄前必须等待所有调用结束。不同句柄各自拥有设备和工作区。
+默认工作区上限为**每张模型图 512 MiB**，完整 OCR 最多 3 张图；这是按需分配的上限，不是启动时预留 512 MiB。
+该预算包括共享 arena、输入 staging、概率及 CTC 读回缓冲区；模型权重、CPU 图像/几何和 driver 分配另计。
+WinForms 可设置每模型工作区上限（MiB，0=默认）；DET 长边默认保持 960，不以缩小检测输入规避内存或伪造提速。
+详见 [工作区修复、DML 基准与后续优化](docs/WORKSPACE-PERFORMANCE.md)，其中耗时属于当时的历史基线。
+新增[算子计时工具与第二轮 FP32 优化报告](docs/GPU-PROFILING.md)，诊断默认关闭；大图仍需继续优化。
+第三轮[安全 GELU 融合与完整 OCR 对拍](docs/GELU-FUSION.md)记录此前 Medium 大图仍慢于 DML 的结果；第四轮[回读/主机优化](docs/HOST-TRANSFER-OPTIMIZATION.md)继续改善默认 FP32 路径，不缩小 DET 960 或放宽精度门槛。
+第五轮[三模型主机流水线优化](docs/PIPELINE-OPTIMIZATION.md)优化 CLS/REC 缩放和透视裁剪；RTX 4060 同图交替测试 Tiny 耗时降低 20～24%、Small 约 16%、Medium 约 9～10%，100 图完整预测对象不变，其他显卡不保证同等收益。
+新增[协作矩阵工程实验](docs/COOPERATIVE-MATRIX-EXPERIMENT.md)，默认关闭；Medium 大图分数门槛未过，不能替换已验证部署包。
+显式 Vulkan 失败直接报错，不静默改用 CPU。等待 GPU fence 的 30 秒保护不是 GPU 任务取消；
+设备丢失/超时后不能继续复用该计划，应结束处理并重建服务/句柄。
+
+## 复用与许可证
+
+项目采用 Apache-2.0；第三方来源、固定提交和修改说明集中见 [NOTICE](NOTICE)，完整许可证保留在 `licenses`。
+nlohmann/json 为 MIT，模型保留 PaddleOCR 来源说明与 Apache-2.0 许可证。
+复用上游不代表上游为本项目背书，也不能照搬其精度/性能结论。
+
+## CI 与技术验证包
+
+Windows CI 固定并校验官方 Vulkan SDK 1.4.350.0 下载，缓存安装器下载；构建、检查 C ABI、
+测试安装目录、WinForms 布局/框选映射，并生成 zip + SHA-256。WinForms CI 主机测试不执行 GPU OCR，
+无实体 GPU 时明确跳过硬件测试，不把跳过算作通过。
+Linux CI 缓存校验后的 SDK，使用 lavapipe 软件 Vulkan 对拍，生成 tar.gz + SHA-256。
+软件 Vulkan 对拍包含 DET、CLS、REC、CTC、BGR stride/长度及同句柄并发检查。
+并增加完整 OCR、DB/crop 单元测试、裁剪资源上限和独立结果生命周期测试。
+两个工作流定义已准备；尚未推送新仓库运行，不宣称远程 CI 已通过。
+
+本地打包（确认测试通过后）：
+
+```powershell
+cmake --install build/local --config Release --prefix dist/staging
+python tests/test_api.py --library dist/staging/lw.PPOCR.Vulkan.dll
+python scripts/package.py --staging dist/staging --output dist --platform windows-x64
+```
+
+包内含完整 OCR 库、HTTP 服务与 Web、设备探测程序、WinForms 程序、DET/CLS/REC 模型、字典、示例、测试图片和文档。
+Windows 下载包解压后，可直接用下面的 C# 控制台程序验证，不需要 Python 或 Vulkan SDK。
+Windows 使用静态 MSVC 运行库；已检查 DLL 的直接依赖仅有 `vulkan-1.dll` 和 `KERNEL32.dll`。
+另有[可转发的 C# 完整体验包](docs/CSHARP-SHARE-PACKAGE.md)，带三模型、官方 x64 loader、可选 Runtime 安装器和 C# 源码；仍需目标电脑安装匹配显卡驱动。
+最新 [Demo 计时与展示优化说明](docs/DEMO-TIMING-OPTIMIZATION.md)区分 OCR 调用、原生流水线与界面就绪时间，记录 UTF-8 修复、按需展示和本机重复调用验证。
+Vulkan loader/显卡驱动应由显卡厂商安装，不能仅复制开发机的驱动文件。
+构建机找到 .NET Framework C# 编译器时，包内同时提供 x64 控制台示例：
+
+```powershell
+.\lw-ppocr-vulkan-probe.exe
+.\lw.PPOCR.Vulkan.CSharpDemo.exe models/ppocrv6-tiny/det.json 1
+.\lw.PPOCR.Vulkan.CSharpDemo.exe --recognize models/ppocrv6-tiny/rec/model.json test-images/sample.jpg 1 20 28 292 46
+.\lw.PPOCR.Vulkan.CSharpDemo.exe --ocr models/ppocrv6-tiny test-images/sample.jpg 1
+```
+
+请把 `1` 改成探测程序输出的设备编号；上述是控制台示例，图形界面运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`。
+识别示例中的 ROI 由调用方给出；`Bitmap` 按行复制，避免填充/负 stride 穿过 ABI。
+使用例子：
+
+```powershell
+python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vulkan.dll --model models/ppocrv6-tiny/det.json --image test-images/sample.jpg --device 1 --output build/det-map.png
+```
+
+兼容证据见 [COMPATIBILITY.md](docs/COMPATIBILITY.md)，开发边界见 [ROADMAP.md](docs/ROADMAP.md)。
+
+下一阶段：更广的样本与显卡验证、GPU validation/sanitizer 与长期稳定性 → 性能档与正式发布包。
+
+开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。

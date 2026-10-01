@@ -1,0 +1,7 @@
+* text=auto eol=lf
+third_party/simd-paddleocr/shaders/*.comp -text
+models/**/*.onnx -text
+models/**/*.bin -text
+models/**/dictionary.txt -text
+third_party/simd-paddleocr/onnx-reference/*.cs text eol=lf
+*.jpg -text

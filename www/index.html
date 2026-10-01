@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>lw.PPOCR.Vulkan · GPU OCR</title><link rel="stylesheet" href="/style.css"><script defer src="/app.js"></script></head>
+<body><main><header><h1>lw.PPOCR.Vulkan</h1><p>Vulkan GPU · PP-OCRv6 Tiny · 完整 OCR / 仅识别</p>
+<p><a href="https://github.com/lxw112190/lw.PPOCR.Vulkan" target="_blank" rel="noopener">项目地址（新项目，发布状态见 README）</a> · 作者：天天代码码天天 · QQ：819069052 · <button id="donate" class="link">捐赠支持</button></p></header>
+<section class="toolbar"><label>图片<input id="file" type="file" accept="image/jpeg,image/png,image/bmp"></label>
+<label>操作<select id="operation"><option value="ocr">整图 OCR</option><option value="recognize">仅识别（已裁剪文字行）</option></select></label>
+<label>API Key<input id="key" type="password" autocomplete="off" placeholder="未配置时留空"></label>
+<button id="sample">加载测试图片</button><button id="run" class="primary">开始识别</button></section>
+<p class="hint">API Key 通过 X-API-Key 请求头发送，不写入 URL、不存储到浏览器。GPU 在服务配置 device_index 中选择；网页不能修改服务 GPU。默认发送二进制图片。</p>
+<p id="status" role="status">请加载图片，点击开始识别。</p><p id="timing"></p>
+<section class="results"><div class="picture"><canvas id="canvas"></canvas></div><div><h2>文字结果</h2><pre id="text"></pre><details><summary>详细 JSON</summary><pre id="json"></pre></details></div></section>
+<dialog id="sponsor"><button id="close">关闭</button><h2>感谢支持开源</h2><img src="/sponsor.jpg" alt="捐赠二维码"></dialog>
+</main></body></html>

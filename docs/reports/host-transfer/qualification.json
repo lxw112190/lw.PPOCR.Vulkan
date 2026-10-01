@@ -1,0 +1,114 @@
+{
+  "library_sha256": "0cfd9b5bbc192193b3208392eaee1cdb9e7012202e5f944522a504570ea81894",
+  "baseline_sha256": "6f42a2bacbbc4b1c52877369bcc0cbfc63e0738c7f7283be3446622bae8d0148",
+  "source_sha256": {
+    "CMakeLists.txt": "07fba7621626afc7483e254bdb738e6d4216293db2cd9167fe3ef9b7dffeecb9",
+    "src/memory_policy.hpp": "da5e7660c0c895d4264fed675fa368f68ab7c693963142c39f49f2b4f744304d",
+    "src/vulkan_context.hpp": "38c677fb83b0fc8f77a9ae852f3c6627fb62b7a044bba372d70e364d75ee614d",
+    "src/vulkan_context.cpp": "9ac247949bfcd2e1552d0b370e55c08b30284394b43433ef92f29ca780540a4b",
+    "src/det_preprocess.hpp": "9c245308133b7f0bda155501d2563caa2543212865db2134016d13981e3a6d98",
+    "src/det_preprocess.cpp": "d8c16898b0541f7c49b41ac4062257128ac8cdacd9e6c7af6155f49f7c876d13",
+    "src/ocr_host.cpp": "6a57df9a49e9b52c9c0e91254e88c8f29dde5a112d82ecb83edbdb98f52c48b3",
+    "src/graph.cpp": "d1550c713d465091a4e40eee88220ea9d1f1a7debfd1a5190c67f08e167ff5ce",
+    "tests/memory_policy_unit.cpp": "946d2e32488085186ed1ee8cc16fab0f3944f9aee537a3a598bd0817f9c92061",
+    "tests/det_preprocess_unit.cpp": "aaad27604f27f2aeeb26a0236c51a79d8314298b5ea5e85d2f12d55f80e8717a",
+    "tests/benchmark_three_projects.py": "1dc2ae086011bb714bde4a79e183c85f3ca30893543c7409022db33610510523",
+    "tests/benchmark_projects/adapters.py": "f49841f493c41900cf90ee016d220985a2e42de1fb79cf65f488f8e04097a17a",
+    "tests/benchmark_projects/memory.py": "9d749394daf0fc6969fda664ca42f64c58d6d6989b65a15f8e2f05fbd4447c25",
+    "tests/benchmark_dml_ocr.py": "e0c5b4e753c203e71e2c16441dd4055be41a5013e89a00dee06ed0e55c4f8a3d",
+    "tests/test_workspace.py": "4c7e0d798f3e30dae672940f4c35fd9067326f8ae991b2e0db2176df7eaa2c3a",
+    "tests/test_ocr_reference.py": "746e892c75f3b7aa59ae663c5564757326c1f9dac5be84a956e52be017b872cc",
+    "scripts/report_host_transfer.py": "f63ba1c240ed2a42e2d51e31dc1b6ae1bd26e7dc63fe4f9ba14c12298f374e26"
+  },
+  "hardware": {
+    "vulkan_index": 1,
+    "dxgi_index": 1,
+    "vulkan_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "dxgi_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor_id": 4318,
+    "device_id": 10464,
+    "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+    "logical_cpu_count": 16,
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.7",
+    "inventory_helper_only": "DML reference DLL used only for DXGI enumeration in controller; actual DML inference uses original project DLL in its isolated worker"
+  },
+  "dataset_manifest_sha256": "c51474cb3761515c8c9b07c0afb1846303aba1b2304ef9a87043c9d8c282159d",
+  "audit": [
+    {
+      "model": "tiny",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 84.69258633350061,
+        "median": 82.71545000388869,
+        "p95": 123.0520949986385,
+        "total": 25407.775900050183,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 51.02201433313894,
+        "median": 49.8134499976004,
+        "p95": 72.49613000094541,
+        "total": 15306.604299941682,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 39.75622124441263
+    },
+    {
+      "model": "small",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 81.22120100037137,
+        "median": 83.40635000058683,
+        "p95": 106.35544999568084,
+        "total": 24366.36030011141,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 58.554291000182275,
+        "median": 58.46595000184607,
+        "p95": 76.73869999998715,
+        "total": 17566.287300054682,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 27.90762722172189
+    },
+    {
+      "model": "medium",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 122.10150533319393,
+        "median": 126.20459999743616,
+        "p95": 158.36949000295135,
+        "total": 36630.45159995818,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 106.26662266663818,
+        "median": 106.9553499983158,
+        "p95": 139.1651349971653,
+        "total": 31879.986799991457,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 12.968621986555428
+    }
+  ],
+  "evidence_input_sha256": {
+    "build\\reports\\transfer-optimized-matched-dml.json": "dafd20e6e36792a2144f840b355d97d61130e7fa144347f9ce5d20215cecac22",
+    "build\\reports\\transfer-optimized-workspace-nvidia.json": "17a3090099d54f703635155edbb68ed927b70b4f8404184e137d9db4751f9960",
+    "build\\reports\\transfer-optimized-ocr-tiny-nvidia.json": "5d7ec3ef9a364b0b23b6e06f916696100b35ba1b3dc98b7aa1e27a8fb9d6e19a",
+    "build\\reports\\transfer-optimized-ocr-small-nvidia.json": "69aefc5cf2dd83ebde2d99ae14ccb1625fa2354be9c241d5dd0c3c3264e73176",
+    "build\\reports\\transfer-optimized-ocr-medium-nvidia.json": "e5e291fb45660f2fa5800674cfa03e7f401db3ae33c1d96297647d6e78cf882c",
+    "build\\reports\\transfer-optimized-ocr-medium-amd.json": "e3a7437e6218d92fb61c362d14640889d61a4f38415eada359068247067f10f2",
+    "build\\reports\\transfer-optimized-100\\tiny-vulkan.json": "60ce8e4f7f9d8ca08db3b42c042b4563f950db4f112d383794e249cc08a9841c",
+    "build\\reports\\transfer-optimized-100\\small-vulkan.json": "58fc9ce17974d52c645ecddedc853738338ade5c2d26d42110ef57d4a923dbcf",
+    "build\\reports\\transfer-optimized-100\\medium-vulkan.json": "bd2fa4bb506f8b6c4f84df8e8c7523d788dc76c59655afa2a9483dea2ddb300c"
+  },
+  "caveat": "Before/after corpus runs were sequential, not paired in the same time window. DML helper is a separate matched-host experiment, not the legacy project DLL. ORT reference reports are invocation evidence; they do not independently embed a DLL hash. RAM/WDDM counters are not a leak proof or physical-board VRAM measurement."
+}

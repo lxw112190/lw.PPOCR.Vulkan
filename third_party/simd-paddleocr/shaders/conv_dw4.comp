@@ -1,0 +1,29 @@
+#version 450
+// Project-written FP32 vector depthwise convolution, Apache-2.0, 2026.
+// Four adjacent NHWC channels per invocation; kernel-major packed weights.
+// C must be divisible by four. Same dy/dx accumulation order as scalar path.
+layout(local_size_x=256)in;
+layout(set=0,binding=0)readonly buffer X{vec4 x[];};
+layout(set=0,binding=1)readonly buffer W{vec4 w[];};
+layout(set=0,binding=2)readonly buffer B{vec4 b[];};
+layout(set=0,binding=3)writeonly buffer O{vec4 o[];};
+layout(push_constant)uniform PC{
+ uint outW;uint outH;uint C;uint kH;uint kW;uint sh;uint sw;uint pt;uint pl;uint inW;uint inH;uint flags;
+}p;
+void main(){
+ uint gid=gl_GlobalInvocationID.x,C4=p.C/4;
+ if(gid>=p.outW*p.outH*C4)return;
+ uint c4=gid%C4,px=gid/C4;
+ int iy0=int((px/p.outW)*p.sh)-int(p.pt),ix0=int((px%p.outW)*p.sw)-int(p.pl);
+ vec4 acc=vec4(0);
+ for(uint dy=0;dy<p.kH;++dy){
+  int iy=iy0+int(dy);if(iy<0 || iy>=int(p.inH))continue;
+  for(uint dx=0;dx<p.kW;++dx){
+   int ix=ix0+int(dx);if(ix<0 || ix>=int(p.inW))continue;
+   acc+=w[(dy*p.kW+dx)*C4+c4]*x[(uint(iy)*p.inW+uint(ix))*C4+c4];
+  }
+ }
+ if((p.flags&1u)!=0)acc+=b[c4];
+ if((p.flags&16u)!=0)acc=max(acc,vec4(0));
+ o[gid]=acc;
+}

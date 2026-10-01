@@ -1,0 +1,32 @@
+#version 450
+#extension GL_EXT_control_flow_attributes : require
+// Project-written FP32 M64/N64/K32 variant with vector output stores.
+// Apache-2.0, 2026. Experimental selection; N must be divisible by four.
+layout(local_size_x=256)in;
+layout(set=0,binding=0)readonly buffer X{float x[];};
+layout(set=0,binding=1)readonly buffer W{vec4 w[];};
+layout(set=0,binding=2)readonly buffer B{float b[];};
+layout(set=0,binding=3)writeonly buffer O{vec4 o[];};
+layout(push_constant)uniform PC{uint M;uint N;uint K;uint flags;}p;
+shared float aa[2048];shared vec4 bb[512];
+void main(){
+ uint lid=gl_LocalInvocationID.x,m0=gl_WorkGroupID.x*64,n0=gl_WorkGroupID.y*64;
+ uint mr=(lid/16)*4,nv=lid%16,N4=p.N/4;
+ vec4 a=vec4(0),c=vec4(0),d=vec4(0),e=vec4(0);
+ for(uint k0=0;k0<p.K;k0+=32){
+  for(uint i=lid;i<2048;i+=256){uint m=m0+i/32,k=k0+i%32;aa[i]=(m<p.M && k<p.K)?x[m*p.K+k]:0;}
+  for(uint i=lid;i<512;i+=256){uint k=k0+i/16,n4=n0/4+i%16;bb[i]=(k<p.K && n4<N4)?w[k*N4+n4]:vec4(0);}
+  barrier();
+  [[unroll]] for(uint k=0;k<32;++k){vec4 v=bb[k*16+nv];a+=aa[(mr+0)*32+k]*v;c+=aa[(mr+1)*32+k]*v;d+=aa[(mr+2)*32+k]*v;e+=aa[(mr+3)*32+k]*v;}
+  barrier();
+ }
+ // No per-invocation early return before the workgroup barriers.
+ uint n4=n0/4+nv;if(n4>=N4)return;
+ uint n=n4*4,m=m0+mr;
+ vec4 bias=(p.flags&1u)!=0?vec4(b[n],b[n+1],b[n+2],b[n+3]):vec4(0);
+ a+=bias;c+=bias;d+=bias;e+=bias;
+ if((p.flags&16u)!=0){a=max(a,vec4(0));c=max(c,vec4(0));d=max(d,vec4(0));e=max(e,vec4(0));}
+ if((p.flags&32u)!=0){a=lwvk_gelu(a);c=lwvk_gelu(c);d=lwvk_gelu(d);e=lwvk_gelu(e);}
+ if(m<p.M)o[m*N4+n4]=a;if(m+1<p.M)o[(m+1)*N4+n4]=c;
+ if(m+2<p.M)o[(m+2)*N4+n4]=d;if(m+3<p.M)o[(m+3)*N4+n4]=e;
+}

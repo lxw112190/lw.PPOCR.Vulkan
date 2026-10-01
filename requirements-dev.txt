@@ -1,0 +1,6 @@
+# Offline conversion and independent reference tests; not deployment dependencies.
+numpy==2.2.6
+onnx==1.22.0
+onnxruntime==1.21.0
+Pillow==11.3.0
+psutil==7.0.0

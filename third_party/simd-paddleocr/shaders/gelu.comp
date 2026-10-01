@@ -1,0 +1,8 @@
+#version 450
+// Project-written exact-pattern FP32 GELU lowering, Apache-2.0, 2026.
+// lwvk_gelu is injected by the reviewed build-time preparation script.
+layout(local_size_x=256)in;
+layout(set=0,binding=0)readonly buffer X{float x[];};
+layout(set=0,binding=1)writeonly buffer O{float o[];};
+layout(push_constant)uniform PC{uint count;}p;
+void main(){uint i=gl_GlobalInvocationID.x;if(i<p.count)o[i]=lwvk_gelu(x[i]);}

@@ -1,0 +1,3898 @@
+{
+  "format": "LWVK-REC",
+  "format_version": 0,
+  "source_sha256": "9ef676d6ed3c88256a2d92c640c44f25b0c40947e111b14b8be8f594091563e6",
+  "weights_file": "weights.bin",
+  "weights_bytes": 4414960,
+  "weights_sha256": "f2ba6de14c71cc17756882ea99aefa28060c53c51fedcbb4ec3e9ed422c15a2f",
+  "weights_fnv1a64": "7276922243168446248",
+  "input": 0,
+  "output": 277,
+  "tensors": [
+    {
+      "name": "x"
+    },
+    {
+      "name": "conv2d_0.w_0",
+      "shape": [
+        24,
+        3,
+        3,
+        3
+      ],
+      "offset": 0,
+      "count": 648
+    },
+    {
+      "name": "p2o.pd_op.conv2d.0.0"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.0.0/alpha",
+      "shape": [
+        1,
+        24,
+        1,
+        1
+      ],
+      "offset": 2592,
+      "count": 24
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.0.0/scaled"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.0.0/beta",
+      "shape": [
+        1,
+        24,
+        1,
+        1
+      ],
+      "offset": 2688,
+      "count": 24
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.0.0"
+    },
+    {
+      "name": "helper.constant.0",
+      "shape": [],
+      "offset": 2784,
+      "count": 1
+    },
+    {
+      "name": "Div.1"
+    },
+    {
+      "name": "Erf.1"
+    },
+    {
+      "name": "helper.constant.2",
+      "shape": [],
+      "offset": 2788,
+      "count": 1
+    },
+    {
+      "name": "Add.1"
+    },
+    {
+      "name": "Mul.1"
+    },
+    {
+      "name": "helper.constant.1",
+      "shape": [],
+      "offset": 2792,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.0.0"
+    },
+    {
+      "name": "conv2d_1.w_0",
+      "shape": [
+        48,
+        24,
+        3,
+        3
+      ],
+      "offset": 2796,
+      "count": 10368
+    },
+    {
+      "name": "p2o.pd_op.conv2d.1.0"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.1.0/alpha",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 44268,
+      "count": 48
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.1.0/scaled"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.1.0/beta",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 44460,
+      "count": 48
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.1.0"
+    },
+    {
+      "name": "conv2d_43.w_0",
+      "shape": [
+        48,
+        1,
+        3,
+        3
+      ],
+      "offset": 44652,
+      "count": 432
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.0.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.0.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 46380,
+      "count": 48
+    },
+    {
+      "name": "Add.3"
+    },
+    {
+      "name": "ReduceMean.1"
+    },
+    {
+      "name": "conv2d_4.w_0",
+      "shape": [
+        12,
+        48,
+        1,
+        1
+      ],
+      "offset": 46572,
+      "count": 576
+    },
+    {
+      "name": "p2o.pd_op.conv2d.2.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.1.0",
+      "shape": [
+        1,
+        12,
+        1,
+        1
+      ],
+      "offset": 48876,
+      "count": 12
+    },
+    {
+      "name": "Add.5"
+    },
+    {
+      "name": "p2o.pd_op.relu.0.0"
+    },
+    {
+      "name": "conv2d_5.w_0",
+      "shape": [
+        48,
+        12,
+        1,
+        1
+      ],
+      "offset": 48924,
+      "count": 576
+    },
+    {
+      "name": "p2o.pd_op.conv2d.3.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.2.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 51228,
+      "count": 48
+    },
+    {
+      "name": "Add.7"
+    },
+    {
+      "name": "p2o.pd_op.hardsigmoid.0.0"
+    },
+    {
+      "name": "Mul.4"
+    },
+    {
+      "name": "conv2d_44.w_0",
+      "shape": [
+        96,
+        48,
+        1,
+        1
+      ],
+      "offset": 51420,
+      "count": 4608
+    },
+    {
+      "name": "p2o.pd_op.conv2d.4.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.3.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 69852,
+      "count": 96
+    },
+    {
+      "name": "Add.9"
+    },
+    {
+      "name": "helper.constant.3",
+      "shape": [],
+      "offset": 70236,
+      "count": 1
+    },
+    {
+      "name": "Div.3"
+    },
+    {
+      "name": "Erf.3"
+    },
+    {
+      "name": "helper.constant.5",
+      "shape": [],
+      "offset": 70240,
+      "count": 1
+    },
+    {
+      "name": "Add.11"
+    },
+    {
+      "name": "Mul.6"
+    },
+    {
+      "name": "helper.constant.4",
+      "shape": [],
+      "offset": 70244,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.1.0"
+    },
+    {
+      "name": "conv2d_45.w_0",
+      "shape": [
+        48,
+        96,
+        1,
+        1
+      ],
+      "offset": 70248,
+      "count": 4608
+    },
+    {
+      "name": "p2o.pd_op.conv2d.5.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.4.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 88680,
+      "count": 48
+    },
+    {
+      "name": "Add.13"
+    },
+    {
+      "name": "Add.15"
+    },
+    {
+      "name": "conv2d_47.w_0",
+      "shape": [
+        48,
+        1,
+        3,
+        3
+      ],
+      "offset": 88872,
+      "count": 432
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.1.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.5.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 90600,
+      "count": 48
+    },
+    {
+      "name": "Add.17"
+    },
+    {
+      "name": "conv2d_48.w_0",
+      "shape": [
+        96,
+        48,
+        1,
+        1
+      ],
+      "offset": 90792,
+      "count": 4608
+    },
+    {
+      "name": "p2o.pd_op.conv2d.6.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.6.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 109224,
+      "count": 96
+    },
+    {
+      "name": "Add.19"
+    },
+    {
+      "name": "helper.constant.6",
+      "shape": [],
+      "offset": 109608,
+      "count": 1
+    },
+    {
+      "name": "Div.5"
+    },
+    {
+      "name": "Erf.5"
+    },
+    {
+      "name": "helper.constant.8",
+      "shape": [],
+      "offset": 109612,
+      "count": 1
+    },
+    {
+      "name": "Add.21"
+    },
+    {
+      "name": "Mul.9"
+    },
+    {
+      "name": "helper.constant.7",
+      "shape": [],
+      "offset": 109616,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.2.0"
+    },
+    {
+      "name": "conv2d_49.w_0",
+      "shape": [
+        48,
+        96,
+        1,
+        1
+      ],
+      "offset": 109620,
+      "count": 4608
+    },
+    {
+      "name": "p2o.pd_op.conv2d.7.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.7.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 128052,
+      "count": 48
+    },
+    {
+      "name": "Add.23"
+    },
+    {
+      "name": "Add.25"
+    },
+    {
+      "name": "conv2d_50.w_0",
+      "shape": [
+        48,
+        1,
+        3,
+        3
+      ],
+      "offset": 128244,
+      "count": 432
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.2.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.8.0",
+      "shape": [
+        1,
+        48,
+        1,
+        1
+      ],
+      "offset": 129972,
+      "count": 48
+    },
+    {
+      "name": "Add.27"
+    },
+    {
+      "name": "conv2d_51.w_0",
+      "shape": [
+        96,
+        48,
+        1,
+        1
+      ],
+      "offset": 130164,
+      "count": 4608
+    },
+    {
+      "name": "p2o.pd_op.conv2d.8.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.9.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 148596,
+      "count": 96
+    },
+    {
+      "name": "Add.29"
+    },
+    {
+      "name": "helper.constant.9",
+      "shape": [],
+      "offset": 148980,
+      "count": 1
+    },
+    {
+      "name": "Div.7"
+    },
+    {
+      "name": "Erf.7"
+    },
+    {
+      "name": "helper.constant.11",
+      "shape": [],
+      "offset": 148984,
+      "count": 1
+    },
+    {
+      "name": "Add.31"
+    },
+    {
+      "name": "Mul.12"
+    },
+    {
+      "name": "helper.constant.10",
+      "shape": [],
+      "offset": 148988,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.3.0"
+    },
+    {
+      "name": "conv2d_52.w_0",
+      "shape": [
+        96,
+        96,
+        1,
+        1
+      ],
+      "offset": 148992,
+      "count": 9216
+    },
+    {
+      "name": "p2o.pd_op.conv2d.9.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.10.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 185856,
+      "count": 96
+    },
+    {
+      "name": "Add.33"
+    },
+    {
+      "name": "conv2d_54.w_0",
+      "shape": [
+        96,
+        1,
+        3,
+        3
+      ],
+      "offset": 186240,
+      "count": 864
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.3.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.11.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 189696,
+      "count": 96
+    },
+    {
+      "name": "Add.35"
+    },
+    {
+      "name": "ReduceMean.3"
+    },
+    {
+      "name": "conv2d_17.w_0",
+      "shape": [
+        24,
+        96,
+        1,
+        1
+      ],
+      "offset": 190080,
+      "count": 2304
+    },
+    {
+      "name": "p2o.pd_op.conv2d.10.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.12.0",
+      "shape": [
+        1,
+        24,
+        1,
+        1
+      ],
+      "offset": 199296,
+      "count": 24
+    },
+    {
+      "name": "Add.37"
+    },
+    {
+      "name": "p2o.pd_op.relu.1.0"
+    },
+    {
+      "name": "conv2d_18.w_0",
+      "shape": [
+        96,
+        24,
+        1,
+        1
+      ],
+      "offset": 199392,
+      "count": 2304
+    },
+    {
+      "name": "p2o.pd_op.conv2d.11.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.13.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 208608,
+      "count": 96
+    },
+    {
+      "name": "Add.39"
+    },
+    {
+      "name": "p2o.pd_op.hardsigmoid.1.0"
+    },
+    {
+      "name": "Mul.15"
+    },
+    {
+      "name": "conv2d_55.w_0",
+      "shape": [
+        192,
+        96,
+        1,
+        1
+      ],
+      "offset": 208992,
+      "count": 18432
+    },
+    {
+      "name": "p2o.pd_op.conv2d.12.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.14.0",
+      "shape": [
+        1,
+        192,
+        1,
+        1
+      ],
+      "offset": 282720,
+      "count": 192
+    },
+    {
+      "name": "Add.41"
+    },
+    {
+      "name": "helper.constant.12",
+      "shape": [],
+      "offset": 283488,
+      "count": 1
+    },
+    {
+      "name": "Div.9"
+    },
+    {
+      "name": "Erf.9"
+    },
+    {
+      "name": "helper.constant.14",
+      "shape": [],
+      "offset": 283492,
+      "count": 1
+    },
+    {
+      "name": "Add.43"
+    },
+    {
+      "name": "Mul.17"
+    },
+    {
+      "name": "helper.constant.13",
+      "shape": [],
+      "offset": 283496,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.4.0"
+    },
+    {
+      "name": "conv2d_56.w_0",
+      "shape": [
+        96,
+        192,
+        1,
+        1
+      ],
+      "offset": 283500,
+      "count": 18432
+    },
+    {
+      "name": "p2o.pd_op.conv2d.13.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.15.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 357228,
+      "count": 96
+    },
+    {
+      "name": "Add.45"
+    },
+    {
+      "name": "Add.47"
+    },
+    {
+      "name": "conv2d_58.w_0",
+      "shape": [
+        96,
+        1,
+        3,
+        3
+      ],
+      "offset": 357612,
+      "count": 864
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.4.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.16.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 361068,
+      "count": 96
+    },
+    {
+      "name": "Add.49"
+    },
+    {
+      "name": "conv2d_59.w_0",
+      "shape": [
+        192,
+        96,
+        1,
+        1
+      ],
+      "offset": 361452,
+      "count": 18432
+    },
+    {
+      "name": "p2o.pd_op.conv2d.14.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.17.0",
+      "shape": [
+        1,
+        192,
+        1,
+        1
+      ],
+      "offset": 435180,
+      "count": 192
+    },
+    {
+      "name": "Add.51"
+    },
+    {
+      "name": "helper.constant.15",
+      "shape": [],
+      "offset": 435948,
+      "count": 1
+    },
+    {
+      "name": "Div.11"
+    },
+    {
+      "name": "Erf.11"
+    },
+    {
+      "name": "helper.constant.17",
+      "shape": [],
+      "offset": 435952,
+      "count": 1
+    },
+    {
+      "name": "Add.53"
+    },
+    {
+      "name": "Mul.20"
+    },
+    {
+      "name": "helper.constant.16",
+      "shape": [],
+      "offset": 435956,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.5.0"
+    },
+    {
+      "name": "conv2d_60.w_0",
+      "shape": [
+        96,
+        192,
+        1,
+        1
+      ],
+      "offset": 435960,
+      "count": 18432
+    },
+    {
+      "name": "p2o.pd_op.conv2d.15.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.18.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 509688,
+      "count": 96
+    },
+    {
+      "name": "Add.55"
+    },
+    {
+      "name": "Add.57"
+    },
+    {
+      "name": "conv2d_61.w_0",
+      "shape": [
+        96,
+        1,
+        3,
+        3
+      ],
+      "offset": 510072,
+      "count": 864
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.5.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.19.0",
+      "shape": [
+        1,
+        96,
+        1,
+        1
+      ],
+      "offset": 513528,
+      "count": 96
+    },
+    {
+      "name": "Add.59"
+    },
+    {
+      "name": "conv2d_62.w_0",
+      "shape": [
+        192,
+        96,
+        1,
+        1
+      ],
+      "offset": 513912,
+      "count": 18432
+    },
+    {
+      "name": "p2o.pd_op.conv2d.16.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.20.0",
+      "shape": [
+        1,
+        192,
+        1,
+        1
+      ],
+      "offset": 587640,
+      "count": 192
+    },
+    {
+      "name": "Add.61"
+    },
+    {
+      "name": "helper.constant.18",
+      "shape": [],
+      "offset": 588408,
+      "count": 1
+    },
+    {
+      "name": "Div.13"
+    },
+    {
+      "name": "Erf.13"
+    },
+    {
+      "name": "helper.constant.20",
+      "shape": [],
+      "offset": 588412,
+      "count": 1
+    },
+    {
+      "name": "Add.63"
+    },
+    {
+      "name": "Mul.23"
+    },
+    {
+      "name": "helper.constant.19",
+      "shape": [],
+      "offset": 588416,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.6.0"
+    },
+    {
+      "name": "conv2d_63.w_0",
+      "shape": [
+        160,
+        192,
+        1,
+        1
+      ],
+      "offset": 588420,
+      "count": 30720
+    },
+    {
+      "name": "p2o.pd_op.conv2d.17.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.21.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 711300,
+      "count": 160
+    },
+    {
+      "name": "Add.65"
+    },
+    {
+      "name": "conv2d_65.w_0",
+      "shape": [
+        160,
+        1,
+        3,
+        3
+      ],
+      "offset": 711940,
+      "count": 1440
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.6.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.22.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 717700,
+      "count": 160
+    },
+    {
+      "name": "Add.67"
+    },
+    {
+      "name": "ReduceMean.5"
+    },
+    {
+      "name": "conv2d_30.w_0",
+      "shape": [
+        40,
+        160,
+        1,
+        1
+      ],
+      "offset": 718340,
+      "count": 6400
+    },
+    {
+      "name": "p2o.pd_op.conv2d.18.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.23.0",
+      "shape": [
+        1,
+        40,
+        1,
+        1
+      ],
+      "offset": 743940,
+      "count": 40
+    },
+    {
+      "name": "Add.69"
+    },
+    {
+      "name": "p2o.pd_op.relu.2.0"
+    },
+    {
+      "name": "conv2d_31.w_0",
+      "shape": [
+        160,
+        40,
+        1,
+        1
+      ],
+      "offset": 744100,
+      "count": 6400
+    },
+    {
+      "name": "p2o.pd_op.conv2d.19.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.24.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 769700,
+      "count": 160
+    },
+    {
+      "name": "Add.71"
+    },
+    {
+      "name": "p2o.pd_op.hardsigmoid.2.0"
+    },
+    {
+      "name": "Mul.26"
+    },
+    {
+      "name": "conv2d_66.w_0",
+      "shape": [
+        320,
+        160,
+        1,
+        1
+      ],
+      "offset": 770340,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.20.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.25.0",
+      "shape": [
+        1,
+        320,
+        1,
+        1
+      ],
+      "offset": 975140,
+      "count": 320
+    },
+    {
+      "name": "Add.73"
+    },
+    {
+      "name": "helper.constant.21",
+      "shape": [],
+      "offset": 976420,
+      "count": 1
+    },
+    {
+      "name": "Div.15"
+    },
+    {
+      "name": "Erf.15"
+    },
+    {
+      "name": "helper.constant.23",
+      "shape": [],
+      "offset": 976424,
+      "count": 1
+    },
+    {
+      "name": "Add.75"
+    },
+    {
+      "name": "Mul.28"
+    },
+    {
+      "name": "helper.constant.22",
+      "shape": [],
+      "offset": 976428,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.7.0"
+    },
+    {
+      "name": "conv2d_67.w_0",
+      "shape": [
+        160,
+        320,
+        1,
+        1
+      ],
+      "offset": 976432,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.21.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.26.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 1181232,
+      "count": 160
+    },
+    {
+      "name": "Add.77"
+    },
+    {
+      "name": "Add.79"
+    },
+    {
+      "name": "conv2d_69.w_0",
+      "shape": [
+        160,
+        1,
+        3,
+        3
+      ],
+      "offset": 1181872,
+      "count": 1440
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.7.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.27.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 1187632,
+      "count": 160
+    },
+    {
+      "name": "Add.81"
+    },
+    {
+      "name": "conv2d_70.w_0",
+      "shape": [
+        320,
+        160,
+        1,
+        1
+      ],
+      "offset": 1188272,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.22.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.28.0",
+      "shape": [
+        1,
+        320,
+        1,
+        1
+      ],
+      "offset": 1393072,
+      "count": 320
+    },
+    {
+      "name": "Add.83"
+    },
+    {
+      "name": "helper.constant.24",
+      "shape": [],
+      "offset": 1394352,
+      "count": 1
+    },
+    {
+      "name": "Div.17"
+    },
+    {
+      "name": "Erf.17"
+    },
+    {
+      "name": "helper.constant.26",
+      "shape": [],
+      "offset": 1394356,
+      "count": 1
+    },
+    {
+      "name": "Add.85"
+    },
+    {
+      "name": "Mul.31"
+    },
+    {
+      "name": "helper.constant.25",
+      "shape": [],
+      "offset": 1394360,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.8.0"
+    },
+    {
+      "name": "conv2d_71.w_0",
+      "shape": [
+        160,
+        320,
+        1,
+        1
+      ],
+      "offset": 1394364,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.23.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.29.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 1599164,
+      "count": 160
+    },
+    {
+      "name": "Add.87"
+    },
+    {
+      "name": "Add.89"
+    },
+    {
+      "name": "conv2d_73.w_0",
+      "shape": [
+        160,
+        1,
+        3,
+        3
+      ],
+      "offset": 1599804,
+      "count": 1440
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.8.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.30.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 1605564,
+      "count": 160
+    },
+    {
+      "name": "Add.91"
+    },
+    {
+      "name": "conv2d_74.w_0",
+      "shape": [
+        320,
+        160,
+        1,
+        1
+      ],
+      "offset": 1606204,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.24.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.31.0",
+      "shape": [
+        1,
+        320,
+        1,
+        1
+      ],
+      "offset": 1811004,
+      "count": 320
+    },
+    {
+      "name": "Add.93"
+    },
+    {
+      "name": "helper.constant.27",
+      "shape": [],
+      "offset": 1812284,
+      "count": 1
+    },
+    {
+      "name": "Div.19"
+    },
+    {
+      "name": "Erf.19"
+    },
+    {
+      "name": "helper.constant.29",
+      "shape": [],
+      "offset": 1812288,
+      "count": 1
+    },
+    {
+      "name": "Add.95"
+    },
+    {
+      "name": "Mul.34"
+    },
+    {
+      "name": "helper.constant.28",
+      "shape": [],
+      "offset": 1812292,
+      "count": 1
+    },
+    {
+      "name": "p2o.pd_op.gelu.9.0"
+    },
+    {
+      "name": "conv2d_75.w_0",
+      "shape": [
+        160,
+        320,
+        1,
+        1
+      ],
+      "offset": 1812296,
+      "count": 51200
+    },
+    {
+      "name": "p2o.pd_op.conv2d.25.0"
+    },
+    {
+      "name": "p2o.pd_op.reshape.32.0",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 2017096,
+      "count": 160
+    },
+    {
+      "name": "Add.97"
+    },
+    {
+      "name": "Add.99"
+    },
+    {
+      "name": "p2o.pd_op.pool2d.0.0"
+    },
+    {
+      "name": "p2o.pd_op.squeeze.0.0"
+    },
+    {
+      "name": "p2o.pd_op.transpose.0.0"
+    },
+    {
+      "name": "p2o.pd_op.transpose.1.0"
+    },
+    {
+      "name": "p2o.pd_op.unsqueeze.1.0"
+    },
+    {
+      "name": "p2o.pd_op.unsqueeze.0.0",
+      "shape": [
+        160,
+        1,
+        1,
+        5
+      ],
+      "offset": 2017736,
+      "count": 800
+    },
+    {
+      "name": "p2o.pd_op.depthwise_conv2d.9.0"
+    },
+    {
+      "name": "p2o.pd_op.squeeze.1.0"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.2.0/alpha",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 2020936,
+      "count": 160
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.2.0/scaled"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.2.0/beta",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 2021576,
+      "count": 160
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.2.0"
+    },
+    {
+      "name": "HardSigmoid.4"
+    },
+    {
+      "name": "p2o.pd_op.hardswish.0.0"
+    },
+    {
+      "name": "p2o.pd_op.unsqueeze.3.0"
+    },
+    {
+      "name": "p2o.pd_op.unsqueeze.2.0",
+      "shape": [
+        160,
+        160,
+        1,
+        1
+      ],
+      "offset": 2022216,
+      "count": 25600
+    },
+    {
+      "name": "p2o.pd_op.conv2d.26.0"
+    },
+    {
+      "name": "p2o.pd_op.squeeze.2.0"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.3.0/alpha",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 2124616,
+      "count": 160
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.3.0/scaled"
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.3.0/beta",
+      "shape": [
+        1,
+        160,
+        1,
+        1
+      ],
+      "offset": 2125256,
+      "count": 160
+    },
+    {
+      "name": "p2o.pd_op.batch_norm_.3.0"
+    },
+    {
+      "name": "HardSigmoid.6"
+    },
+    {
+      "name": "p2o.pd_op.hardswish.1.0"
+    },
+    {
+      "name": "p2o.pd_op.transpose.2.0"
+    },
+    {
+      "name": "p2o.pd_op.matmul.0.0/conv-weight",
+      "shape": [
+        80,
+        160,
+        1,
+        1
+      ],
+      "offset": 2125896,
+      "count": 12800
+    },
+    {
+      "name": "p2o.pd_op.matmul.0.0"
+    },
+    {
+      "name": "linear_0.b_0/lwvk-channel",
+      "shape": [
+        1,
+        80,
+        1,
+        1
+      ],
+      "offset": 2177096,
+      "count": 80
+    },
+    {
+      "name": "Add.105"
+    },
+    {
+      "name": "p2o.pd_op.matmul.1.0/conv-weight",
+      "shape": [
+        6906,
+        80,
+        1,
+        1
+      ],
+      "offset": 2177416,
+      "count": 552480
+    },
+    {
+      "name": "p2o.pd_op.matmul.1.0"
+    },
+    {
+      "name": "linear_1.b_0/lwvk-channel",
+      "shape": [
+        1,
+        6906,
+        1,
+        1
+      ],
+      "offset": 4387336,
+      "count": 6906
+    },
+    {
+      "name": "Add.107"
+    },
+    {
+      "name": "fetch_name_0"
+    }
+  ],
+  "nodes": [
+    {
+      "op": "Conv",
+      "inputs": [
+        0,
+        1
+      ],
+      "output": 2,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          2,
+          2
+        ],
+        "group": 1,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        2,
+        3
+      ],
+      "output": 4,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        4,
+        5
+      ],
+      "output": 6,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        6,
+        7
+      ],
+      "output": 8,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        8
+      ],
+      "output": 9,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        9,
+        10
+      ],
+      "output": 11,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        6,
+        11
+      ],
+      "output": 12,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        12,
+        13
+      ],
+      "output": 14,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        14,
+        15
+      ],
+      "output": 16,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          2,
+          2
+        ],
+        "group": 1,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        16,
+        17
+      ],
+      "output": 18,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        18,
+        19
+      ],
+      "output": 20,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        20,
+        21
+      ],
+      "output": 22,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 48,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        22,
+        23
+      ],
+      "output": 24,
+      "attrs": {}
+    },
+    {
+      "op": "ReduceMean",
+      "inputs": [
+        24
+      ],
+      "output": 25,
+      "attrs": {
+        "axes": [
+          2,
+          3
+        ],
+        "keepdims": 1
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        25,
+        26
+      ],
+      "output": 27,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        27,
+        28
+      ],
+      "output": 29,
+      "attrs": {}
+    },
+    {
+      "op": "Relu",
+      "inputs": [
+        29
+      ],
+      "output": 30,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        30,
+        31
+      ],
+      "output": 32,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        32,
+        33
+      ],
+      "output": 34,
+      "attrs": {}
+    },
+    {
+      "op": "HardSigmoid",
+      "inputs": [
+        34
+      ],
+      "output": 35,
+      "attrs": {
+        "alpha": 0.16666670143604279,
+        "beta": 0.5
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        24,
+        35
+      ],
+      "output": 36,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        36,
+        37
+      ],
+      "output": 38,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        38,
+        39
+      ],
+      "output": 40,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        40,
+        41
+      ],
+      "output": 42,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        42
+      ],
+      "output": 43,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        43,
+        44
+      ],
+      "output": 45,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        40,
+        45
+      ],
+      "output": 46,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        46,
+        47
+      ],
+      "output": 48,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        48,
+        49
+      ],
+      "output": 50,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        50,
+        51
+      ],
+      "output": 52,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        36,
+        52
+      ],
+      "output": 53,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        53,
+        54
+      ],
+      "output": 55,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 48,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        55,
+        56
+      ],
+      "output": 57,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        57,
+        58
+      ],
+      "output": 59,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        59,
+        60
+      ],
+      "output": 61,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        61,
+        62
+      ],
+      "output": 63,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        63
+      ],
+      "output": 64,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        64,
+        65
+      ],
+      "output": 66,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        61,
+        66
+      ],
+      "output": 67,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        67,
+        68
+      ],
+      "output": 69,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        69,
+        70
+      ],
+      "output": 71,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        71,
+        72
+      ],
+      "output": 73,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        57,
+        73
+      ],
+      "output": 74,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        74,
+        75
+      ],
+      "output": 76,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          2,
+          1
+        ],
+        "group": 48,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        76,
+        77
+      ],
+      "output": 78,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        78,
+        79
+      ],
+      "output": 80,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        80,
+        81
+      ],
+      "output": 82,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        82,
+        83
+      ],
+      "output": 84,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        84
+      ],
+      "output": 85,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        85,
+        86
+      ],
+      "output": 87,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        82,
+        87
+      ],
+      "output": 88,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        88,
+        89
+      ],
+      "output": 90,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        90,
+        91
+      ],
+      "output": 92,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        92,
+        93
+      ],
+      "output": 94,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        94,
+        95
+      ],
+      "output": 96,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 96,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        96,
+        97
+      ],
+      "output": 98,
+      "attrs": {}
+    },
+    {
+      "op": "ReduceMean",
+      "inputs": [
+        98
+      ],
+      "output": 99,
+      "attrs": {
+        "axes": [
+          2,
+          3
+        ],
+        "keepdims": 1
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        99,
+        100
+      ],
+      "output": 101,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        101,
+        102
+      ],
+      "output": 103,
+      "attrs": {}
+    },
+    {
+      "op": "Relu",
+      "inputs": [
+        103
+      ],
+      "output": 104,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        104,
+        105
+      ],
+      "output": 106,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        106,
+        107
+      ],
+      "output": 108,
+      "attrs": {}
+    },
+    {
+      "op": "HardSigmoid",
+      "inputs": [
+        108
+      ],
+      "output": 109,
+      "attrs": {
+        "alpha": 0.16666670143604279,
+        "beta": 0.5
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        98,
+        109
+      ],
+      "output": 110,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        110,
+        111
+      ],
+      "output": 112,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        112,
+        113
+      ],
+      "output": 114,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        114,
+        115
+      ],
+      "output": 116,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        116
+      ],
+      "output": 117,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        117,
+        118
+      ],
+      "output": 119,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        114,
+        119
+      ],
+      "output": 120,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        120,
+        121
+      ],
+      "output": 122,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        122,
+        123
+      ],
+      "output": 124,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        124,
+        125
+      ],
+      "output": 126,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        110,
+        126
+      ],
+      "output": 127,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        127,
+        128
+      ],
+      "output": 129,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 96,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        129,
+        130
+      ],
+      "output": 131,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        131,
+        132
+      ],
+      "output": 133,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        133,
+        134
+      ],
+      "output": 135,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        135,
+        136
+      ],
+      "output": 137,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        137
+      ],
+      "output": 138,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        138,
+        139
+      ],
+      "output": 140,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        135,
+        140
+      ],
+      "output": 141,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        141,
+        142
+      ],
+      "output": 143,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        143,
+        144
+      ],
+      "output": 145,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        145,
+        146
+      ],
+      "output": 147,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        131,
+        147
+      ],
+      "output": 148,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        148,
+        149
+      ],
+      "output": 150,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          2,
+          1
+        ],
+        "group": 96,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        150,
+        151
+      ],
+      "output": 152,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        152,
+        153
+      ],
+      "output": 154,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        154,
+        155
+      ],
+      "output": 156,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        156,
+        157
+      ],
+      "output": 158,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        158
+      ],
+      "output": 159,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        159,
+        160
+      ],
+      "output": 161,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        156,
+        161
+      ],
+      "output": 162,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        162,
+        163
+      ],
+      "output": 164,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        164,
+        165
+      ],
+      "output": 166,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        166,
+        167
+      ],
+      "output": 168,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        168,
+        169
+      ],
+      "output": 170,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 160,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        170,
+        171
+      ],
+      "output": 172,
+      "attrs": {}
+    },
+    {
+      "op": "ReduceMean",
+      "inputs": [
+        172
+      ],
+      "output": 173,
+      "attrs": {
+        "axes": [
+          2,
+          3
+        ],
+        "keepdims": 1
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        173,
+        174
+      ],
+      "output": 175,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        175,
+        176
+      ],
+      "output": 177,
+      "attrs": {}
+    },
+    {
+      "op": "Relu",
+      "inputs": [
+        177
+      ],
+      "output": 178,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        178,
+        179
+      ],
+      "output": 180,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        180,
+        181
+      ],
+      "output": 182,
+      "attrs": {}
+    },
+    {
+      "op": "HardSigmoid",
+      "inputs": [
+        182
+      ],
+      "output": 183,
+      "attrs": {
+        "alpha": 0.16666670143604279,
+        "beta": 0.5
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        172,
+        183
+      ],
+      "output": 184,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        184,
+        185
+      ],
+      "output": 186,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        186,
+        187
+      ],
+      "output": 188,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        188,
+        189
+      ],
+      "output": 190,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        190
+      ],
+      "output": 191,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        191,
+        192
+      ],
+      "output": 193,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        188,
+        193
+      ],
+      "output": 194,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        194,
+        195
+      ],
+      "output": 196,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        196,
+        197
+      ],
+      "output": 198,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        198,
+        199
+      ],
+      "output": 200,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        184,
+        200
+      ],
+      "output": 201,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        201,
+        202
+      ],
+      "output": 203,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 160,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        203,
+        204
+      ],
+      "output": 205,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        205,
+        206
+      ],
+      "output": 207,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        207,
+        208
+      ],
+      "output": 209,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        209,
+        210
+      ],
+      "output": 211,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        211
+      ],
+      "output": 212,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        212,
+        213
+      ],
+      "output": 214,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        209,
+        214
+      ],
+      "output": 215,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        215,
+        216
+      ],
+      "output": 217,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        217,
+        218
+      ],
+      "output": 219,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        219,
+        220
+      ],
+      "output": 221,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        205,
+        221
+      ],
+      "output": 222,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        222,
+        223
+      ],
+      "output": 224,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          3,
+          3
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 160,
+        "pads": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        224,
+        225
+      ],
+      "output": 226,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        226,
+        227
+      ],
+      "output": 228,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        228,
+        229
+      ],
+      "output": 230,
+      "attrs": {}
+    },
+    {
+      "op": "Div",
+      "inputs": [
+        230,
+        231
+      ],
+      "output": 232,
+      "attrs": {}
+    },
+    {
+      "op": "Erf",
+      "inputs": [
+        232
+      ],
+      "output": 233,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        233,
+        234
+      ],
+      "output": 235,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        230,
+        235
+      ],
+      "output": 236,
+      "attrs": {}
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        236,
+        237
+      ],
+      "output": 238,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        238,
+        239
+      ],
+      "output": 240,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        240,
+        241
+      ],
+      "output": 242,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        226,
+        242
+      ],
+      "output": 243,
+      "attrs": {}
+    },
+    {
+      "op": "AveragePool",
+      "inputs": [
+        243
+      ],
+      "output": 244,
+      "attrs": {
+        "kernel_shape": [
+          3,
+          2
+        ],
+        "strides": [
+          3,
+          2
+        ],
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "ceil_mode": 0,
+        "count_include_pad": 0
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        244
+      ],
+      "output": 245,
+      "attrs": {
+        "kind": "ncw"
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        245
+      ],
+      "output": 246,
+      "attrs": {
+        "kind": "nwc"
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        246
+      ],
+      "output": 247,
+      "attrs": {
+        "kind": "ncw"
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        247
+      ],
+      "output": 248,
+      "attrs": {
+        "kind": "nchw"
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        248,
+        249
+      ],
+      "output": 250,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          5
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 160,
+        "pads": [
+          0,
+          2,
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        250
+      ],
+      "output": 251,
+      "attrs": {
+        "kind": "ncw"
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        251,
+        252
+      ],
+      "output": 253,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        253,
+        254
+      ],
+      "output": 255,
+      "attrs": {}
+    },
+    {
+      "op": "HardSigmoid",
+      "inputs": [
+        255
+      ],
+      "output": 256,
+      "attrs": {
+        "alpha": 0.1666666716337204,
+        "beta": 0.5
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        256,
+        255
+      ],
+      "output": 257,
+      "attrs": {}
+    },
+    {
+      "op": "View",
+      "inputs": [
+        257
+      ],
+      "output": 258,
+      "attrs": {
+        "kind": "nchw"
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        258,
+        259
+      ],
+      "output": 260,
+      "attrs": {
+        "dilations": [
+          1,
+          1
+        ],
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "group": 1,
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "View",
+      "inputs": [
+        260
+      ],
+      "output": 261,
+      "attrs": {
+        "kind": "ncw"
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        261,
+        262
+      ],
+      "output": 263,
+      "attrs": {}
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        263,
+        264
+      ],
+      "output": 265,
+      "attrs": {}
+    },
+    {
+      "op": "HardSigmoid",
+      "inputs": [
+        265
+      ],
+      "output": 266,
+      "attrs": {
+        "alpha": 0.1666666716337204,
+        "beta": 0.5
+      }
+    },
+    {
+      "op": "Mul",
+      "inputs": [
+        266,
+        265
+      ],
+      "output": 267,
+      "attrs": {}
+    },
+    {
+      "op": "View",
+      "inputs": [
+        267
+      ],
+      "output": 268,
+      "attrs": {
+        "kind": "nwc"
+      }
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        268,
+        269
+      ],
+      "output": 270,
+      "attrs": {
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "dilations": [
+          1,
+          1
+        ],
+        "group": 1
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        270,
+        271
+      ],
+      "output": 272,
+      "attrs": {}
+    },
+    {
+      "op": "Conv",
+      "inputs": [
+        272,
+        273
+      ],
+      "output": 274,
+      "attrs": {
+        "kernel_shape": [
+          1,
+          1
+        ],
+        "strides": [
+          1,
+          1
+        ],
+        "pads": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "dilations": [
+          1,
+          1
+        ],
+        "group": 1
+      }
+    },
+    {
+      "op": "Add",
+      "inputs": [
+        274,
+        275
+      ],
+      "output": 276,
+      "attrs": {}
+    },
+    {
+      "op": "Softmax",
+      "inputs": [
+        276
+      ],
+      "output": 277,
+      "attrs": {}
+    }
+  ],
+  "dictionary_file": "dictionary.txt",
+  "dictionary_fnv1a64": "10511920404568678613",
+  "classes": 6906
+}

@@ -1,0 +1,72 @@
+#version 450
+// Project-written mixed-precision implicit GEMM, Apache-2.0, 2026.
+// Shared-memory staging / subgroup32 approach references pinned SimdPaddleOCR.
+// FP32 tensors and weights -> FP16 A/B -> cooperative FP32 accumulation -> FP32 output.
+// Experimental: enabled only by an opt-in build AND LWVK_EXPERIMENTAL_COOP=1.
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+#extension GL_KHR_cooperative_matrix : require
+#extension GL_KHR_shader_subgroup_basic : require
+#extension GL_KHR_memory_scope_semantics : require
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x=128) in;
+layout(set=0,binding=0) readonly buffer X { float x[]; };
+layout(set=0,binding=1) readonly buffer W { float w[]; };
+layout(set=0,binding=2) readonly buffer B { float b[]; };
+layout(set=0,binding=3) writeonly buffer O { float o[]; };
+layout(push_constant) uniform PC {
+ uint outW;uint outH;uint Cout;uint Cin;uint kH;uint kW;uint sh;uint sw;
+ uint pt;uint pl;uint inW;uint inH;uint flags;
+} p;
+// M64/N128/K32, four subgroups, eight accumulators per subgroup.
+// Pad shared strides by eight half elements to reduce repeated bank conflicts.
+shared float16_t aa[64*40];
+shared float16_t bb[32*136];
+shared float cc[4*16*16];
+float inputValue(uint m,uint k) {
+ if (m>=p.outW*p.outH || k>=p.Cin*p.kH*p.kW) return 0.0;
+ if (p.kH==1 && p.kW==1 && p.sh==1 && p.sw==1 && p.pt==0 && p.pl==0)
+  return x[m*p.Cin+k];
+ uint ci=k%p.Cin, sp=k/p.Cin;
+ int iy=int((m/p.outW)*p.sh+sp/p.kW)-int(p.pt);
+ int ix=int((m%p.outW)*p.sw+sp%p.kW)-int(p.pl);
+ return iy>=0 && iy<int(p.inH) && ix>=0 && ix<int(p.inW) ? x[(uint(iy)*p.inW+uint(ix))*p.Cin+ci] : 0.0;
+}
+void main() {
+ uint lid=gl_LocalInvocationID.x, lane=gl_SubgroupInvocationID, sg=gl_SubgroupID;
+ uint m0=gl_WorkGroupID.x*64, n0=gl_WorkGroupID.y*128;
+ uint mr=(sg/2)*32, nr=(sg%2)*64;
+ uint K=p.Cin*p.kH*p.kW, Npad=(p.Cout+3)&~3u;
+ coopmat<float,gl_ScopeSubgroup,16,16,gl_MatrixUseAccumulator> accum[2][4];
+ [[unroll]] for(uint r=0;r<2;++r) [[unroll]] for(uint c=0;c<4;++c)
+  accum[r][c]=coopmat<float,gl_ScopeSubgroup,16,16,gl_MatrixUseAccumulator>(0.0);
+ for (uint k0=0;k0<K;k0+=32) {
+  for (uint i=lid;i<2048;i+=128) aa[(i/32)*40+i%32]=float16_t(inputValue(m0+i/32,k0+i%32));
+  for (uint i=lid;i<4096;i+=128) {
+   uint k=k0+i/128,n=n0+i%128;
+   bb[(i/128)*136+i%128]=float16_t(k<K && n<p.Cout ? w[k*Npad+n] : 0.0);
+  }
+  barrier();
+  [[unroll]] for (uint k=0;k<32;k+=16) {
+   coopmat<float16_t,gl_ScopeSubgroup,16,16,gl_MatrixUseA> a[2];
+   coopmat<float16_t,gl_ScopeSubgroup,16,16,gl_MatrixUseB> b[4];
+   [[unroll]] for(uint r=0;r<2;++r)coopMatLoad(a[r],aa,(mr+r*16)*40+k,40,gl_CooperativeMatrixLayoutRowMajor);
+   [[unroll]] for(uint c=0;c<4;++c)coopMatLoad(b[c],bb,k*136+nr+c*16,136,gl_CooperativeMatrixLayoutRowMajor);
+   [[unroll]] for(uint r=0;r<2;++r) [[unroll]] for(uint c=0;c<4;++c)accum[r][c]=coopMatMulAdd(a[r],b[c],accum[r][c]);
+  }
+  barrier();
+ }
+ [[unroll]] for (uint r=0;r<2;++r) [[unroll]] for(uint j=0;j<4;++j) {
+  coopMatStore(accum[r][j],cc,sg*256,16,gl_CooperativeMatrixLayoutRowMajor);
+  subgroupMemoryBarrierShared(); subgroupBarrier();
+  for (uint i=lane;i<256;i+=32) {
+   uint m=m0+mr+r*16+i/16,n=n0+nr+j*16+i%16;
+   if (m<p.outW*p.outH && n<p.Cout) {
+    float v=cc[sg*256+i]+((p.flags&1u)!=0 ? b[n] : 0.0);
+    if ((p.flags&16u)!=0) v=max(v,0.0);
+    if ((p.flags&32u)!=0) v=lwvk_gelu(v); // FP32 helper injected by prepare_shaders.py
+    o[m*p.Cout+n]=v;
+   }
+  }
+  subgroupMemoryBarrierShared(); subgroupBarrier();
+ }
+}

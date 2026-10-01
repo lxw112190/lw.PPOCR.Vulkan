@@ -1,0 +1,113 @@
+{
+  "version": "0.5.0-dev.1",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "reference": [
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 1.2732925824820995e-11,
+      "text": "0",
+      "score": 0.9999979734420776,
+      "inference_ms": 0.7266
+    },
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 1.0345502232667059e-11,
+      "text": "1",
+      "score": 0.9999982118606567,
+      "inference_ms": 0.6989
+    },
+    {
+      "task": "rec",
+      "width": 32,
+      "rows": 4,
+      "max_abs": 2.7492642402648926e-06,
+      "text": "保材",
+      "score": 0.08205464482307434,
+      "inference_ms": 3.1078
+    },
+    {
+      "task": "rec",
+      "width": 64,
+      "rows": 8,
+      "max_abs": 7.212162017822266e-06,
+      "text": "",
+      "score": 0.0,
+      "inference_ms": 5.3822
+    },
+    {
+      "task": "rec",
+      "width": 96,
+      "rows": 12,
+      "max_abs": 1.8715858459472656e-05,
+      "text": "【净含量】：20ml",
+      "score": 0.7728545069694519,
+      "inference_ms": 6.3386
+    },
+    {
+      "task": "rec",
+      "width": 320,
+      "rows": 40,
+      "max_abs": 1.0728836059570312e-06,
+      "text": "【主要功能】：可紧致头发磷层，从而达至",
+      "score": 0.9959414601325989,
+      "inference_ms": 16.6209
+    },
+    {
+      "task": "rec",
+      "width": 640,
+      "rows": 80,
+      "max_abs": 1.0728836059570312e-06,
+      "text": "纯臻营养护发素",
+      "score": 0.9980912208557129,
+      "inference_ms": 32.1381
+    },
+    {
+      "task": "rec",
+      "width": 960,
+      "rows": 120,
+      "max_abs": 8.940696716308594e-07,
+      "text": "【产品编号】:YM-X-3011",
+      "score": 0.9833530783653259,
+      "inference_ms": 47.0682
+    },
+    {
+      "task": "rec-bgr",
+      "text": "纯臻营养护发素",
+      "score": 0.9990233182907104,
+      "cpu_score": 0.9990234460149493,
+      "inference_ms": 3.0341,
+      "stride_tests": "passed"
+    }
+  ],
+  "repeat_tests": [
+    {
+      "task": "cls",
+      "iterations": 2,
+      "passed": true
+    },
+    {
+      "task": "rec",
+      "iterations": 2,
+      "passed": true
+    }
+  ],
+  "rss_samples": [
+    {
+      "task": "cls",
+      "iteration": 0,
+      "rss_bytes": 166342656
+    },
+    {
+      "task": "rec",
+      "iteration": 0,
+      "rss_bytes": 325275648
+    }
+  ],
+  "rss_note": "Python/ORT/Vulkan driver combined RSS; not leak proof",
+  "stage": "CLS/REC probabilities and recognition-only; not full OCR",
+  "passed": true
+}

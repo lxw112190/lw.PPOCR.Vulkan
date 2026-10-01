@@ -1,0 +1,26 @@
+#version 450
+// Apache-2.0. Adapted from SimdPaddleOCR conv1x1_dot (6298596e28404f0e93af585a79e84086363eeb72).
+// Modified: FP32, guarded arbitrary output channels, no fused optional operands.
+// m4*n4 register tile, K-major padded weights; input K must be a multiple of four.
+layout(local_size_x=256)in;
+layout(set=0,binding=0)readonly buffer X{vec4 x[];};
+layout(set=0,binding=1)readonly buffer W{vec4 w[];};
+layout(set=0,binding=2)readonly buffer B{float b[];};
+layout(set=0,binding=3)writeonly buffer O{float o[];};
+layout(push_constant)uniform PC{uint M;uint N;uint K;uint flags;}p;
+void main(){
+ uint gid=gl_GlobalInvocationID.x,nv=(p.N+3)/4,mv=(p.M+3)/4;
+ if(gid>=mv*nv)return;
+ uint n4=gid%nv,m=(gid/nv)*4,kv=p.K/4;
+ vec4 a=vec4(0),bb=vec4(0),c=vec4(0),d=vec4(0);
+ for(uint k4=0;k4<kv;++k4){
+  vec4 x0=m<p.M?x[m*kv+k4]:vec4(0),x1=m+1<p.M?x[(m+1)*kv+k4]:vec4(0);
+  vec4 x2=m+2<p.M?x[(m+2)*kv+k4]:vec4(0),x3=m+3<p.M?x[(m+3)*kv+k4]:vec4(0);
+  for(uint j=0;j<4;++j){vec4 wt=w[(k4*4+j)*nv+n4];a+=x0[j]*wt;bb+=x1[j]*wt;c+=x2[j]*wt;d+=x3[j]*wt;}
+ }
+ for(uint j=0;j<4;++j){uint n=n4*4+j;if(n>=p.N)break;float bias=(p.flags&1u)!=0?b[n]:0;
+  vec4 v=vec4(a[j],bb[j],c[j],d[j])+bias;if((p.flags&16u)!=0)v=max(v,vec4(0));
+  if(m<p.M)o[m*p.N+n]=v.x;if(m+1<p.M)o[(m+1)*p.N+n]=v.y;
+  if(m+2<p.M)o[(m+2)*p.N+n]=v.z;if(m+3<p.M)o[(m+3)*p.N+n]=v.w;
+ }
+}

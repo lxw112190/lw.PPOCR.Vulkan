@@ -1,0 +1,64 @@
+{
+  "ok": true,
+  "request_results_consistent": true,
+  "rss_signal_threshold_bytes": 100663296,
+  "version": "0.5.0-dev.1",
+  "device": 1,
+  "full_ocr_requests": 50,
+  "model_root": "E:\\My-Code\\PPOCR\\lw.PPOCR.Vulkan\\dist\\lw.PPOCR.Vulkan-v0.5.0-dev.1-windows-x64-full-ocr-preview\\models\\onnx\\ppocrv6-tiny",
+  "recognize_requests": 3,
+  "sizes": [
+    [
+      250,
+      250
+    ],
+    [
+      500,
+      500
+    ],
+    [
+      1000,
+      1000
+    ],
+    [
+      900,
+      450
+    ],
+    [
+      450,
+      900
+    ]
+  ],
+  "elapsed_seconds": 11.561999999999898,
+  "rss_after_warmup": 700788736,
+  "rss_end": 674865152,
+  "rss_delta": -25923584,
+  "rss_after_first_size_cycle": 486170624,
+  "extra_warmup_ocr_requests": 100,
+  "extra_warmup_recognize_requests": 4,
+  "warmup_samples": [
+    {
+      "warmup_iteration": 50,
+      "rss_bytes": 654708736
+    },
+    {
+      "warmup_iteration": 100,
+      "rss_bytes": 700788736
+    }
+  ],
+  "samples": [
+    {
+      "iteration": 50,
+      "rss_bytes": 674865152,
+      "threads": 30,
+      "handles": 474
+    }
+  ],
+  "latency_ms": {
+    "median": 226.5000000006694,
+    "p95": 343.99999999914144
+  },
+  "limits": "RSS/handles/threads only; no sanitizer or GPU VRAM leak-proof claim",
+  "service_sha256": "2d5c329d1b53f500d8f17c5e9e48758a10bad2195a4ba8ad94f88e06d923b03e",
+  "library_sha256": "727f81f854dea8d5cafccaa35ad290f8093e33adbcff379953d1b968a3fdc7a0"
+}

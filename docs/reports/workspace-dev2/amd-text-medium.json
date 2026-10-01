@@ -1,0 +1,86 @@
+{
+  "version": "0.5.0-dev.2",
+  "device": "AMD Radeon(TM) Graphics",
+  "reference": [
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 5.002220859751105e-12,
+      "text": "0",
+      "score": 0.9999979734420776,
+      "inference_ms": 0.916
+    },
+    {
+      "task": "cls",
+      "width": 160,
+      "rows": 1,
+      "max_abs": 1.9667822925839573e-11,
+      "text": "1",
+      "score": 0.9999982118606567,
+      "inference_ms": 2.6299
+    },
+    {
+      "task": "rec",
+      "width": 32,
+      "rows": 4,
+      "max_abs": 1.0579824447631836e-05,
+      "text": "新",
+      "score": 0.28855130076408386,
+      "inference_ms": 42.4886
+    },
+    {
+      "task": "rec",
+      "width": 96,
+      "rows": 12,
+      "max_abs": 1.7464160919189453e-05,
+      "text": "[]",
+      "score": 0.6719964146614075,
+      "inference_ms": 16.1181
+    },
+    {
+      "task": "rec",
+      "width": 320,
+      "rows": 40,
+      "max_abs": 6.556510925292969e-07,
+      "text": "【净含量】:220ml",
+      "score": 0.9598590731620789,
+      "inference_ms": 35.4944
+    },
+    {
+      "task": "rec-bgr",
+      "text": "纯臻营养护发素",
+      "score": 0.999721348285675,
+      "cpu_score": 0.9997214930398124,
+      "inference_ms": 22.838,
+      "stride_tests": "passed"
+    }
+  ],
+  "repeat_tests": [
+    {
+      "task": "cls",
+      "iterations": 3,
+      "passed": true
+    },
+    {
+      "task": "rec",
+      "iterations": 3,
+      "passed": true
+    }
+  ],
+  "rss_samples": [
+    {
+      "task": "cls",
+      "iteration": 0,
+      "rss_bytes": 124116992
+    },
+    {
+      "task": "rec",
+      "iteration": 0,
+      "rss_bytes": 392114176
+    }
+  ],
+  "rss_note": "Python/ORT/Vulkan driver combined RSS; not leak proof",
+  "stage": "CLS/REC probabilities and recognition-only; not full OCR",
+  "passed": true
+}

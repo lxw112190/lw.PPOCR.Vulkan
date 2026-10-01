@@ -1,0 +1,264 @@
+{
+  "version": "0.3.0-dev.1",
+  "device": "AMD Radeon(TM) Graphics",
+  "reference": "ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
+  "comparisons": [
+    {
+      "variant": "sample",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】：代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】：YM-X-3011",
+        "ODM OEM",
+        "【净含量】:220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "(成品包材)",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 85.23559999999999,
+        "det_ms": 49.565,
+        "rec_ms": 589.4225,
+        "total_ms": 1085.5137
+      }
+    },
+    {
+      "variant": "rotated-180",
+      "items": 16,
+      "texts": [
+        "发足够的滋养",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "(成品包材)",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "【适用人群】：适合所有肤质",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【产品编号】：YM-X-3011",
+        "【品名】：纯臻营养护发素",
+        "【品牌】：代加工方式/OEM ODM",
+        "每瓶22元，1000瓶起订）",
+        "(45元/每公斤，100公斤起订)",
+        "产品信息/参数",
+        "纯臻营养护发素"
+      ],
+      "timing": {
+        "cls_ms": 81.76899999999999,
+        "det_ms": 49.8912,
+        "rec_ms": 560.6773,
+        "total_ms": 873.9892
+      }
+    },
+    {
+      "variant": "wide-resized",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】：代力加工方式/OEMODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】:YM-x-3011",
+        "ODM OEM",
+        "【净含量】: 220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油由酰胺丙基甜菜碱、泛鲲",
+        "(成品包材）",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 78.7993,
+        "det_ms": 50.8678,
+        "rec_ms": 772.9947999999999,
+        "total_ms": 1113.1562
+      }
+    },
+    {
+      "variant": "small",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】：代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】：YM-X-3011",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醍",
+        "(成品包材）",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 80.2724,
+        "det_ms": 22.3743,
+        "rec_ms": 549.9119,
+        "total_ms": 846.6436
+      }
+    },
+    {
+      "variant": "blank",
+      "items": 0,
+      "texts": [],
+      "timing": {
+        "cls_ms": 0.0,
+        "det_ms": 4.1977,
+        "rec_ms": 0.0,
+        "total_ms": 13.8495
+      }
+    }
+  ],
+  "iterations": 300,
+  "rss": [
+    {
+      "iteration": 1,
+      "rss_mib": 384.85546875
+    },
+    {
+      "iteration": 11,
+      "rss_mib": 399.81640625
+    },
+    {
+      "iteration": 21,
+      "rss_mib": 369.34765625
+    },
+    {
+      "iteration": 31,
+      "rss_mib": 381.875
+    },
+    {
+      "iteration": 41,
+      "rss_mib": 369.4765625
+    },
+    {
+      "iteration": 51,
+      "rss_mib": 399.85546875
+    },
+    {
+      "iteration": 61,
+      "rss_mib": 390.15234375
+    },
+    {
+      "iteration": 71,
+      "rss_mib": 373.1171875
+    },
+    {
+      "iteration": 81,
+      "rss_mib": 375.296875
+    },
+    {
+      "iteration": 91,
+      "rss_mib": 379.375
+    },
+    {
+      "iteration": 101,
+      "rss_mib": 365.84765625
+    },
+    {
+      "iteration": 111,
+      "rss_mib": 377.3515625
+    },
+    {
+      "iteration": 121,
+      "rss_mib": 387.671875
+    },
+    {
+      "iteration": 131,
+      "rss_mib": 401.4375
+    },
+    {
+      "iteration": 141,
+      "rss_mib": 379.69921875
+    },
+    {
+      "iteration": 151,
+      "rss_mib": 371.0625
+    },
+    {
+      "iteration": 161,
+      "rss_mib": 365.6015625
+    },
+    {
+      "iteration": 171,
+      "rss_mib": 385.58203125
+    },
+    {
+      "iteration": 181,
+      "rss_mib": 378.5546875
+    },
+    {
+      "iteration": 191,
+      "rss_mib": 374.40234375
+    },
+    {
+      "iteration": 201,
+      "rss_mib": 377.953125
+    },
+    {
+      "iteration": 211,
+      "rss_mib": 381.22265625
+    },
+    {
+      "iteration": 221,
+      "rss_mib": 377.359375
+    },
+    {
+      "iteration": 231,
+      "rss_mib": 366.890625
+    },
+    {
+      "iteration": 241,
+      "rss_mib": 376.73046875
+    },
+    {
+      "iteration": 251,
+      "rss_mib": 373.296875
+    },
+    {
+      "iteration": 261,
+      "rss_mib": 382.140625
+    },
+    {
+      "iteration": 271,
+      "rss_mib": 387.546875
+    },
+    {
+      "iteration": 281,
+      "rss_mib": 381.08203125
+    },
+    {
+      "iteration": 291,
+      "rss_mib": 373.73046875
+    },
+    {
+      "iteration": 300,
+      "rss_mib": 374.6875
+    }
+  ],
+  "rss_before_engine_mib": 163.48046875,
+  "rss_after_engine_destroy_mib": 302.90234375,
+  "limitations": "Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
+  "input_recovery": "passed",
+  "result_lifetime": "passed",
+  "classifier_disabled": "passed",
+  "concurrency": "4 workers / 8 calls passed"
+}

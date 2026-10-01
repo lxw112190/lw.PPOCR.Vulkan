@@ -1,0 +1,136 @@
+name: Vulkan full OCR preview
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: .ci/downloads
+          key: vulkan-sdk-windows-1.4.350.0-855b27ba-v1
+      - name: Install pinned SDK (official hash checked)
+        shell: pwsh
+        run: ./scripts/install_vulkan_sdk.ps1
+      - name: Validate dependencies and models
+        run: |
+          python -m pip install numpy==2.2.6 Pillow==11.3.0 psutil==7.0.0
+          python scripts/verify_assets.py
+          python scripts/repository_preflight.py
+          python tests/test_repository_preflight.py
+      - name: Build / host ABI tests
+        shell: pwsh
+        run: |
+          cmake -S . -B build/ci -G "Visual Studio 17 2022" -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build build/ci --config Release --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir build/ci -C Release --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./build/ci/Release/lw-ppocr-vulkan-probe.exe --allow-no-device
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Stage and package (no hardware inference claim)
+        shell: pwsh
+        run: |
+          cmake --install build/ci --config Release --prefix dist/staging
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/test_api.py --library dist/staging/lw.PPOCR.Vulkan.dll
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/test_winforms.py --package dist/staging --output build/reports/winforms --host-only
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/test_http_host.py --service dist/staging/lw-ppocr-vulkan-http-service.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/package.py --staging dist/staging --output dist --platform windows-x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-full-ocr-preview
+          path: |
+            dist/*.zip
+            dist/*.sha256
+            build/reports/winforms/*
+          if-no-files-found: error
+  linux-software-vulkan:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    env:
+      VULKAN_SDK: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64
+      LD_LIBRARY_PATH: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64/lib
+      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.x86_64.json
+      VK_INSTANCE_LAYERS: VK_LAYER_KHRONOS_validation
+      VK_LAYER_VALIDATE_SYNC: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Software Vulkan and validation prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libvulkan1 mesa-vulkan-drivers vulkan-validationlayers
+          python -m pip install -r requirements-dev.txt
+      - uses: actions/cache@v4
+        id: sdk
+        with:
+          path: .ci/vulkan-sdk
+          key: vulkan-sdk-linux-1.4.350.0-b65f068a-v1
+      - name: Extract pinned official SDK
+        if: steps.sdk.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .ci/vulkan-sdk
+          curl --fail --location --retry 5 https://sdk.lunarg.com/sdk/download/1.4.350.0/linux/vulkansdk-linux-x86_64-1.4.350.0.tar.xz -o .ci/sdk.tar.xz
+          echo 'b65f068ab36263559da49d7cacd7e7b9df23824ca8b68ccc522a2b06f5725df2  .ci/sdk.tar.xz' | sha256sum --check
+          tar -xJf .ci/sdk.tar.xz -C .ci/vulkan-sdk
+      - name: Verify / build / ABI tests
+        run: |
+          test -x "$VULKAN_SDK/bin/glslc"
+          python scripts/verify_assets.py
+          python scripts/repository_preflight.py
+          python tests/test_repository_preflight.py
+          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/ci --parallel 4
+          ctest --test-dir build/ci --output-on-failure
+      - name: Tiny DET reference using software Vulkan (not GPU performance)
+        run: |
+          ./build/ci/lw-ppocr-vulkan-probe
+          python tests/test_det_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --quick --iterations 20 --report build/reports/linux-software-det.json
+          python tests/test_invalid_models.py --library build/ci/liblw.PPOCR.Vulkan.so
+      - name: CLS / REC / native CTC and BGR reference (software Vulkan)
+        run: |
+          python tests/test_text_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --quick --iterations 10 --report build/reports/linux-software-text.json
+      - name: Full OCR / DB / crops / resource limits (software Vulkan)
+        run: |
+          python tests/test_ocr_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --quick --iterations 2 --report build/reports/linux-software-full.json
+      - name: Stage / test / package
+        run: |
+          cmake --install build/ci --prefix dist/staging
+          python tests/test_api.py --library dist/staging/liblw.PPOCR.Vulkan.so
+          python tests/test_det_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model dist/staging/models/ppocrv6-tiny/det.json --quick --iterations 2
+          python tests/test_text_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model-root dist/staging/models/ppocrv6-tiny --quick --iterations 2
+          python tests/test_ocr_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --models dist/staging/models/ppocrv6-tiny --quick --iterations 1
+          python tests/test_http.py --package dist/staging --output build/reports/http-software --device 0
+          for variant in tiny small medium; do
+            python tests/test_text_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model-root "dist/staging/models/onnx/ppocrv6-$variant" --quick --iterations 1 --report "build/reports/onnx-$variant-text.json"
+            python tests/test_ocr_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --models "dist/staging/models/onnx/ppocrv6-$variant" --quick --iterations 1 --report "build/reports/onnx-$variant-full.json"
+          done
+          dist/staging/install-service.sh --verify-only
+          python scripts/package.py --staging dist/staging --output dist --platform linux-x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64-software-validated-full-ocr-preview
+          path: |
+            dist/*.tar.gz
+            dist/*.sha256
+            build/reports/*.json
+            build/reports/http-software/**
+          if-no-files-found: error

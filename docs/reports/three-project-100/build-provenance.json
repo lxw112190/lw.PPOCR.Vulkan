@@ -1,0 +1,252 @@
+{
+  "c_make_cache_sha256": "3f41cb5c74588502e744be451fe3bf6cb7778bf567a243f618785f9880072afc",
+  "c_build_options": {
+    "LW_AVX2_FMA_CONV3X3_DISPATCH:BOOL": "ON",
+    "LW_BUILD_CSHARP_DEMOS:BOOL": "OFF",
+    "LW_BUILD_ENVIRONMENT_FILE:FILEPATH": "",
+    "LW_BUILD_HTTP_DEMO:BOOL": "OFF",
+    "LW_BUILD_WEB_MODEL_VARIANTS:BOOL": "OFF",
+    "LW_EXPERIMENTAL_ADAPTIVE_REC_BUDGET:BOOL": "ON",
+    "LW_EXPERIMENTAL_AVX2_CONV3X3_EIGHT_OUTPUTS:BOOL": "OFF",
+    "LW_EXPERIMENTAL_AVX2_FAST_PATH:BOOL": "ON",
+    "LW_EXPERIMENTAL_AVX2_FMA_CONV1X1_DISPATCH:BOOL": "OFF",
+    "LW_EXPERIMENTAL_AVX2_FMA_DISPATCH:BOOL": "OFF",
+    "LW_EXPERIMENTAL_AVX2_FMA_MATMUL_DISPATCH:BOOL": "OFF",
+    "LW_EXPERIMENTAL_CLS_FIXED_POINT_RESIZE:BOOL": "ON",
+    "LW_EXPERIMENTAL_CTC_TILED:BOOL": "OFF",
+    "LW_EXPERIMENTAL_DET_FIXED_POINT_RESIZE:BOOL": "ON",
+    "LW_EXPERIMENTAL_FUSION_MEMORY:BOOL": "OFF",
+    "LW_EXPERIMENTAL_PARALLEL_CROP_PHASE:BOOL": "ON",
+    "LW_EXPERIMENTAL_PERSISTENT_LINE_POOL:BOOL": "ON",
+    "LW_EXPERIMENTAL_PREPARED_EXECUTION:BOOL": "OFF",
+    "LW_EXPERIMENTAL_STREAMING_CROPS:BOOL": "OFF",
+    "LW_EXPERIMENTAL_WORKSPACE_PLANNER_V2:BOOL": "OFF",
+    "LW_HTTP_TEST_PROCESS_TIMEOUT:STRING": "120",
+    "LW_HTTP_TEST_REQUEST_TIMEOUT:STRING": "30",
+    "LW_LWM_FORMAT_VERSION:STRING": "0.1",
+    "LW_PACKAGE_PLATFORM_OVERRIDE:STRING": "",
+    "LW_PRECONVERTED_ASSETS_DIR:PATH": "",
+    "LW_REC_RESIDENT_WIDTHS:BOOL": "OFF",
+    "LW_RUNTIME_ONLY:BOOL": "OFF",
+    "LW_STAGED_PACKAGE_TEST_TIMEOUT:STRING": "240",
+    "LW_WASM_COMPILED_DET:BOOL": "ON",
+    "LW_WASM_COMPILED_REC:BOOL": "OFF",
+    "LW_WASM_DB_BITMAP_SIMD:BOOL": "OFF",
+    "LW_WASM_FINE_REC_WIDTHS:BOOL": "OFF",
+    "LW_WASM_HOST_ABI_VERSION:STRING": "1",
+    "LW_WASM_POINTWISE_ROWS:STRING": "2",
+    "LW_WASM_REC_LAZY_FALLBACK:BOOL": "OFF",
+    "LW_WASM_REC_SIMD_KERNELS:BOOL": "ON",
+    "LW_WASM_SIMD128:BOOL": "ON",
+    "LW_WEB_LEGACY:BOOL": "OFF",
+    "LW_WEB_MIN_CHROME_VERSION:STRING": "70",
+    "LW_WEB_PDF:BOOL": "ON",
+    "LW_WASM_POINTWISE_ROWS-STRINGS:INTERNAL": "2;4"
+  },
+  "c_model_conversion": {
+    "tiny": {
+      "det": {
+        "metadata_sha256": "80ee3ce2cfff373aa7a241209f00aa99ff6a66bbecf4ecb254c623159dba4046",
+        "metadata": {
+          "format": "LWM",
+          "format_version": "0.1",
+          "input": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-tiny\\det.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\tiny\\det.lwm",
+          "tensor_count": 408,
+          "node_count": 242,
+          "input_count": 1,
+          "output_count": 1,
+          "weight_size": 1713648,
+          "file_size": 1770448,
+          "checksum": "0xbb5b135c0135c513"
+        }
+      },
+      "cls": {
+        "metadata_sha256": "6b32be72ad230144d6d0b9ba802e57712cf80f14bf18d2de8f26ad6cb528ea5d",
+        "metadata": {
+          "format": "LWM",
+          "format_version": "0.1",
+          "input": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-tiny\\cls.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\tiny\\cls.lwm",
+          "tensor_count": 173,
+          "node_count": 106,
+          "input_count": 1,
+          "output_count": 1,
+          "weight_size": 965488,
+          "file_size": 989824,
+          "checksum": "0xafdcaeff449b963e"
+        }
+      },
+      "rec": {
+        "metadata_sha256": "c40a2752ce43469fb41f9b895aefd5ca302f90c2063175e812a4f88e20621c30",
+        "metadata": {
+          "format": "LWM",
+          "format_version": "0.1",
+          "input": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-tiny\\rec.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\tiny\\rec.lwm",
+          "tensor_count": 274,
+          "node_count": 159,
+          "input_count": 1,
+          "output_count": 1,
+          "weight_size": 4417352,
+          "file_size": 4453936,
+          "checksum": "0x372bf7a4a7fb6a06"
+        }
+      }
+    },
+    "small": {
+      "det": {
+        "metadata_sha256": "e4203167b2ea1d9ba55de47ab68174ada5d75a1f2d04ff0ea37dfb8509e7cdcc",
+        "metadata": {
+          "conversion": {
+            "checksum": "0x28721e20ec993a40",
+            "file_size": 9870240,
+            "input_count": 1,
+            "node_count": 242,
+            "output_count": 1,
+            "tensor_count": 408,
+            "weight_size": 9813440
+          },
+          "dynamic": true,
+          "height": 960,
+          "model": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-small\\det.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\small\\det.lwm",
+          "schema_version": 1,
+          "status": "production",
+          "tool": "tools/convert_small_det.py",
+          "width": 960
+        }
+      },
+      "cls": {
+        "metadata_sha256": "667658d47f0d288cccd31aa6946fa58bd47b0810628ace6f61b2afd245d1f774",
+        "metadata": {
+          "format": "LWM",
+          "format_version": "0.1",
+          "input": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-small\\cls.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\small\\cls.lwm",
+          "tensor_count": 173,
+          "node_count": 106,
+          "input_count": 1,
+          "output_count": 1,
+          "weight_size": 965488,
+          "file_size": 989824,
+          "checksum": "0xafdcaeff449b963e"
+        }
+      },
+      "rec": {
+        "metadata_sha256": "54fca2f092274c9044b503d0681daf0e188e98dc317fa0996fc14ac34b2f3d08",
+        "metadata": {
+          "conversion": {
+            "checksum": "0x2566a917e363f5e2",
+            "file_size": 21146696,
+            "input_count": 1,
+            "node_count": 336,
+            "output_count": 1,
+            "tensor_count": 563,
+            "weight_size": 21071120
+          },
+          "dynamic": true,
+          "dynamic_contract": {
+            "contract": "ppocrv6-small-rec-width-div-8",
+            "metadata_outputs": [
+              "Shape.1",
+              "Shape.13",
+              "Shape.3",
+              "Shape.7",
+              "Slice.1",
+              "helper.slice.0"
+            ],
+            "probed_widths": [
+              192,
+              320,
+              480,
+              640,
+              960
+            ],
+            "required_widths": [
+              192,
+              320,
+              480,
+              640,
+              960
+            ],
+            "schema_version": 1,
+            "status": "validated-analysis-only"
+          },
+          "model": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-small\\rec.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\small\\rec.lwm",
+          "schema_version": 1,
+          "staticization": null,
+          "status": "production",
+          "tool": "tools/convert_small_rec.py",
+          "width": null
+        }
+      }
+    },
+    "medium": {
+      "det": {
+        "metadata_sha256": "4bd28402a67ed1a534d3dcd64c070d622790229a64e66ae0f7b40819b7a202b6",
+        "metadata": {
+          "conversion": {
+            "checksum": "0x0bcaf83bac50a5b9",
+            "file_size": 62015040,
+            "input_count": 1,
+            "node_count": 276,
+            "output_count": 1,
+            "tensor_count": 499,
+            "weight_size": 61946528
+          },
+          "dynamic": true,
+          "height": null,
+          "model": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-medium\\det.onnx",
+          "model_sha256": "eb13b44b25bb36f89528b68720af8a61d9cf381176107f465db1757b65d086e1",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\medium\\det.lwm",
+          "schema_version": 1,
+          "status": "production",
+          "tool": "tools/convert_medium_det.py",
+          "width": null
+        }
+      },
+      "cls": {
+        "metadata_sha256": "6bacbf42fb4163bd6e6a169d9094628be9c0780ecd07482f9e23be49b0320750",
+        "metadata": {
+          "format": "LWM",
+          "format_version": "0.1",
+          "input": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-medium\\cls.onnx",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\medium\\cls.lwm",
+          "tensor_count": 173,
+          "node_count": 106,
+          "input_count": 1,
+          "output_count": 1,
+          "weight_size": 965488,
+          "file_size": 989824,
+          "checksum": "0xafdcaeff449b963e"
+        }
+      },
+      "rec": {
+        "metadata_sha256": "434bde5bc35b19b73cd9dd03639280953ee5ee4a4ba555c8838520dc355bc260",
+        "metadata": {
+          "conversion": {
+            "checksum": "0x5c1ad5136616c165",
+            "file_size": 76541144,
+            "input_count": 1,
+            "node_count": 355,
+            "output_count": 1,
+            "tensor_count": 595,
+            "weight_size": 76461256
+          },
+          "dynamic": true,
+          "dynamic_width_symbol": "LW_MEDIUM_REC_WIDTH",
+          "model": "..\\lw.PPOCR.Vulkan\\models\\onnx\\ppocrv6-medium\\rec.onnx",
+          "model_sha256": "9c09abf0957f7968c7586464b7397b84ad2387a0497a351af40e9acc71b673ba",
+          "output": "..\\lw.PPOCR.Vulkan\\build\\comparison-c-models\\medium\\rec.lwm",
+          "schema_version": 1,
+          "staticization": null,
+          "status": "production",
+          "tool": "tools/convert_medium_rec.py",
+          "width": null
+        }
+      }
+    }
+  }
+}

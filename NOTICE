@@ -1,0 +1,105 @@
+lw.PPOCR.Vulkan
+Copyright (c) 2026 天天代码码天天
+
+This project includes Vulkan shaders from sdcb/SimdPaddleOCR,
+Copyright (c) 2026 Sdcb.PaddleOCR contributors, Apache-2.0.
+Source commit: 6298596e28404f0e93af585a79e84086363eeb72 (feature/2.0).
+The C++ Vulkan runtime is newly written; its device/queue and graph resource
+design references the pinned upstream runtime. Shader modifications are described
+in scripts/prepare_shaders.py and the source/modification summary below.
+
+The C++ ONNX reader adapts the bounded protobuf-reader design and normalization
+from lxw112190/SimdPaddleOCR, Apache-2.0, commit
+d94a79ec56ec0d9bec1cb7c45f91dc1081161080. The unmodified OnnxProtoReader.cs snapshot
+is retained under third_party/simd-paddleocr/onnx-reference. LayerNorm/attention
+and register-tiled pointwise shaders reuse the earlier pinned upstream kernels.
+PP-OCRv6 Tiny/Small/Medium ONNX assets follow the official PaddlePaddle model
+sources listed in docs/ONNX-MODELS.md and models/onnx/catalog.json.
+
+nlohmann/json is distributed under its MIT license.
+PP-OCRv6 model assets retain their upstream attribution and Apache-2.0 license.
+
+BGR recognition preprocessing is adapted from lw.PPOCR.C (MIT),
+Copyright (c) 2026 天天代码码天天. Its complete MIT license is included at
+licenses/lw-PPOCR-C-MIT.txt. Reviewed source revision:
+b7d2b42383adcee68b0e4f1a7c3de546be9c9552.
+DB postprocessing, DET preprocessing, perspective cropping and reading order
+also reuse lw.PPOCR.C MIT sources; CLS preprocessing and portable bitmap adapters
+are derived implementations. Reduced private headers are provided for this port.
+The C++ DET preprocessing fast path also adapts that MIT implementation,
+hoisting horizontal resize coordinates while preserving its double-precision
+interpolation/normalization operation order. Buffer upload/readback memory
+selection and persistent mapping are project-written Vulkan runtime changes.
+The CLS/REC coordinate-hoisting implementation and channel-shared perspective
+crop in src/crop_optimized.c also adapt the same pinned MIT lw.PPOCR.C sources;
+the unmodified reference sources and full MIT license are retained.
+
+The C++ split/coalesce lifetime planner is inspired by MIT lw.PPOCR.C
+src/runtime/memory.c. Graph-level shared grow-only workspace and lazy rebinding
+reference the pinned upstream Vulkan arena design. The new FP32 register/shared-memory
+GEMM kernels and affine/ReLU graph optimizer are project-written implementations.
+Kernel-major FP32 vector depthwise convolution, timestamp diagnostics and guarded
+HardSwish/SiLU graph fusion are also project-written additions.
+Guarded exact-pattern GELU lowering, FP32 GELU epilogues and transpose-convolution
+bias/activation fusion are project-written. The M64/N64 pointwise experiment is
+also project-written and remains a default-off engineering option.
+The separately gated experimental cooperative-matrix GEMM follows the pinned
+upstream subgroup/shared-staging design; its FP32-buffer / mixed-FP16 port,
+tile layout and capability checks are newly written. It is not a release default.
+
+HTTP support uses cpp-httplib 0.49.0 (MIT), spdlog 1.17.0 (MIT) and its
+bundled fmt 12.1.0 (BSD-2-Clause), copied from the author's lw.PPOCR.OpenCVDNN
+repository. Service scripts are adapted from that project (Apache-2.0).
+cpp-httplib has a documented local transport queue-overflow 429 patch.
+stb_image 2.30 is pinned at 2c980bb59875b0d32144a71867fbdebb2f77cd20,
+from https://github.com/nothings/stb; used under the included MIT alternative.
+
+Source repositories and modification summary
+------------------------------------------
+Shader/runtime design reference: https://github.com/sdcb/SimdPaddleOCR,
+feature/2.0, commit 6298596e28404f0e93af585a79e84086363eeb72 (Apache-2.0).
+ONNX reader reference: https://github.com/lxw112190/SimdPaddleOCR,
+commit d94a79ec56ec0d9bec1cb7c45f91dc1081161080 (Apache-2.0).
+Host geometry/preprocessing reference: https://github.com/lxw112190/lw.PPOCR.C,
+commit b7d2b42383adcee68b0e4f1a7c3de546be9c9552 (MIT).
+
+Unmodified shader snapshots under third_party/simd-paddleocr/shaders include
+conv_dense, conv_dw, convt2s2, elem, reduce_hw, resize4, concat_c, maxpool4,
+nchw2nhwc, avgpool4, softmax, attn and layernorm, from the pinned upstream
+src/Sdcb.SimdPaddleOCR/Backends/Vulkan/Shaders directory. Build-time variants
+remove FP16 extensions/types, retain NHWC scheduling, use FP32 HardSigmoid
+parameters, improve Erf precision and use an FP32 MaxPool lower bound.
+Generated variants identify their modifications; original snapshots remain.
+The pointwise convolution adapts the conv1x1_dot register-tile math with tails
+and without optional fused operands. Project-written FP32 tiled GEMM,
+parallel Softmax/argmax, epilogues and vector depthwise additions are separate.
+
+The native ONNX port retains bounded protobuf child messages and adapts
+Identity/metadata normalization and exact LayerNorm/QKV-attention recognition.
+It adds graph/constant/string budgets and strict canonical-layout checks.
+Offline CLS/REC lowering turns inference BatchNormalization into channel
+scale/bias and constant tail MatMul into transposed-weight 1x1 convolution.
+Arbitrary Transpose/Reshape are not silently treated as no-ops.
+Resource wrappers use official Vulkan headers and explicit RAII ownership.
+Shape plans use a bounded 32-entry LRU and shared arena/IO; cached command
+references are invalidated before buffer replacement and lazily rebound.
+
+Unmodified host snapshots include db_postprocess.c, det_preprocess.c, crop.c,
+reading_order.c and the crop/reading-order headers in third_party/lw-ppocr-c.
+Private compatibility headers are not the complete upstream SDK. Scalar
+bitmap adapters replace AVX2 dependencies and use four orthogonal neighbors;
+the upstream scalar tail used a different diagonal approximation. Profiling
+is disabled in this extraction. Derived CLS/REC preprocessing retains double
+interpolation order, bounded aspect-preserving resize and padding. Native CTC
+is project-written with the same greedy semantics and dictionary indexes.
+The local optimized perspective crop shares sampling coordinates across
+B/G/R without changing pixel math; the original crop is retained for tests.
+Host reference tests share this geometry; they are not an independent DB
+algorithm implementation. Golden geometry tests cover its basic contracts.
+
+Optional cooperative-matrix code references conv1x1_cm_sg32 shared staging,
+subgroup32 and FP32 accumulation, but uses FP32 global buffers and K-major
+weights rather than the upstream FP16/N-major layout. It remains separately
+gated and default-off; upstream accuracy, speed and compatibility are not
+inherited or claimed. Models retain the official sources and licenses listed
+in docs/ONNX-MODELS.md. Reuse does not imply endorsement by upstream authors.

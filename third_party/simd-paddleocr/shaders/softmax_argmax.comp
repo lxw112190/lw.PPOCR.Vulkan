@@ -1,0 +1,20 @@
+#version 450
+// Apache-2.0, lw.PPOCR.Vulkan 2026. Exact greedy label + softmax probability.
+// Parallel reduction, lowest class index wins ties. Two floats per time step.
+layout(local_size_x=256)in;
+layout(set=0,binding=0)readonly buffer X{float x[];};
+layout(set=0,binding=1)writeonly buffer O{float o[];};
+layout(push_constant)uniform PC{uint rows;uint cols;}p;
+shared float red[256];shared uint ids[256];
+void main(){
+ uint r=gl_WorkGroupID.x,l=gl_LocalInvocationID.x,b=r*p.cols;
+ float m=-3.402823466e38;uint best=0xffffffff;
+ for(uint c=l;c<p.cols;c+=256){float v=x[b+c];if(v>m || (v==m && c<best)){m=v;best=c;}}
+ red[l]=m;ids[l]=best;barrier();
+ for(uint s=128;s>0;s>>=1){if(l<s && (red[l+s]>red[l] || (red[l+s]==red[l] && ids[l+s]<ids[l]))){red[l]=red[l+s];ids[l]=ids[l+s];}barrier();}
+ m=red[0];best=ids[0];barrier();
+ float sum=0;for(uint c=l;c<p.cols;c+=256)sum+=exp(x[b+c]-m);
+ red[l]=sum;barrier();
+ for(uint s=128;s>0;s>>=1){if(l<s)red[l]+=red[l+s];barrier();}
+ if(l==0){o[r*2]=float(best);o[r*2+1]=1/red[0];}
+}

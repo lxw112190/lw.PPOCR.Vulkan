@@ -1,0 +1,186 @@
+{
+  "ok": true,
+  "request_results_consistent": true,
+  "rss_signal_threshold_bytes": 100663296,
+  "version": "0.5.0-dev.2",
+  "device": 1,
+  "full_ocr_requests": 1000,
+  "model_root": "E:\\My-Code\\PPOCR\\lw.PPOCR.Vulkan\\dist\\lw.PPOCR.Vulkan-v0.5.0-dev.2-windows-x64-full-ocr-preview\\models\\onnx\\ppocrv6-tiny",
+  "recognize_requests": 41,
+  "sizes": [
+    [
+      250,
+      250
+    ],
+    [
+      500,
+      500
+    ],
+    [
+      1000,
+      1000
+    ],
+    [
+      900,
+      450
+    ],
+    [
+      450,
+      900
+    ]
+  ],
+  "elapsed_seconds": 124.09399999999732,
+  "rss_after_warmup": 271585280,
+  "rss_end": 273313792,
+  "rss_delta": 1728512,
+  "rss_after_first_size_cycle": 252760064,
+  "extra_warmup_ocr_requests": 200,
+  "extra_warmup_recognize_requests": 8,
+  "warmup_samples": [
+    {
+      "warmup_iteration": 50,
+      "rss_bytes": 272470016
+    },
+    {
+      "warmup_iteration": 100,
+      "rss_bytes": 273514496
+    },
+    {
+      "warmup_iteration": 150,
+      "rss_bytes": 273293312
+    },
+    {
+      "warmup_iteration": 200,
+      "rss_bytes": 271585280
+    }
+  ],
+  "samples": [
+    {
+      "iteration": 50,
+      "rss_bytes": 271523840,
+      "threads": 32,
+      "handles": 502
+    },
+    {
+      "iteration": 100,
+      "rss_bytes": 272400384,
+      "threads": 31,
+      "handles": 500
+    },
+    {
+      "iteration": 150,
+      "rss_bytes": 272957440,
+      "threads": 31,
+      "handles": 500
+    },
+    {
+      "iteration": 200,
+      "rss_bytes": 271777792,
+      "threads": 31,
+      "handles": 500
+    },
+    {
+      "iteration": 250,
+      "rss_bytes": 272076800,
+      "threads": 31,
+      "handles": 500
+    },
+    {
+      "iteration": 300,
+      "rss_bytes": 273776640,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 350,
+      "rss_bytes": 270704640,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 400,
+      "rss_bytes": 272486400,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 450,
+      "rss_bytes": 272482304,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 500,
+      "rss_bytes": 272486400,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 550,
+      "rss_bytes": 272740352,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 600,
+      "rss_bytes": 272482304,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 650,
+      "rss_bytes": 272744448,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 700,
+      "rss_bytes": 272744448,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 750,
+      "rss_bytes": 272482304,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 800,
+      "rss_bytes": 273338368,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 850,
+      "rss_bytes": 273342464,
+      "threads": 28,
+      "handles": 501
+    },
+    {
+      "iteration": 900,
+      "rss_bytes": 273313792,
+      "threads": 26,
+      "handles": 497
+    },
+    {
+      "iteration": 950,
+      "rss_bytes": 273313792,
+      "threads": 26,
+      "handles": 497
+    },
+    {
+      "iteration": 1000,
+      "rss_bytes": 273313792,
+      "threads": 26,
+      "handles": 497
+    }
+  ],
+  "latency_ms": {
+    "median": 110.00000000058208,
+    "p95": 172.0000000022992
+  },
+  "limits": "RSS/handles/threads only; no sanitizer or GPU VRAM leak-proof claim",
+  "service_sha256": "ed52e79bb370c468f39d368d3b00d6cccd31b4da8777a63dc363ae02e7d0f39a",
+  "library_sha256": "b2f2c49a8353acd333489e21b74642829bdd58cee59d9c3d3714c3f7832052c8"
+}

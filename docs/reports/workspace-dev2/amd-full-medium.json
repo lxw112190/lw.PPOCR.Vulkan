@@ -1,0 +1,92 @@
+{
+  "version": "0.5.0-dev.2",
+  "device": "AMD Radeon(TM) Graphics",
+  "reference": "ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
+  "comparisons": [
+    {
+      "variant": "sample",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订）",
+        "【品牌】：代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】：YM-X-3011",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "(成品包材)",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 15.969299999999997,
+        "det_ms": 50.068,
+        "rec_ms": 572.4393000000001,
+        "total_ms": 740.2052
+      }
+    },
+    {
+      "variant": "rotated-180",
+      "items": 16,
+      "texts": [
+        "发足够的滋养",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "(成品包材)",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "【适用人群】：适合所有肤质",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【产品编号】：YM-X-3011",
+        "【品名】：纯臻营养护发素",
+        "【品牌】：代加工方式/OEM ODM",
+        "每瓶22元，1000瓶起订）",
+        "(45元/每公斤，100公斤起订)",
+        "产品信息/参数",
+        "纯臻营养护发素"
+      ],
+      "timing": {
+        "cls_ms": 18.9099,
+        "det_ms": 52.2592,
+        "rec_ms": 558.2865,
+        "total_ms": 685.719
+      }
+    },
+    {
+      "variant": "blank",
+      "items": 0,
+      "texts": [],
+      "timing": {
+        "cls_ms": 0.0,
+        "det_ms": 9.2129,
+        "rec_ms": 0.0,
+        "total_ms": 12.8339
+      }
+    }
+  ],
+  "iterations": 3,
+  "rss": [
+    {
+      "iteration": 1,
+      "rss_mib": 775.1875
+    },
+    {
+      "iteration": 3,
+      "rss_mib": 775.20703125
+    }
+  ],
+  "rss_before_engine_mib": 309.4609375,
+  "rss_after_engine_destroy_mib": 722.96875,
+  "limitations": "Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
+  "input_recovery": "passed",
+  "result_lifetime": "passed",
+  "classifier_disabled": "passed",
+  "concurrency": "4 workers / 4 calls passed"
+}

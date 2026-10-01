@@ -1,0 +1,124 @@
+{
+  "passed": true,
+  "library_sha256": "91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee",
+  "baseline_library_sha256": "0cfd9b5bbc192193b3208392eaee1cdb9e7012202e5f944522a504570ea81894",
+  "baseline_qualification_sha256": "4b628152886442066a707680743086da1aa00cc537b84ae7d8c410f46f76ea42",
+  "hardware": {
+    "vulkan_index": 1,
+    "dxgi_index": 1,
+    "vulkan_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "dxgi_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor_id": 4318,
+    "device_id": 10464,
+    "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+    "logical_cpu_count": 16,
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.7",
+    "inventory_helper_only": "DML reference DLL used only for DXGI enumeration in controller; actual DML inference uses original project DLL in its isolated worker"
+  },
+  "dataset_manifest_sha256": "c51474cb3761515c8c9b07c0afb1846303aba1b2304ef9a87043c9d8c282159d",
+  "source_sha256": {
+    "CMakeLists.txt": "fe0a63d58e917025ea36e1f87ca269660bae38d68d71941a0b562be104916f78",
+    "src/ocr_host.cpp": "b6001a863baeffaefa32cc44d56f0869af4d420953068115e4aad621b2b1e7fa",
+    "src/ocr_host.hpp": "b39c5e9f4a19efb01eb0c51d9b7ca09d47e0da338df1baa3afc2049d085b351f",
+    "src/cls_preprocess.cpp": "1832f11bba4d0401ffaded09c473c75d728490a686672e895f44198f0211f672",
+    "src/cls_preprocess.hpp": "8fe83fd91310d2ec6c2654bdca8debd83fbe071d30220dc7c1bd861bef8e8883",
+    "src/rec_preprocess.cpp": "1eddb4a823939977ad20d39214c75f9973edd21e35276595eba9317fcca5030a",
+    "src/crop_optimized.c": "9eda4b3c51cfa32ef667c9bfc7f0317b5916fcfea863d1b8cd459b6cb5d831e7",
+    "src/crop_optimized.hpp": "a98b88bffbc837926e8ff46d70a37942a0b7956c2855fd0b81a05f06fbaaac06",
+    "tests/resize_preprocess_unit.cpp": "97aead3b6a73676e631d09542f767d899835ec055ac7f28c297f07ab304c5b44",
+    "tests/crop_optimized_unit.cpp": "4c5ee00ddf41b82ab1e8d4f9187e953ad9f95f75eb93fb48e72d00ff80d41438",
+    "tests/benchmark_vulkan_pair.py": "ee9eea492c71f01bea4ac529cf48fdd8c3c0dc68d5d55061018e03c052ce70a5",
+    "tests/test_workspace.py": "4c7e0d798f3e30dae672940f4c35fd9067326f8ae991b2e0db2176df7eaa2c3a",
+    "tests/test_ocr_reference.py": "746e892c75f3b7aa59ae663c5564757326c1f9dac5be84a956e52be017b872cc",
+    "scripts/prepare_shaders.py": "cd8c6ab20351d34b179b2d0a48159fd1e34bcfb8c5c4feac9d8b6628c776c6dc",
+    "scripts/report_pipeline_optimization.py": "09be85a235d150b57a73c3400d4aedc233cfe7314f02afb6799e5373530f40a3",
+    "third_party/lw-ppocr-c/ppocr/crop.c": "27fbcf4969c33f25f2ac04dc392004a5a384492bc94b593f6a4cfebad0a8c746",
+    "NOTICE": "1ebee4122ca935169eb70c7235c91ae33e8ff52cf23f7218b2f0bdbb42559f46",
+    "dependencies.lock.json": "34407427cb88b8a103986502fd3f4812f586870109ad2a8276acd1a1b1a39adf",
+    "scripts/package_csharp_demo.py": "96a7b7d497740633b077f8fe8431452e8bc9c12c64441b4bb62abad557164aff",
+    "tests/summarize_demo_revision.py": "2050488c449cc8f28313b2f7fa4e5e703c4f10132f0a303aa7efc2516532037e"
+  },
+  "evidence_input_sha256": {
+    "build\\reports\\pipeline-opt\\final-pair.json": "28c08cb924935ada60fe814e4fc9cef43ad180960c200fe23b659f52e5a83497",
+    "build\\reports\\pipeline-opt\\amd-pair.json": "2b354b2e1d398f7bd0930ce05213d206fdbcbe957ab55e1fbb067c48bf0232ac",
+    "build\\reports\\pipeline-opt\\workspace.json": "9ad9b71694890b1c900820aec80d337394542edb1f0857ee4c8564a7beb23170",
+    "build\\reports\\pipeline-opt\\shared-layout-pair.json": "65d347d05df8d28ed73c53198646c457f2a70a8d3d3b6abb6dc200109e5020d6",
+    "build\\reports\\pipeline-opt\\reference-tiny.json": "8bc4729bb9f9190fc7b00478ba0d36c34f3802c699687fcae83a279e6de9c1f6",
+    "build\\reports\\pipeline-opt\\reference-small.json": "ed43800d2932bf2680e7b556595abdd34637cd7037f1e1706361693cd22071de",
+    "build\\reports\\pipeline-opt\\reference-medium.json": "1c8d990f3749cee85fdf40b9ec5f9fb1a73721480ef58ad20d71de88dd286763",
+    "build\\reports\\pipeline-opt\\corpus\\tiny-vulkan.json": "37f6fdb07ecbf59ad32d5d7ed6c02d3d43adadb31422a9464386d4f6b552552a",
+    "build\\reports\\pipeline-opt\\corpus\\small-vulkan.json": "7a86e62fe36acd6eb4a4aa1778844676e2b78d21ae25075e11ebe015c529e2a0",
+    "build\\reports\\pipeline-opt\\corpus\\medium-vulkan.json": "e08e34683a399d29b21993eb952c075234f63af5b45453b4efbb810f4870b9ee",
+    "build\\pipeline-opt\\Testing\\Temporary\\LastTest.log": "19459e548e75d2865f951a21158f9729272d7e78ffb04a0ffd4ce915a595149d"
+  },
+  "audit": [
+    {
+      "model": "tiny",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 51.02201433313894,
+        "median": 49.8134499976004,
+        "p95": 72.49613000094541,
+        "total": 15306.604299941682,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 41.03821666741472,
+        "median": 40.93540000030771,
+        "p95": 57.03522500698455,
+        "total": 12311.465000224416,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 19.56762741771979
+    },
+    {
+      "model": "small",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 58.554291000182275,
+        "median": 58.46595000184607,
+        "p95": 76.73869999998715,
+        "total": 17566.287300054682,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 50.52698066686086,
+        "median": 50.63710000104038,
+        "p95": 66.27147500767023,
+        "total": 15158.094200058258,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 13.709175188025801
+    },
+    {
+      "model": "medium",
+      "images": 100,
+      "exact_prediction_objects": 100,
+      "aggregate_accuracy_equal": true,
+      "old_latency_ms": {
+        "mean": 106.26662266663818,
+        "median": 106.9553499983158,
+        "p95": 139.1651349971653,
+        "total": 31879.986799991457,
+        "samples": 300
+      },
+      "new_latency_ms": {
+        "mean": 98.98489266706747,
+        "median": 100.58579999167705,
+        "p95": 128.0896499964001,
+        "total": 29695.46780012024,
+        "samples": 300
+      },
+      "mean_latency_reduction_percent": 6.852320904573905
+    }
+  ],
+  "ctest": "12/12 passed; resize: 90 bit-identical tensors; crop: 72 byte-identical cases",
+  "default_path": "FP32; DET 960; classifier enabled; shaders/models/API unchanged; experiments and profiling off",
+  "discarded_experiment": "Shared-memory row padding produced no stable benefit in six paired cases; reverted.",
+  "caveat": "Paired sample runs alternate old/new in the same process; corpus runs are sequential time windows. AMD Small/Medium did not show a speedup. ORT reference reports are invocation evidence, not self-hashed DLL attestations. No new long-run leak proof or universal GPU performance claim. Private-image report stores no OCR text/image bytes."
+}

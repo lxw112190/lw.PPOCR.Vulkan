@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "version": "0.4.0-dev.1",
+  "device": 1,
+  "full_ocr_requests": 50,
+  "recognize_requests": 3,
+  "sizes": [
+    [
+      250,
+      250
+    ],
+    [
+      500,
+      500
+    ],
+    [
+      1000,
+      1000
+    ],
+    [
+      900,
+      450
+    ],
+    [
+      450,
+      900
+    ]
+  ],
+  "elapsed_seconds": 23.10900000000038,
+  "rss_after_warmup": 246390784,
+  "rss_end": 289394688,
+  "rss_delta": 43003904,
+  "samples": [
+    {
+      "iteration": 50,
+      "rss_bytes": 289394688,
+      "threads": 30,
+      "handles": 438
+    }
+  ],
+  "latency_ms": {
+    "median": 429.5000000001892,
+    "p95": 639.9999999994179
+  },
+  "limits": "RSS/handles/threads only; no sanitizer or GPU VRAM leak-proof claim",
+  "service_sha256": "82ba4bbe572d0a7489fdadf57ae951119f8c2ceea735168f221bfc313f4d9fda",
+  "library_sha256": "93f56e499b3f4a02cc19797bd713c683093ee0d78d191d651b7a02d732c6e9bd"
+}

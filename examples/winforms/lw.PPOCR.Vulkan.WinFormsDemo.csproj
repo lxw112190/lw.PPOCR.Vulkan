@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <ProjectGuid>{E376673B-8083-4CCA-A053-B7C90517F07A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Lw.PPOCR.VulkanDemo</RootNamespace>
+    <AssemblyName>lw.PPOCR.Vulkan.WinFormsDemo</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+    <WarningLevel>4</WarningLevel>
+    <NativeBuildDir Condition="'$(NativeBuildDir)' == '' and Exists('$(MSBuildProjectDirectory)\..\..\lw.PPOCR.Vulkan.dll')">$(MSBuildProjectDirectory)\..\..</NativeBuildDir>
+    <NativeBuildDir Condition="'$(NativeBuildDir)' == ''">$(MSBuildProjectDirectory)\..\..\build\Release</NativeBuildDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/>
+    <Reference Include="System.Drawing"/><Reference Include="System.Windows.Forms"/>
+    <Reference Include="System.Web.Extensions"/>
+    <Compile Include="Program.cs"/><Compile Include="MainForm.cs"/>
+    <Compile Include="ImageCanvas.cs"/><Compile Include="NativeOcr.cs"/>
+    <None Include="App.config"/>
+    <ModelAsset Include="..\..\models\ppocrv6-tiny\**\*.json"/>
+    <ModelAsset Include="..\..\models\ppocrv6-tiny\**\*.bin"/>
+    <ModelAsset Include="..\..\models\ppocrv6-tiny\**\dictionary.txt"/>
+    <OnnxAsset Include="..\..\models\onnx\**\*.onnx"/>
+    <OnnxAsset Include="..\..\models\onnx\**\*.json"/>
+    <OnnxAsset Include="..\..\models\onnx\**\dictionary.txt"/>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+  <Target Name="CopyDemoRuntime" AfterTargets="Build">
+    <Copy SourceFiles="$(NativeBuildDir)\lw.PPOCR.Vulkan.dll" DestinationFolder="$(OutputPath)" Condition="Exists('$(NativeBuildDir)\lw.PPOCR.Vulkan.dll')"/>
+    <Copy SourceFiles="$(NativeBuildDir)\vulkan-1.dll" DestinationFolder="$(OutputPath)" Condition="Exists('$(NativeBuildDir)\vulkan-1.dll')"/>
+    <Copy SourceFiles="@(ModelAsset)" DestinationFiles="@(ModelAsset->'$(OutputPath)models\ppocrv6-tiny\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(OnnxAsset)" DestinationFiles="@(OnnxAsset->'$(OutputPath)models\onnx\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="..\..\test-images\sample.jpg" DestinationFolder="$(OutputPath)test-images" Condition="Exists('..\..\test-images\sample.jpg')"/>
+  </Target>
+</Project>

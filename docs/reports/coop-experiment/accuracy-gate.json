@@ -1,0 +1,464 @@
+{
+  "status": "failed_or_interrupted",
+  "version": "0.5.0-dev.2",
+  "vulkan_gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "vulkan_index": 1,
+  "dxgi_gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "dxgi_index": 1,
+  "library_sha256": "b5d7490d82ec1496b67ea1fe85b05c633c1e1ada97e88ed56bfd4f8f9ebe6b0c",
+  "experimental_coop_requested": true,
+  "dml_shape_cache": true,
+  "iterations": 1,
+  "pending_case": {
+    "model": "medium",
+    "image": "sample-1000",
+    "items": 16,
+    "text_equal": true,
+    "cls_equal": true,
+    "max_box_delta": 0.0,
+    "max_score_delta": 0.05108654499053955
+  },
+  "comparisons": [
+    {
+      "model": "tiny",
+      "image": "sample-500",
+      "image_sha256": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+      "size": [
+        500,
+        500
+      ],
+      "det_size": [
+        512,
+        512
+      ],
+      "bgr_sha256": "d9787e2010b990d3e3e10a4a1ecedbd7b989b6a3097c124a70dd3b154eabe21a",
+      "accuracy": {
+        "items": 16,
+        "text_equal": true,
+        "cls_equal": true,
+        "max_box_delta": 0.0,
+        "max_score_delta": 0.00031435489654541016
+      },
+      "samples": {
+        "vulkan": [
+          {
+            "wall_ms": 62.73240000155056,
+            "cls_ms": 8.4115,
+            "det_ms": 7.6386,
+            "rec_ms": 17.088199999999997,
+            "total_ms": 62.4207
+          }
+        ],
+        "dml": [
+          {
+            "wall_ms": 62.99890000082087,
+            "cls_ms": 9.111400000000001,
+            "det_ms": 3.3191,
+            "rec_ms": 22.6145,
+            "total_ms": 62.2722
+          }
+        ]
+      },
+      "dml_diagnostics": [
+        {
+          "cached_sessions": 16,
+          "ctc_ms": 1.5608,
+          "fixed_sessions_created": 16,
+          "rec_inference_ms": 21.053199999999997,
+          "rec_widths": [
+            320,
+            288,
+            624,
+            576,
+            616,
+            488,
+            528,
+            208,
+            384,
+            552,
+            736,
+            624,
+            256,
+            744,
+            888,
+            256
+          ],
+          "shape_cache": true
+        }
+      ],
+      "median_ms": {
+        "vulkan": {
+          "wall_ms": 62.73240000155056,
+          "cls_ms": 8.4115,
+          "det_ms": 7.6386,
+          "rec_ms": 17.088199999999997,
+          "total_ms": 62.4207
+        },
+        "dml": {
+          "wall_ms": 62.99890000082087,
+          "cls_ms": 9.111400000000001,
+          "det_ms": 3.3191,
+          "rec_ms": 22.6145,
+          "total_ms": 62.2722
+        }
+      },
+      "p95_ms": {
+        "vulkan": 62.73240000155056,
+        "dml": 62.99890000082087
+      }
+    },
+    {
+      "model": "tiny",
+      "image": "sample-1000",
+      "image_sha256": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+      "size": [
+        1000,
+        1000
+      ],
+      "det_size": [
+        960,
+        960
+      ],
+      "bgr_sha256": "ce9d6b58db8f6db93d78060c7ef8822e107b1c60023eac32289dc8dde2668eae",
+      "accuracy": {
+        "items": 16,
+        "text_equal": true,
+        "cls_equal": true,
+        "max_box_delta": 0.0,
+        "max_score_delta": 0.0012525320053100586
+      },
+      "samples": {
+        "vulkan": [
+          {
+            "wall_ms": 118.26379999911296,
+            "cls_ms": 8.8352,
+            "det_ms": 29.0872,
+            "rec_ms": 17.1784,
+            "total_ms": 117.012
+          }
+        ],
+        "dml": [
+          {
+            "wall_ms": 98.7356000005093,
+            "cls_ms": 9.4249,
+            "det_ms": 10.2129,
+            "rec_ms": 21.134599999999995,
+            "total_ms": 97.7699
+          }
+        ]
+      },
+      "dml_diagnostics": [
+        {
+          "cached_sessions": 27,
+          "ctc_ms": 1.4397,
+          "fixed_sessions_created": 27,
+          "rec_inference_ms": 19.6943,
+          "rec_widths": [
+            328,
+            288,
+            600,
+            504,
+            624,
+            488,
+            488,
+            240,
+            352,
+            528,
+            720,
+            584,
+            232,
+            800,
+            800,
+            248
+          ],
+          "shape_cache": true
+        }
+      ],
+      "median_ms": {
+        "vulkan": {
+          "wall_ms": 118.26379999911296,
+          "cls_ms": 8.8352,
+          "det_ms": 29.0872,
+          "rec_ms": 17.1784,
+          "total_ms": 117.012
+        },
+        "dml": {
+          "wall_ms": 98.7356000005093,
+          "cls_ms": 9.4249,
+          "det_ms": 10.2129,
+          "rec_ms": 21.134599999999995,
+          "total_ms": 97.7699
+        }
+      },
+      "p95_ms": {
+        "vulkan": 118.26379999911296,
+        "dml": 98.7356000005093
+      }
+    },
+    {
+      "model": "small",
+      "image": "sample-500",
+      "image_sha256": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+      "size": [
+        500,
+        500
+      ],
+      "det_size": [
+        512,
+        512
+      ],
+      "bgr_sha256": "d9787e2010b990d3e3e10a4a1ecedbd7b989b6a3097c124a70dd3b154eabe21a",
+      "accuracy": {
+        "items": 16,
+        "text_equal": true,
+        "cls_equal": true,
+        "max_box_delta": 0.0,
+        "max_score_delta": 0.00017851591110229492
+      },
+      "samples": {
+        "vulkan": [
+          {
+            "wall_ms": 93.76180000253953,
+            "cls_ms": 9.1652,
+            "det_ms": 10.5345,
+            "rec_ms": 42.052899999999994,
+            "total_ms": 93.3444
+          }
+        ],
+        "dml": [
+          {
+            "wall_ms": 103.9277999989281,
+            "cls_ms": 9.8211,
+            "det_ms": 4.4111,
+            "rec_ms": 58.28490000000001,
+            "total_ms": 103.2605
+          }
+        ]
+      },
+      "dml_diagnostics": [
+        {
+          "cached_sessions": 16,
+          "ctc_ms": 3.8336,
+          "fixed_sessions_created": 16,
+          "rec_inference_ms": 54.450100000000006,
+          "rec_widths": [
+            344,
+            288,
+            624,
+            552,
+            616,
+            488,
+            504,
+            192,
+            384,
+            552,
+            736,
+            624,
+            224,
+            744,
+            760,
+            256
+          ],
+          "shape_cache": true
+        }
+      ],
+      "median_ms": {
+        "vulkan": {
+          "wall_ms": 93.76180000253953,
+          "cls_ms": 9.1652,
+          "det_ms": 10.5345,
+          "rec_ms": 42.052899999999994,
+          "total_ms": 93.3444
+        },
+        "dml": {
+          "wall_ms": 103.9277999989281,
+          "cls_ms": 9.8211,
+          "det_ms": 4.4111,
+          "rec_ms": 58.28490000000001,
+          "total_ms": 103.2605
+        }
+      },
+      "p95_ms": {
+        "vulkan": 93.76180000253953,
+        "dml": 103.9277999989281
+      }
+    },
+    {
+      "model": "small",
+      "image": "sample-1000",
+      "image_sha256": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+      "size": [
+        1000,
+        1000
+      ],
+      "det_size": [
+        960,
+        960
+      ],
+      "bgr_sha256": "ce9d6b58db8f6db93d78060c7ef8822e107b1c60023eac32289dc8dde2668eae",
+      "accuracy": {
+        "items": 16,
+        "text_equal": true,
+        "cls_equal": true,
+        "max_box_delta": 0.0,
+        "max_score_delta": 0.00017440319061279297
+      },
+      "samples": {
+        "vulkan": [
+          {
+            "wall_ms": 181.53280000115046,
+            "cls_ms": 11.1647,
+            "det_ms": 45.5578,
+            "rec_ms": 53.36219999999999,
+            "total_ms": 180.2066
+          }
+        ],
+        "dml": [
+          {
+            "wall_ms": 155.80189999673166,
+            "cls_ms": 11.8683,
+            "det_ms": 16.9458,
+            "rec_ms": 58.318400000000004,
+            "total_ms": 154.3146
+          }
+        ]
+      },
+      "dml_diagnostics": [
+        {
+          "cached_sessions": 26,
+          "ctc_ms": 4.1533999999999995,
+          "fixed_sessions_created": 26,
+          "rec_inference_ms": 54.163900000000005,
+          "rec_widths": [
+            336,
+            296,
+            616,
+            504,
+            640,
+            488,
+            224,
+            496,
+            384,
+            512,
+            736,
+            576,
+            232,
+            800,
+            800,
+            248
+          ],
+          "shape_cache": true
+        }
+      ],
+      "median_ms": {
+        "vulkan": {
+          "wall_ms": 181.53280000115046,
+          "cls_ms": 11.1647,
+          "det_ms": 45.5578,
+          "rec_ms": 53.36219999999999,
+          "total_ms": 180.2066
+        },
+        "dml": {
+          "wall_ms": 155.80189999673166,
+          "cls_ms": 11.8683,
+          "det_ms": 16.9458,
+          "rec_ms": 58.318400000000004,
+          "total_ms": 154.3146
+        }
+      },
+      "p95_ms": {
+        "vulkan": 181.53280000115046,
+        "dml": 155.80189999673166
+      }
+    },
+    {
+      "model": "medium",
+      "image": "sample-500",
+      "image_sha256": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+      "size": [
+        500,
+        500
+      ],
+      "det_size": [
+        512,
+        512
+      ],
+      "bgr_sha256": "d9787e2010b990d3e3e10a4a1ecedbd7b989b6a3097c124a70dd3b154eabe21a",
+      "accuracy": {
+        "items": 16,
+        "text_equal": true,
+        "cls_equal": true,
+        "max_box_delta": 0.0,
+        "max_score_delta": 0.00017070770263671875
+      },
+      "samples": {
+        "vulkan": [
+          {
+            "wall_ms": 183.4713999996893,
+            "cls_ms": 10.686499999999997,
+            "det_ms": 25.0418,
+            "rec_ms": 112.40769999999999,
+            "total_ms": 183.0674
+          }
+        ],
+        "dml": [
+          {
+            "wall_ms": 152.1630000024743,
+            "cls_ms": 10.0843,
+            "det_ms": 12.0266,
+            "rec_ms": 95.3424,
+            "total_ms": 151.5554
+          }
+        ]
+      },
+      "dml_diagnostics": [
+        {
+          "cached_sessions": 17,
+          "ctc_ms": 4.606999999999999,
+          "fixed_sessions_created": 17,
+          "rec_inference_ms": 90.7342,
+          "rec_widths": [
+            368,
+            280,
+            624,
+            568,
+            704,
+            512,
+            528,
+            240,
+            400,
+            688,
+            776,
+            624,
+            224,
+            952,
+            880,
+            256
+          ],
+          "shape_cache": true
+        }
+      ],
+      "median_ms": {
+        "vulkan": {
+          "wall_ms": 183.4713999996893,
+          "cls_ms": 10.686499999999997,
+          "det_ms": 25.0418,
+          "rec_ms": 112.40769999999999,
+          "total_ms": 183.0674
+        },
+        "dml": {
+          "wall_ms": 152.1630000024743,
+          "cls_ms": 10.0843,
+          "det_ms": 12.0266,
+          "rec_ms": 95.3424,
+          "total_ms": 151.5554
+        }
+      },
+      "p95_ms": {
+        "vulkan": 183.4713999996893,
+        "dml": 152.1630000024743
+      }
+    }
+  ],
+  "note": "Incomplete or failed gate. Do not use this report to claim DML performance success. No OCR text stored."
+}

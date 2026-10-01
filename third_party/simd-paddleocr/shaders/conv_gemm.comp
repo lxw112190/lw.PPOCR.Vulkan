@@ -1,0 +1,32 @@
+#version 450
+// Apache-2.0, lw.PPOCR.Vulkan 2026. Portable FP32 implicit GEMM convolution.
+// Shared-memory tiling references SimdPaddleOCR's tiled GEMM scheduling;
+// OIHW weights and NHWC activations, no optional subgroup/FP16 features.
+layout(local_size_x=256) in;
+layout(set=0,binding=0) readonly buffer X { float x[]; };
+layout(set=0,binding=1) readonly buffer W { float w[]; };
+layout(set=0,binding=2) readonly buffer B { float b[]; };
+layout(set=0,binding=3) writeonly buffer O { float o[]; };
+layout(push_constant) uniform PC {
+ uint outW;uint outH;uint Cout;uint Cin;uint kH;uint kW;uint sh;uint sw;
+ uint pt;uint pl;uint inW;uint inH;uint flags;
+} p;
+shared float aa[256];shared float bb[256];
+void main(){
+ uint lid=gl_LocalInvocationID.x,r=lid/16,c=lid%16;
+ uint nt=(p.Cout+15)/16,tile=gl_WorkGroupID.x;
+ uint m=(tile/nt)*16+r,n=(tile%nt)*16+c;
+ uint M=p.outW*p.outH,span=p.kH*p.kW,K=p.Cin*span;
+ float acc=0;
+ for(uint k0=0;k0<K;k0+=16){
+  uint ak=k0+c,ci=ak/span,sp=ak%span;
+  int iy=int((m/p.outW)*p.sh+sp/p.kW)-int(p.pt);
+  int ix=int((m%p.outW)*p.sw+sp%p.kW)-int(p.pl);
+  aa[lid]=(m<M && ak<K && iy>=0 && iy<int(p.inH) && ix>=0 && ix<int(p.inW))?x[(uint(iy)*p.inW+uint(ix))*p.Cin+ci]:0;
+  uint bk=k0+r;bb[lid]=(n<p.Cout && bk<K)?w[n*K+bk]:0;
+  barrier();
+  for(uint k=0;k<16;++k)acc+=aa[r*16+k]*bb[k*16+c];
+  barrier();
+ }
+ if(m<M && n<p.Cout){if((p.flags&1u)!=0)acc+=b[n];if((p.flags&16u)!=0)acc=max(acc,0.0);o[m*p.Cout+n]=acc;}
+}
