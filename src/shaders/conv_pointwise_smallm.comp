@@ -1,0 +1,22 @@
+#version 450
+// Apache-2.0, lw.PPOCR.Vulkan 2026. Small-M sequential FP32 pointwise dot products.
+// A scalar output per lane avoids calculating three unused register rows at M=1.
+// Adjacent lanes read adjacent packed channels; no reduction/reassociation in K.
+layout(local_size_x = 64) in;
+layout(binding = 0, std430) readonly buffer X { float x[]; };
+layout(binding = 1, std430) readonly buffer W { float w[]; };
+layout(binding = 2, std430) readonly buffer B { float b[]; };
+layout(binding = 3, std430) writeonly buffer O { float o[]; };
+layout(push_constant) uniform PC { uint M; uint N; uint K; uint flags; } p;
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= p.M * p.N) return;
+    uint m = id / p.N, n = id % p.N, padded_n = (p.N + 3) & ~3u;
+    float acc = 0;
+    for (uint k = 0; k < p.K; ++k) acc += x[m * p.K + k] * w[k * padded_n + n];
+    acc += (p.flags & 1u) != 0 ? b[n] : 0;
+    if ((p.flags & 16u) != 0) acc = max(acc, 0.0);
+    if ((p.flags & 32u) != 0) acc = lwvk_gelu(acc);
+    if ((p.flags & 128u) != 0) acc = lwvk_silu(acc);
+    o[id] = acc;
+}

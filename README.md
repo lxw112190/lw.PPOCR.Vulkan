@@ -40,7 +40,12 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
 
 新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。**默认关闭**，通过 `LWVK_GPU_DET_PREPROCESS=1` 或独立 Demo 实验启动脚本开启；额外要求 `shaderFloat64`，不支持时明确报错。
+
+继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；两项实验仍默认关闭、额外要求 `shaderFloat64`。完整 C# 包用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 同时开启，普通启动脚本保持 CPU 前处理。
+
 此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
+
+最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
 
 ## 项目原理：C++ 如何使用 Vulkan 推理 OCR
 

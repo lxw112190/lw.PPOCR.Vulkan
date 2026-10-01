@@ -50,6 +50,10 @@ GPU 正确性、HTTP 与部署包测试必须额外执行，不能把 host 单�
 
 English: Format first-party C/C++ with clang-format 17 only. Keep vendored snapshots unchanged, explain ownership/synchronization/resource bounds, and rerun native plus GPU/deployment tests after code changes. Historical report hashes apply to their original binaries, not automatically to today's source.
 
+## FP32 kernel 回归
+
+FP32 kernel 优化新增 `tests/test_pointwise_regression.py --before <旧DLL> --after <新DLL> --device <GPU编号> --report <JSON>`，对三模型的 DET/CLS/REC 原始概率逐位对照；与独立 ORT 参考测试互补。GPU 算子、端到端和部署包验证均不能省略。自有 pointwise shader 位于 `src/shaders`，构建派生时注入统一 GELU/SiLU epilogue，保持固定 `third_party` 资产原始字节。
+
 ## Linux CI：Vulkan 头文件已找到但链接库缺失
 
 若 CMake 输出 `found suitable version "1.4.350"`，同时报 `missing: Vulkan_LIBRARY`，

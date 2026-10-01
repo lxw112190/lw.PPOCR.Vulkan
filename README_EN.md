@@ -31,6 +31,10 @@ The earlier [host/readback report](docs/HOST-TRANSFER-OPTIMIZATION.md) remains a
 
 The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md) fuses resize, normalization and input packing directly into the DET arena. It is **off by default**, requires `shaderFloat64`, and keeps FP32 networks/DET cap 960. Enable `LWVK_GPU_DET_PREPROCESS=1` before launching a new process, or use the separate experimental Demo launcher. On RTX 4060, paired 100-image mean latency fell by 18.0%/12.1%/5.9% for Tiny/Small/Medium with every prediction field unchanged; this is not a universal speed or DML-superiority claim.
 
+The follow-up [GPU CLS/REC preprocessing and upload experiment](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md) reduces mean latency by another **14.6%/10.3%/4.8%** for Tiny/Small/Medium against that DET-only baseline on the same 100 images, with exact prediction-field equality. `LWVK_GPU_TEXT_PREPROCESS=1` fuses text-line resize, gray padding, normalization and REC 180-degree sampling, while segmented uploads eliminate a full-source temporary copy. Both experiments remain off by default and require `shaderFloat64`; networks stay FP32. The complete C# package includes `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` to enable both. The normal launcher retains CPU preprocessing.
+
+The latest [FP32 pointwise optimization](docs/POINTWISE-OPTIMIZATION.md) uses contiguous vector stores, a small-spatial kernel and guarded Conv→SiLU epilogues, selected automatically without a new flag. Against the previous GPU-preprocessing build, paired 100-image means improve by another **2.1%/3.0%/3.3%** for Tiny/Small/Medium. Both sides enable GPU preprocessing for that comparison. RTX/AMD tests retain exact FP32 output bits across 27 shapes per device; the default CPU-preprocessing path also passes. FP32 networks and DET960 remain unchanged.
+
 Also implemented: Tiny CLS/REC GPU graphs, native greedy CTC decoding,
 length/stride-checked BGR recognition-only, adaptive width and C#/Python image examples.
 Full OCR now composes DB boxes, reading order, perspective crops, tall-region rotation,

@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "device": 1,
+  "gpu_text_preprocess": true,
+  "rows": [
+    {
+      "model": "tiny",
+      "exact_rec_bgr_cases": 24,
+      "length_query_and_small_buffer": "passed",
+      "padded_stride_and_invalid_input_recovery": "passed",
+      "lru_40_widths": "passed",
+      "concurrent_calls": 20
+    },
+    {
+      "model": "small",
+      "exact_rec_bgr_cases": 24,
+      "length_query_and_small_buffer": "passed",
+      "padded_stride_and_invalid_input_recovery": "passed",
+      "lru_40_widths": "passed",
+      "concurrent_calls": 20
+    },
+    {
+      "model": "medium",
+      "exact_rec_bgr_cases": 24,
+      "length_query_and_small_buffer": "passed",
+      "padded_stride_and_invalid_input_recovery": "passed",
+      "lru_40_widths": "passed",
+      "concurrent_calls": 20
+    }
+  ],
+  "library_sha256": "39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929",
+  "baseline_sha256": "b87cbb9559586053cd46e5a9bb1ef28b8d5f9df56cf8b5e219c3e20dd33482fa",
+  "raw_upload_budget_recovery": "passed",
+  "limitations": "Functional gate, not VRAM measurement or leak proof."
+}

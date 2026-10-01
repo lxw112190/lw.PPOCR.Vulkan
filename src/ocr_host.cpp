@@ -116,27 +116,35 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
         profile.end(3);
         int label = -1;
         float cls_score = 0;
-        if (graphs.cls) {
+        bool rotate = false;
+        if (graphs.cls || graphs.cls_bgr) {
             profile.begin();
-            auto classifier = preprocess_cls_bgr(crop.data(), cw, ch);
+            std::vector<float> classifier;
+            if (!graphs.cls_bgr)
+                classifier = preprocess_cls_bgr(crop.data(), cw, ch);
             float probabilities[2]{};
             profile.end(4);
             profile.begin();
-            cls_ms += graphs.cls(classifier.data(), 80, 160, probabilities, 2);
+            cls_ms += graphs.cls_bgr ? graphs.cls_bgr(crop.data(), crop_bytes, cw, ch, probabilities)
+                                     : graphs.cls(classifier.data(), 80, 160, probabilities, 2);
             profile.end(5);
             if (!probability(probabilities[0]) || !probability(probabilities[1]))
                 throw std::runtime_error("invalid CLS probability");
             label = probabilities[1] > probabilities[0] ? 1 : 0;
             cls_score = probabilities[label];
-            if (label == 1 && cls_score > config.cls_threshold)
+            rotate = label == 1 && cls_score > config.cls_threshold;
+            if (rotate && !graphs.rec_bgr)
                 lw_rotate_bgr_u8_180(crop.data(), cw, ch);
         }
         profile.begin();
-        auto recognizer = preprocess_rec_bgr(crop.data(), crop_bytes, cw, ch, cw * 3, 0);
+        RecInput recognizer;
+        if (!graphs.rec_bgr)
+            recognizer = preprocess_rec_bgr(crop.data(), crop_bytes, cw, ch, cw * 3, 0);
         profile.end(4);
         profile.begin();
         double ms = 0;
-        auto decoded = graphs.rec(recognizer.data.data(), recognizer.width, ms);
+        auto decoded = graphs.rec_bgr ? graphs.rec_bgr(crop.data(), crop_bytes, cw, ch, rotate, ms)
+                                      : graphs.rec(recognizer.data.data(), recognizer.width, ms);
         rec_ms += ms;
         profile.end(6);
         items.push_back({{"x1", box.x1},
@@ -159,7 +167,7 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
         {"image_height", h},
         {"det_width", rw},
         {"det_height", rh},
-        {"classifier_enabled", bool(graphs.cls)},
+        {"classifier_enabled", bool(graphs.cls || graphs.cls_bgr)},
         {"timing", {{"det_ms", det_ms}, {"cls_ms", cls_ms}, {"rec_ms", rec_ms}, {"total_ms", milliseconds(started)}}}};
     // total_ms 包含 CPU 前后处理；DET/CLS/REC 只计图执行路径，二者不应强制相等。
     // 公共流水线计时在最终 JSON 序列化前结束，诊断输出默认关闭。

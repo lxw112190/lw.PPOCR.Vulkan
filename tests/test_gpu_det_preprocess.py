@@ -128,6 +128,7 @@ def main():
             raise AssertionError('raw upload budget ignored')
         assert not engine.run(blank)['items']
     report = dict(passed=True, device=a.device, gpu_det_preprocess=True, rows=rows,
+        gpu_text_preprocess=os.environ.get('LWVK_GPU_TEXT_PREPROCESS')=='1',
         before_sha256=hashlib.sha256(a.before.read_bytes()).hexdigest(),
         after_sha256=hashlib.sha256(a.after.read_bytes()).hexdigest(),
         lru_40_shapes='passed', raw_upload_budget_and_recovery='passed',

@@ -45,6 +45,31 @@ struct Fixture {
 int main() {
     try {
         unsigned tests = 0;
+        for (unsigned condition = 0; condition < 8; ++condition) {
+            Fixture f;
+            f.nodes = {{"Conv", {0, 11}, 1, Json::object()}, {"SiLU", {1}, 2, Json::object()}};
+            uint32_t output = 2;
+            if (condition == 1)
+                output = 1;
+            if (condition == 2)
+                f.nodes.push_back({"Add", {1, 0}, 12, Json::object()});
+            if (condition == 3)
+                f.nodes[0].attrs["group"] = 4;
+            if (condition == 4)
+                f.nodes[0].attrs["fused_relu"] = true;
+            if (condition == 5)
+                f.nodes[0].attrs["fused_gelu"] = true;
+            if (condition == 6)
+                f.nodes[1].inputs.push_back(0);
+            if (condition == 7)
+                f.nodes[1].op = "HardSwish";
+            auto count = fold_silu_epilogue(f.nodes, f.tensors, output);
+            require(count == (condition == 0 ? 1u : 0u), "unsafe SiLU epilogue fold");
+            if (condition == 0)
+                require(f.nodes.size() == 1 && f.nodes[0].output == 2 && f.nodes[0].attrs.at("fused_silu") == true,
+                        "SiLU epilogue lost output");
+            ++tests;
+        }
         for (bool commute : {false, true}) {
             Fixture f;
             if (commute) {

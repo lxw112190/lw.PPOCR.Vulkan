@@ -43,8 +43,8 @@ class Plan {
     Plan(const Plan&) = delete;
     Plan& operator=(const Plan&) = delete;
     double run(const float* input, float* output, bool ctc = false);
-    double run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride,
-                   float* output);
+    double run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride, float* output,
+                   bool rotate = false);
     std::array<uint64_t, 4> workspace_requirements() const {
         return {arena_bytes_, input_bytes_, output_bytes_, ctc_bytes_};
     }
@@ -100,6 +100,12 @@ class GraphEngine {
     bool gpu_det_preprocess_enabled() const {
         return context_.gpu_det_preprocess;
     }
+    bool gpu_text_preprocess_enabled() const {
+        return context_.gpu_text_preprocess;
+    }
+    double classify_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, float* output);
+    TextResult recognize_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
+                             uint32_t target, bool rotate, double& ms);
     Shape output_shape(uint32_t height, uint32_t width);
     TextResult recognize(const float* input, uint32_t width, double& ms);
     const std::string& task() const {
@@ -110,6 +116,8 @@ class GraphEngine {
     }
 
   private:
+    uint64_t prepare_bgr(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+    TextResult decode_pairs(const std::vector<float>& pairs);
     void prepare(uint32_t height, uint32_t width, uint64_t min_upload = 0);
     void ensure_workspace(Plan& plan, uint64_t min_upload = 0);
     Model model_;

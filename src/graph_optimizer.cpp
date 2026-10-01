@@ -126,4 +126,30 @@ uint32_t fold_transpose_epilogue(std::vector<Node>& nodes, const std::vector<Ten
     nodes = std::move(result);
     return fused;
 }
+uint32_t fold_silu_epilogue(std::vector<Node>& nodes, const std::vector<Tensor>& tensors, uint32_t output) {
+    std::vector<uint32_t> uses(tensors.size());
+    for (const auto& node : nodes)
+        for (auto id : node.inputs)
+            ++uses.at(id);
+    ++uses.at(output);
+    std::vector<Node> result;
+    uint32_t fused = 0;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        auto node = nodes[i];
+        // Do not remove a shared/observable intermediate or combine activations.
+        // All group-one FP32 kernels support the epilogue; depthwise stays unchanged.
+        if (node.op == "Conv" && node.attrs.value("group", 1u) == 1 && uses.at(node.output) == 1 &&
+            !node.attrs.value("fused_relu", false) && !node.attrs.value("fused_gelu", false) &&
+            !node.attrs.value("fused_sigmoid", false) && !node.attrs.value("fused_silu", false) &&
+            i + 1 < nodes.size() && nodes[i + 1].op == "SiLU" &&
+            nodes[i + 1].inputs == std::vector<uint32_t>{node.output}) {
+            node.output = nodes[++i].output;
+            node.attrs["fused_silu"] = true;
+            ++fused;
+        }
+        result.push_back(std::move(node));
+    }
+    nodes = std::move(result);
+    return fused;
+}
 } // namespace lwvk

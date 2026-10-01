@@ -1,6 +1,10 @@
 // Real-device tensor gate: exact FP32 bits vs CPU double reference, plus tail canaries.
 #include "vulkan_context.hpp"
 #include "det_preprocess.hpp"
+#ifdef LWVK_TEXT_PREPROCESS_PROBE
+#include "cls_preprocess.hpp"
+#include "rec_preprocess.hpp"
+#endif
 #include <array>
 #include <cstring>
 #include <iostream>
@@ -22,24 +26,50 @@ struct Commands {
             vkDestroyCommandPool(ctx.device, pool, nullptr);
     }
 };
-static void test(Context& ctx, uint32_t w, uint32_t h, uint32_t pad, uint32_t ow, uint32_t oh) {
+static void test(Context& ctx, uint32_t w, uint32_t h, uint32_t pad, uint32_t ow, uint32_t oh, bool rotate = false) {
     uint32_t stride = w * 3 + pad;
     size_t span = size_t(h - 1) * stride + w * 3;
     std::vector<uint8_t> pixels(span);
     for (size_t i = 0; i < span; ++i)
         pixels[i] = uint8_t((i * 73 + i / 7) % 256);
+#ifdef LWVK_TEXT_PREPROCESS_PROBE
+    std::vector<uint8_t> contiguous(size_t(w) * h * 3);
+    for (uint32_t y = 0; y < h; ++y)
+        for (uint32_t x = 0; x < w; ++x)
+            for (uint32_t c = 0; c < 3; ++c) {
+                const auto dst = rotate ? (size_t(h - 1 - y) * w + w - 1 - x) * 3 + c : (size_t(y) * w + x) * 3 + c;
+                contiguous[dst] = pixels[size_t(y) * stride + x * 3 + c];
+            }
+    auto cpu = oh == 80 ? preprocess_cls_bgr(contiguous.data(), w, h)
+                        : preprocess_rec_bgr(contiguous.data(), contiguous.size(), w, h, w * 3, ow).data;
+#else
     auto cpu = preprocess_det_bgr(pixels.data(), span, w, h, stride, ow, oh);
+#endif
     std::vector<uint32_t> packed(8 + (span + 3) / 4, 0);
     packed[0] = w;
     packed[1] = h;
     packed[2] = stride;
+    packed[3] = rotate ? 1u : 0u;
     std::memcpy(packed.data() + 8, pixels.data(), span);
     std::vector<float> output(cpu.size() + 16, -9876.f);
     Buffer input(ctx, packed.size() * 4, true), result(ctx, output.size() * 4, true);
-    input.write(packed.data(), packed.size() * 4);
+    input.write_parts(packed.data(), 32, pixels.data(), span, (4 - span % 4) % 4);
+    // Bound checks must reject before touching the mapped buffer.
+    bool rejected = false;
+    try {
+        input.write_parts(packed.data(), input.size + 1, pixels.data(), span, 0);
+    } catch (const std::invalid_argument&) {
+        rejected = true;
+    }
+    if (!rejected)
+        throw std::runtime_error("segmented staging bounds ignored");
     result.write(output.data(), output.size() * 4);
     Commands resources{ctx};
+#ifdef LWVK_TEXT_PREPROCESS_PROBE
+    auto& pipeline = ctx.pipeline("bgr_text_preprocess", 2, 8);
+#else
     auto& pipeline = ctx.pipeline("bgr_det_preprocess", 2, 8);
+#endif
     VkCommandPoolCreateInfo pool{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
     pool.queueFamilyIndex = ctx.queue_family;
     check(vkCreateCommandPool(ctx.device, &pool, nullptr, &resources.pool), "probe pool");
@@ -110,6 +140,27 @@ static void test(Context& ctx, uint32_t w, uint32_t h, uint32_t pad, uint32_t ow
 int main(int argc, char** argv) {
     try {
         Context ctx(argc > 1 ? uint32_t(std::stoul(argv[1])) : 0);
+#ifdef LWVK_TEXT_PREPROCESS_PROBE
+        if (!ctx.gpu_text_preprocess)
+            throw std::runtime_error("set LWVK_GPU_TEXT_PREPROCESS=1 before launch");
+        const std::array<std::array<uint32_t, 5>, 10> cases{{{1, 1, 0, 32, 48},
+                                                             {2, 3, 1, 32, 48},
+                                                             {17, 11, 5, 80, 48},
+                                                             {501, 23, 7, 960, 48},
+                                                             {12, 96, 3, 32, 48},
+                                                             {960, 48, 0, 960, 48},
+                                                             {1, 1, 0, 160, 80},
+                                                             {1000, 24, 7, 160, 80},
+                                                             {97, 25, 5, 160, 80},
+                                                             {24, 160, 1, 160, 80}}};
+        for (const auto& c : cases) {
+            test(ctx, c[0], c[1], c[2], c[3], c[4]);
+            if (c[4] == 48)
+                test(ctx, c[0], c[1], c[2], c[3], c[4], true);
+        }
+        std::cout << "PASS: 16 GPU CLS/REC tensor cases, rotation/padding/stride/exact FP32 bits/canaries; "
+                  << ctx.properties.deviceName << '\n';
+#else
         if (!ctx.gpu_det_preprocess)
             throw std::runtime_error("set LWVK_GPU_DET_PREPROCESS=1 before launch");
         const std::array<std::array<uint32_t, 5>, 8> cases{{{1, 1, 0, 32, 32},
@@ -124,6 +175,7 @@ int main(int argc, char** argv) {
             test(ctx, c[0], c[1], c[2], c[3], c[4]);
         std::cout << "PASS: 8 GPU DET tensor cases, exact FP32 bits and tail canaries; " << ctx.properties.deviceName
                   << '\n';
+#endif
         return 0;
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';

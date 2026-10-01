@@ -20,7 +20,8 @@ vec4 lwvk_gelu(vec4 v) { return vec4(lwvk_gelu(v.x),lwvk_gelu(v.y),lwvk_gelu(v.z
 
 def prepare(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
-    for path in sorted(source.glob("*.comp")):
+    paths = list(source.glob("*.comp")) + list((Path(__file__).resolve().parents[1]/"src/shaders").glob("conv_*.comp"))
+    for path in sorted(paths):
         text = path.read_text(encoding="utf-8")
         if path.stem == "conv_coop_gemm":
             # Explicitly mixed precision, never run through the FP32 conversion.
@@ -59,10 +60,10 @@ def prepare(source: Path, destination: Path) -> None:
 // Apache-2.0. Modified by lw.PPOCR.Vulkan in 2026: portable FP32 baseline,
 // FP32 activation parameters, improved Erf precision, FP32 MaxPool bound.
 // Original unmodified source and attribution are shipped with the project."""
-        if path.stem in ('conv_gemm', 'conv_gemm_tiled', 'conv_pointwise_tiled', 'conv_pointwise_tiled64', 'conv_dw4', 'gelu', 'softmax_parallel', 'softmax_argmax'):
+        if path.stem in ('conv_gemm', 'conv_gemm_tiled', 'conv_pointwise_tiled', 'conv_pointwise_tiled64', 'conv_pointwise_vector', 'conv_pointwise_smallm', 'conv_dw4', 'gelu', 'softmax_parallel', 'softmax_argmax'):
             attribution = "#version 450\n// Project-written portable FP32 kernel. Apache-2.0."
         text = text.replace("#version 450", attribution, 1)
-        if path.stem in ('gelu','conv_dense','conv_gemm','conv_gemm_tiled','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64'):
+        if path.stem in ('gelu','conv_dense','conv_gemm','conv_gemm_tiled','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_smallm'):
             text=text.replace("void main()",GELU+"\nvoid main()",1)
             text=text.replace("if((p.flags&16u)!=0)v=max(v,vec4(0));",
                               "if((p.flags&16u)!=0)v=max(v,vec4(0));if((p.flags&32u)!=0)v=lwvk_gelu(v);")
@@ -71,6 +72,19 @@ def prepare(source: Path, destination: Path) -> None:
             if path.stem=='conv_dense':
                 text=text.replace("o[gid] = actf(acc, (p.flags >> 4) & 7u, p.flags);",
                                   "o[gid] = (p.flags&32u)!=0 ? lwvk_gelu(acc) : actf(acc, (p.flags >> 4) & 7u, p.flags);")
+        if path.stem in ('conv_dense','conv_gemm','conv_gemm_tiled','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_smallm'):
+            text=text.replace('void main()', '''vec4 lwvk_silu(vec4 v) { return v * (vec4(1.0) / (vec4(1.0) + exp(-v))); }
+float lwvk_silu(float v) { return v * (1.0 / (1.0 + exp(-v))); }
+void main()''', 1)
+            if path.stem=='conv_dense':
+                text=text.replace('o[gid] = (p.flags&32u)!=0 ?', 'o[gid] = (p.flags&128u)!=0 ? lwvk_silu(acc) : (p.flags&32u)!=0 ?')
+            elif path.stem=='conv_gemm':
+                text=text.replace('o[m*p.Cout+n]=acc;', 'if((p.flags&128u)!=0)acc=lwvk_silu(acc);o[m*p.Cout+n]=acc;')
+            elif path.stem in ('conv_pointwise_tiled64','conv_pointwise_vector'):
+                marker=' if(m<p.M)o[m*N4+n4]=a;' if path.stem=='conv_pointwise_tiled64' else '    if (m < p.M) o[m * N4 + n4] = a;'
+                text=text.replace(marker, 'if((p.flags&128u)!=0){a=lwvk_silu(a);c=lwvk_silu(c);d=lwvk_silu(d);e=lwvk_silu(e);}\n'+marker)
+            else:
+                text=text.replace('if((p.flags&32u)!=0)v=lwvk_gelu(v);', 'if((p.flags&32u)!=0)v=lwvk_gelu(v);if((p.flags&128u)!=0)v=lwvk_silu(v);')
         (destination / path.name).write_text(text, encoding="utf-8", newline="\n")
 
 

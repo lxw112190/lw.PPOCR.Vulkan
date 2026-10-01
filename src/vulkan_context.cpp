@@ -116,13 +116,24 @@ Context::Context(uint32_t index) {
         const char* det_value = std::getenv("LWVK_GPU_DET_PREPROCESS");
         gpu_det_preprocess = det_value && std::strcmp(det_value, "1") == 0;
 #endif
-        if (gpu_det_preprocess) {
+#ifdef _MSC_VER
+        char text_value[2]{};
+        size_t text_length{};
+        getenv_s(&text_length, nullptr, 0, "LWVK_GPU_TEXT_PREPROCESS");
+        if (text_length == 2)
+            getenv_s(&text_length, text_value, sizeof(text_value), "LWVK_GPU_TEXT_PREPROCESS");
+        gpu_text_preprocess = text_value[0] == '1';
+#else
+        const char* text_value = std::getenv("LWVK_GPU_TEXT_PREPROCESS");
+        gpu_text_preprocess = text_value && std::strcmp(text_value, "1") == 0;
+#endif
+        if (gpu_det_preprocess || gpu_text_preprocess) {
             VkPhysicalDeviceFeatures available{};
             vkGetPhysicalDeviceFeatures(physical, &available);
             if (!available.shaderFloat64)
-                throw std::runtime_error("experimental GPU DET preprocessing requires shaderFloat64");
+                throw std::runtime_error("experimental GPU preprocessing requires shaderFloat64");
             if (gpu_profile)
-                throw std::invalid_argument("disable LWVK_GPU_PROFILE for GPU DET preprocessing experiment");
+                throw std::invalid_argument("disable LWVK_GPU_PROFILE for GPU preprocessing experiments");
             enabled.shaderFloat64 = VK_TRUE;
             ci.pEnabledFeatures = &enabled;
         }
@@ -365,6 +376,23 @@ void Buffer::write(const void* data, size_t bytes) {
     if (!host_visible_ || !mapped_ || bytes > size || (!data && bytes))
         throw std::invalid_argument("invalid staging write");
     std::memcpy(mapped_, data, bytes);
+    flush_upload();
+}
+void Buffer::write_parts(const void* prefix, size_t prefix_size, const void* data, size_t bytes, size_t padding) {
+    // 直接写持久映射区：避免先组装一份大图片再 memcpy 一次。最后只 flush 一次。
+    if (!host_visible_ || !mapped_ || (!prefix && prefix_size) || (!data && bytes) || prefix_size > size ||
+        bytes > size - prefix_size || padding > size - prefix_size - bytes)
+        throw std::invalid_argument("invalid segmented staging write");
+    auto* destination = static_cast<uint8_t*>(mapped_);
+    if (prefix_size)
+        std::memcpy(destination, prefix, prefix_size);
+    if (bytes)
+        std::memcpy(destination + prefix_size, data, bytes);
+    if (padding)
+        std::memset(destination + prefix_size + bytes, 0, padding);
+    flush_upload();
+}
+void Buffer::flush_upload() {
     VkResult result = VK_SUCCESS;
     if (!coherent_) {
         VkMappedMemoryRange range{VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE};

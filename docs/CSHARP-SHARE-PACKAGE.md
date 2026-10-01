@@ -16,6 +16,18 @@
 
 新增 GPU DET 前处理实验：关闭已有 Demo，双击 `Start-CSharp-Demo-GPU-DET-Experiment.bat`，再选 GPU/模型初始化。普通 `Start-CSharp-Demo.bat` 保持默认 CPU 前处理；直接运行 EXE 会继承当前进程环境。实验额外要求 `shaderFloat64`，前处理用 FP64、网络仍用 FP32；不支持时明确报错。结果和计时口径见包内 `docs/GPU-DET-PREPROCESS-EXPERIMENT.md`。
 
+本轮继续增加 CLS/REC 前处理实验。关闭已有 Demo，使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 可同时开启 DET＋CLS＋REC GPU 前处理（含 REC 180° 采样）。相对上一版 DET-only 实验，RTX 4060 的 100 图均值再下降 Tiny/Small/Medium 约 14.6%/10.3%/4.8%，完整结果一致。报告见包内 `docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md`。
+
+| 启动脚本 | DET 前处理 | CLS/REC 前处理 |
+| --- | --- | --- |
+| `Start-CSharp-Demo.bat` | CPU | CPU |
+| `Start-CSharp-Demo-GPU-DET-Experiment.bat` | GPU | CPU |
+| `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` | GPU | GPU |
+
+实验开关应在新进程加载 DLL 前设置；脚本使用局部环境，不修改系统配置。两种实验都需要 `shaderFloat64`，不支持时可关闭 Demo 后用普通启动脚本重新启动。默认算法流程示意见 README；开启实验后，缩放/归一化和 REC 180° 校正转到 GPU，裁剪/DB/字典映射仍在 CPU。
+
+最新 `network-opt1` 包继续优化 FP32 1×1 卷积（向量写回、小空间 kernel 与安全的 SiLU 融合），按形状自动启用。普通启动和 GPU 前处理实验都受益，不需要新增开关。相对上一轮 GPU 前处理包，RTX 4060 的 100 图均值再下降约 2.1%/3.0%/3.3%；模型、FP32 和 DET960 不变，详情见包内 `docs/POINTWISE-OPTIMIZATION.md`。
+
 ## 对方电脑需要什么
 
 - Windows 10/11 **64 位**；本机实测 Windows 10，Windows 11 是目标平台，尚未独立实机验证。
@@ -69,6 +81,8 @@ Khronos 更推荐分发 Runtime 安装器，避免长期绑定应用私有 loade
 - **DET / CLS / REC**：上传、提交、GPU 执行与等待、回读；CLS/REC 累计所有文字区域，不是纯 GPU 时间。
 - **其他**：流水线减去三阶段合计，包含 CPU 前后处理、执行计划准备等；不是全部 C# / UI 开销。
 
+开启 GPU 前处理后，DET/CLS/REC 阶段还包含相应 GPU 缩放、填充和归一化；REC 也包含采样时的 180° 校正。因此部分耗时会从“其他”移入阶段计时，不能只比较阶段标签推断纯网络加速。优化收益按同条件的完整 OCR 调用耗时比较。
+
 “首轮调用”可能包含首次尺寸的 GPU 执行计划创建；“重复调用”只表示该引擎已经调用过，不保证新图片的所有尺寸都已预热。比较速度时，同 GPU、模型、参数和图片先运行三次，再测多次，不用首轮耗时代表稳定吞吐。
 
 此前 C# 构建启用 `/optimize+`；紧凑 BGR 内存一次复制，带行填充或负 stride 保留逐行路径；隐藏的 JSON / 表格页签按需更新，避免每次识别都更新不可见控件。最新 `pipeline-opt2` 包进一步优化原生 CLS/REC 缩放和透视裁剪，DLL 已更新；模型、精度、GPU shaders 和公共 API 不变。实际提速证据见 `docs/PIPELINE-OPTIMIZATION.md`，不将计时显示调整宣传为 GPU 推理加速。
@@ -89,6 +103,8 @@ English: OCR-call time includes managed pixel conversion, native inference and r
 
 ZIP 旁边 `.sha256` 用于校验压缩包；包内 `FILES.sha256` 是解压后文件清单，检测传输损坏，不是数字签名。LunarG loader/安装器保留官方数字签名；本项目 Demo/原生库未作代码签名，可能遇到下载来源提示。
 
-历史 `pipeline-opt2` 核心 DLL SHA-256 为 `91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee`，其性能与局限见 `docs/PIPELINE-OPTIMIZATION.md`。新 `gpu-det-experiment1` DLL 为 `c509c8162f863b6b5aa45e02a9fe02f99cb75cec8f66c05877348ff0a631fdd4`，保留前述优化并增加默认关闭的 GPU DET 前处理。`PACKAGE-INFO.json` 和 `validation/native-qualification.json` 标明实际包版本与 DLL 哈希；最终解压包的 C# GUI/整图/框选证据单独保留，不把旧包长测当作本包新长测结果。
+历史 `pipeline-opt2` 核心 DLL SHA-256 为 `91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee`，其性能与局限见 `docs/PIPELINE-OPTIMIZATION.md`。上一版 `gpu-det-experiment1` DLL 为 `c509c8162f863b6b5aa45e02a9fe02f99cb75cec8f66c05877348ff0a631fdd4`。本轮 `gpu-text-experiment1` DLL 为 `b87cbb9559586053cd46e5a9bb1ef28b8d5f9df56cf8b5e219c3e20dd33482fa`，保留前述优化，新增默认关闭的 CLS/REC GPU 前处理和直接分段上传。`PACKAGE-INFO.json` 和 `validation/native-qualification.json` 标明实际包版本与 DLL 哈希；最终解压包的 C# GUI/整图/框选证据单独保留，不把旧包长测当作本包新长测结果。
 
 English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. All application-native DLLs and three models are included. A compatible installed GPU vendor driver and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is required to run. This is a preview, not a universal compatibility/performance guarantee.
+
+`network-opt1` 原生 DLL SHA-256：`39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929`。上段 `gpu-text-experiment1` 哈希属于上一轮构建，不是本包；以本包 `PACKAGE-INFO.json` 和文件校验清单为准。新包有独立回归与 ZIP 验证，不沿用旧包长测作为本轮稳定性结论。

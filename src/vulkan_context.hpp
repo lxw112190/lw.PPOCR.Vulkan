@@ -21,12 +21,14 @@ class Buffer {
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
     void write(const void* data, size_t size);
+    void write_parts(const void* prefix, size_t prefix_size, const void* data, size_t size, size_t tail_padding);
     void read(void* data, size_t size);
     void copy_from(const Buffer& source);
     VkBuffer handle{};
     VkDeviceSize size{};
 
   private:
+    void flush_upload();
     Context& context_;
     VkDeviceMemory memory_{};
     void* mapped_{}; // host buffers stay mapped; graph synchronization owns access
@@ -56,8 +58,9 @@ class Context {
     VkPhysicalDeviceMemoryProperties memory_properties{};
     bool cooperative_matrix{}; // experimental opt-in; tensors/accumulators stay FP32
     bool required_subgroup_size{};
-    bool gpu_profile{};        // engineering diagnostics only; default off
-    bool gpu_det_preprocess{}; // opt-in FP64 resize/normalization, network remains FP32
+    bool gpu_profile{};         // engineering diagnostics only; default off
+    bool gpu_det_preprocess{};  // opt-in FP64 resize/normalization, network remains FP32
+    bool gpu_text_preprocess{}; // opt-in CLS/REC preprocessing; independent of DET
     uint32_t timestamp_valid_bits{};
 
   private:

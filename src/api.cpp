@@ -310,6 +310,22 @@ lwvk_status LWVK_CALL lwvk_recognize_bgr(lwvk_network_handle handle, const uint8
     if (text && capacity)
         text[0] = 0;
     lwvk::RecInput input;
+    if (handle && handle->impl->gpu_text_preprocess_enabled())
+        return protect(
+            [&] {
+                if (handle->impl->task() != "rec" || !required || !score || (!text && capacity))
+                    throw std::invalid_argument("REC handle and valid result outputs required");
+                double ms = 0;
+                const auto decoded = handle->impl->recognize_bgr(pixels, bytes, w, h, stride, rec_width, false, ms);
+                *required = decoded.text.size() + 1;
+                *score = decoded.score;
+                if (elapsed)
+                    *elapsed = ms;
+                if (capacity < *required || !text)
+                    throw std::length_error("UTF-8 text capacity too small; includes NUL");
+                std::memcpy(text, decoded.text.c_str(), static_cast<size_t>(*required));
+            },
+            LWVK_RUNTIME_ERROR);
     const auto status = protect(
         [&] {
             if (!handle || handle->impl->task() != "rec" || !required || !score || (!text && capacity))

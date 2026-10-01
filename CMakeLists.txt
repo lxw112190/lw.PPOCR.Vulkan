@@ -86,7 +86,7 @@ if(BUILD_TESTING)
 endif()
 option(LWVK_SANITIZERS "Enable host ASan/UBSan (not GPU memory validation)" OFF)
 option(LWVK_EXPERIMENTAL_COOP "Build opt-in mixed-FP16 cooperative-matrix experiments (not a release default)" OFF)
-set(shader_names conv_dense conv_gemm conv_gemm_tiled conv_pointwise conv_pointwise_tiled conv_pointwise_tiled64 conv_dw conv_dw4 convt2s2 elem gelu reduce_hw resize4 concat_c maxpool4 nchw2nhwc avgpool4 softmax softmax_parallel softmax_argmax attn layernorm)
+set(shader_names conv_dense conv_gemm conv_gemm_tiled conv_pointwise conv_pointwise_tiled conv_pointwise_tiled64 conv_pointwise_vector conv_pointwise_smallm conv_dw conv_dw4 convt2s2 elem gelu reduce_hw resize4 concat_c maxpool4 nchw2nhwc avgpool4 softmax softmax_parallel softmax_argmax attn layernorm)
 if(LWVK_EXPERIMENTAL_COOP)
   add_compile_definitions(LWVK_EXPERIMENTAL_COOP=1)
   list(APPEND shader_names conv_coop_gemm)
@@ -106,10 +106,17 @@ add_custom_command(OUTPUT "${derived_dir}/bgr_det_preprocess.comp"
   DEPENDS src/shaders/bgr_det_preprocess.comp VERBATIM)
 list(APPEND shader_names bgr_det_preprocess)
 list(APPEND spirv_files "${derived_dir}/bgr_det_preprocess.spv")
+add_custom_command(OUTPUT "${derived_dir}/bgr_text_preprocess.comp"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "${derived_dir}"
+  COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/bgr_text_preprocess.comp" "${derived_dir}/bgr_text_preprocess.comp"
+  DEPENDS src/shaders/bgr_text_preprocess.comp VERBATIM)
+list(APPEND shader_names bgr_text_preprocess)
+list(APPEND spirv_files "${derived_dir}/bgr_text_preprocess.spv")
 add_custom_command(OUTPUT ${derived_sources}
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/prepare_shaders.py"
     "${CMAKE_CURRENT_SOURCE_DIR}/third_party/simd-paddleocr/shaders" "${derived_dir}"
-  DEPENDS ${shader_sources} scripts/prepare_shaders.py VERBATIM)
+  DEPENDS ${shader_sources} src/shaders/conv_pointwise_vector.comp src/shaders/conv_pointwise_smallm.comp scripts/prepare_shaders.py VERBATIM)
 foreach(name IN LISTS shader_names)
   set(validate_command)
   if(LWVK_SPIRV_VAL)
@@ -130,6 +137,11 @@ if(BUILD_TESTING)
   add_dependencies(lwvk_det_gpu_preprocess_probe lwvk_embedded_shaders)
   target_include_directories(lwvk_det_gpu_preprocess_probe PRIVATE src "${CMAKE_CURRENT_BINARY_DIR}/generated")
   target_link_libraries(lwvk_det_gpu_preprocess_probe PRIVATE Vulkan::Vulkan)
+  add_executable(lwvk_text_gpu_preprocess_probe tests/det_gpu_preprocess_probe.cpp src/vulkan_context.cpp src/cls_preprocess.cpp src/rec_preprocess.cpp)
+  add_dependencies(lwvk_text_gpu_preprocess_probe lwvk_embedded_shaders)
+  target_compile_definitions(lwvk_text_gpu_preprocess_probe PRIVATE LWVK_TEXT_PREPROCESS_PROBE=1)
+  target_include_directories(lwvk_text_gpu_preprocess_probe PRIVATE src "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  target_link_libraries(lwvk_text_gpu_preprocess_probe PRIVATE Vulkan::Vulkan)
   add_executable(lwvk_gelu_probe tests/coop_probe.cpp src/vulkan_context.cpp)
   add_dependencies(lwvk_gelu_probe lwvk_embedded_shaders)
   target_compile_definitions(lwvk_gelu_probe PRIVATE LWVK_GELU_PROBE=1)

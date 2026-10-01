@@ -42,6 +42,8 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
                 v = std::max(v, 0.0f);
             if (p[12] & 32)
                 v = ((std::erf(v / std::sqrt(2.0f)) + 1.0f) * v) * .5f;
+            if (p[12] & 128)
+                v = v * (1.0f / (1.0f + std::exp(-v)));
             reference[m * n + j] = v;
         }
     auto uploaded = w;
@@ -70,8 +72,9 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
     };
     try {
         const auto shader = shader_override.empty() ? (depthwise ? "conv_dw4" : "conv_coop_gemm") : shader_override;
-        const bool pointwise =
-            shader == "conv_pointwise" || shader == "conv_pointwise_tiled" || shader == "conv_pointwise_tiled64";
+        const bool pointwise = shader == "conv_pointwise" || shader == "conv_pointwise_tiled" ||
+                               shader == "conv_pointwise_tiled64" || shader == "conv_pointwise_vector" ||
+                               shader == "conv_pointwise_smallm";
         auto& pipeline = ctx.pipeline(shader, 4, depthwise ? 48 : pointwise ? 16 : 52);
         VkCommandPoolCreateInfo pc{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
         pc.queueFamilyIndex = ctx.queue_family;
@@ -125,7 +128,10 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
             vkCmdPushConstants(cmd, pipeline.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 16, push.data());
             if (shader == "conv_pointwise_tiled64")
                 vkCmdDispatch(cmd, (ow * oh + 63) / 64, (n + 63) / 64, 1);
-            else if (shader == "conv_pointwise_tiled")
+            else if (shader == "conv_pointwise_smallm")
+                vkCmdDispatch(cmd, (ow * oh * n + 63) / 64, 1, 1);
+            else if (shader == "conv_pointwise_tiled" || shader == "conv_pointwise_vector" ||
+                     shader == "conv_pointwise_smallm")
                 vkCmdDispatch(cmd, (ow * oh + 31) / 32, (n + 63) / 64, 1);
             else
                 vkCmdDispatch(cmd, (((ow * oh + 3) / 4) * ((n + 3) / 4) + 255) / 256, 1, 1);
@@ -189,6 +195,16 @@ int main(int argc, char** argv) {
                                                                  {17, 3, 65, 32, 3, 3, 1, 1, 1, 1, 17, 3, 32}}};
             double error = 0;
             unsigned count = 0;
+            for (auto p : cases) {
+                p[12] = (p[12] & 1u) | 128u;
+                for (auto shader :
+                     {"conv_dense", "conv_gemm", "conv_gemm_tiled", "conv_pointwise", "conv_pointwise_tiled"}) {
+                    if (std::string(shader).find("pointwise") != std::string::npos && (p[4] != 1 || p[5] != 1))
+                        continue;
+                    error = std::max(error, run_case(ctx, p, shader));
+                    ++count;
+                }
+            }
             for (auto p : cases)
                 for (auto shader :
                      {"conv_dense", "conv_gemm", "conv_gemm_tiled", "conv_pointwise", "conv_pointwise_tiled"}) {
@@ -201,6 +217,21 @@ int main(int argc, char** argv) {
                                                                    {1, 1, 8, 16, 1, 1, 1, 1, 0, 0, 1, 1, 32},
                                                                    {41, 3, 68, 36, 1, 1, 1, 1, 0, 0, 41, 3, 17}}}) {
                 error = std::max(error, run_case(ctx, p, "conv_pointwise_tiled64"));
+                ++count;
+                if (p[3] % 4 == 0) {
+                    error = std::max(error, run_case(ctx, p, "conv_pointwise_vector"));
+                    ++count;
+                    p[12] = (p[12] & 1u) | 128u;
+                    error = std::max(error, run_case(ctx, p, "conv_pointwise_vector"));
+                    error = std::max(error, run_case(ctx, p, "conv_pointwise_tiled64"));
+                    count += 2;
+                }
+            }
+            for (auto p : std::array<std::array<uint32_t, 13>, 4>{{{1, 1, 192, 768, 1, 1, 1, 1, 0, 0, 1, 1, 0},
+                                                                   {3, 1, 97, 68, 1, 1, 1, 1, 0, 0, 3, 1, 1},
+                                                                   {4, 1, 64, 64, 1, 1, 1, 1, 0, 0, 4, 1, 33},
+                                                                   {1, 1, 128, 192, 1, 1, 1, 1, 0, 0, 1, 1, 129}}}) {
+                error = std::max(error, run_case(ctx, p, "conv_pointwise_smallm"));
                 ++count;
             }
             std::cout << "{\"device_index\":" << index << ",\"device\":\"" << ctx.properties.deviceName

@@ -1,0 +1,38 @@
+#version 450
+#extension GL_ARB_gpu_shader_fp64 : require
+// Same packed BGR/header contract as DET. Header[3] requests a 180-degree REC flip.
+// Height 80 identifies CLS (left window=min(source width,4*height)); 48 identifies REC.
+layout(local_size_x = 256) in;
+layout(binding = 0, std430) readonly buffer Source { uint words[]; } src;
+layout(binding = 1, std430) writeonly buffer Destination { float values[]; } dst;
+layout(push_constant) uniform Size { uint height; uint width; } out_size;
+double byte_at(uint x, uint y, uint c) {
+    if (src.words[3] != 0u) { x = src.words[0] - 1u - x; y = src.words[1] - 1u - y; }
+    uint offset = y * src.words[2] + x * 3u + c;
+    return double((src.words[8u + offset / 4u] >> ((offset % 4u) * 8u)) & 255u);
+}
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= out_size.height * out_size.width * 3u) return;
+    uint c = id % 3u, x = (id / 3u) % out_size.width, y = id / (3u * out_size.width);
+    bool cls = out_size.height == 80u;
+    uint sample_width = cls ? min(src.words[0], src.words[1] * 4u) : src.words[0];
+    uint actual = cls ? out_size.width : min((48u * src.words[0] + src.words[1] - 1u) / src.words[1], out_size.width);
+    if (x >= actual) {
+        dst.values[id] = float(128.0lf * 2.0lf / 255.0lf - 1.0lf);
+        return;
+    }
+    // Match reference operation order; clamp before rotation, no interpolation of padding.
+    precise double sx = (double(x) + 0.5lf) * double(sample_width) / double(actual) - 0.5lf;
+    precise double sy = (double(y) + 0.5lf) * double(src.words[1]) / double(out_size.height) - 0.5lf;
+    int ix = int(floor(sx)), iy = int(floor(sy));
+    uint x0 = uint(clamp(ix, 0, int(sample_width) - 1)), x1 = uint(clamp(ix + 1, 0, int(sample_width) - 1));
+    uint y0 = uint(clamp(iy, 0, int(src.words[1]) - 1)), y1 = uint(clamp(iy + 1, 0, int(src.words[1]) - 1));
+    precise double fx = sx - double(ix), fy = sy - double(iy);
+    precise double tl = byte_at(x0, y0, c), tr = byte_at(x1, y0, c);
+    precise double bl = byte_at(x0, y1, c), br = byte_at(x1, y1, c);
+    precise double top = tl + (tr - tl) * fx;
+    precise double bottom = bl + (br - bl) * fx;
+    precise double normalized = (top + (bottom - top) * fy) * 2.0lf / 255.0lf - 1.0lf;
+    dst.values[id] = float(normalized);
+}

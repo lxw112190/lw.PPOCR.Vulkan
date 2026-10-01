@@ -388,6 +388,7 @@ Model::Model(const std::filesystem::path& path) {
         if (!gelu_fusion_disabled())
             fold_gelu(nodes, tensors, weights, output);
         fold_transpose_epilogue(nodes, tensors, output);
+        fold_silu_epilogue(nodes, tensors, output);
     }
 }
 Plan::Plan(Context& c, const Model& model, Buffer& constants, uint32_t h, uint32_t w, uint64_t max_bytes)
@@ -587,7 +588,8 @@ void Plan::attach(SharedWorkspace& workspace) {
         uint32_t dispatches = 1;
         for (auto& node : model.nodes)
             dispatches += node.op == "Concat" ? uint32_t(node.inputs.size()) : 1;
-        const bool bgr = c.gpu_det_preprocess && model.task == "det";
+        const bool bgr = (c.gpu_det_preprocess && model.task == "det") ||
+                         (c.gpu_text_preprocess && (model.task == "cls" || model.task == "rec"));
         const uint32_t sets = dispatches * ((ctc_bytes_ ? 2 : 1) + (bgr ? 1 : 0));
         VkDescriptorPoolSize ds{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, sets * 5}; // ConvTranspose has five bindings
         VkDescriptorPoolCreateInfo dp{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
@@ -614,7 +616,7 @@ void Plan::attach(SharedWorkspace& workspace) {
             auto normal = command_;
             check(vkAllocateCommandBuffers(c.device, &ca, &bgr_command_), "allocate BGR DET graph command");
             command_ = bgr_command_;
-            record(model, false, true);
+            record(model, model.task == "rec", true);
             command_ = normal;
         }
         if (ctc_bytes_) {
@@ -718,7 +720,8 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
     auto linear = [](uint64_t count) { return static_cast<uint32_t>((count + 255) / 256); };
     if (bgr)
         // 缩放、归一化直接写入图的 NHWC 输入，不回读中间张量。
-        dispatch("bgr_det_preprocess", {{upload_->handle, 0, upload_->size}, binding(input_)}, {height_, width_},
+        dispatch(model.task == "det" ? "bgr_det_preprocess" : "bgr_text_preprocess",
+                 {{upload_->handle, 0, upload_->size}, binding(input_)}, {height_, width_},
                  linear(uint64_t(height_) * width_ * 3));
     else
         dispatch("nchw2nhwc", {{upload_->handle, 0, input_bytes_}, binding(input_)}, {height_ * width_, 3, 3},
@@ -736,7 +739,8 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                  p = ints(n.attrs, "pads", {0, 0, 0, 0});
             uint32_t flag = (n.inputs.size() == 3 ? 1u : 0u) | (n.attrs.value("fused_relu", false) ? 16u : 0u) |
                             (n.attrs.value("fused_gelu", false) ? 32u : 0u) |
-                            (n.attrs.value("fused_sigmoid", false) ? 64u : 0u);
+                            (n.attrs.value("fused_sigmoid", false) ? 64u : 0u) |
+                            (n.attrs.value("fused_silu", false) ? 128u : 0u);
             if (n.op == "ConvTranspose")
                 dispatch("convt2s2", {xb, wt, bias, yb, yb}, {y[3], y[2], y[1], x[1], x[3], flag}, linear(count));
             else if (n.attrs.value("group", 1u) == 1) {
@@ -746,7 +750,8 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                 // can change CTC repeat/blank choices and thus the mean score.
                 if (!reference && context_.cooperative_matrix && model.task != "cls" &&
                     (!cooperative_det_only_requested() || model.task == "det") && weight.packed_bytes &&
-                    y[2] * y[3] >= 32 && y[1] >= 128 && y[1] < 1024 && x[1] >= 64)
+                    !n.attrs.value("fused_silu", false) && y[2] * y[3] >= 32 && y[1] >= 128 && y[1] < 1024 &&
+                    x[1] >= 64)
                     dispatch("conv_coop_gemm",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[3], y[2], y[1], x[1], k[0], k[1], s[0], s[1], p[0], p[1], x[3], x[2], flag},
@@ -756,14 +761,19 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                     const bool tiled = !tiled_pointwise_disabled() && y[2] * y[3] >= 16 && y[1] >= 64 && x[1] >= 64;
                     const bool tile64 = tiled && tile64_requested() && y[2] * y[3] >= 64 && y[1] % 4 == 0 &&
                                         context_.properties.limits.maxComputeSharedMemorySize >= 16384;
-                    dispatch(tile64  ? "conv_pointwise_tiled64"
-                             : tiled ? "conv_pointwise_tiled"
-                                     : "conv_pointwise",
+                    const bool vector = tiled && !tile64 && y[1] % 4 == 0;
+                    const bool small_m = y[2] * y[3] <= 4 && y[1] >= 64 && x[1] >= 64;
+                    dispatch(tile64    ? "conv_pointwise_tiled64"
+                             : small_m ? "conv_pointwise_smallm"
+                             : vector  ? "conv_pointwise_vector"
+                             : tiled   ? "conv_pointwise_tiled"
+                                       : "conv_pointwise",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[2] * y[3], y[1], x[1], flag},
-                             tile64  ? (y[2] * y[3] + 63) / 64
-                             : tiled ? (y[2] * y[3] + 31) / 32
-                                     : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
+                             small_m  ? (y[2] * y[3] * y[1] + 63) / 64
+                             : tile64 ? (y[2] * y[3] + 63) / 64
+                             : tiled  ? (y[2] * y[3] + 31) / 32
+                                      : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
                              tiled ? (y[1] + 63) / 64 : 1);
                 } else if (!reference && !tiled_gemm_disabled() && weight.packed_bytes && y[2] * y[3] >= 32 &&
                            y[1] >= 32)
@@ -910,18 +920,14 @@ double Plan::run(const float* input, float* output, bool ctc) {
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
 double Plan::run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride,
-                     float* output) {
+                     float* output, bool rotate) {
     if (poisoned_)
         throw std::runtime_error("GPU plan is poisoned; recreate detector after device failure");
     const auto start = std::chrono::steady_clock::now();
     // 动态头支持同一输出尺寸计划复用不同原图；尾部补齐避免 uint 字节提取越界。
-    std::vector<uint32_t> packed(static_cast<size_t>(8 + (span + 3) / 4), 0);
-    packed[0] = width;
-    packed[1] = height;
-    packed[2] = stride;
-    std::memcpy(packed.data() + 8, input, static_cast<size_t>(span));
-    upload_->write(packed.data(), packed.size() * sizeof(uint32_t));
-    submit_readback(bgr_command_, output, false);
+    const std::array<uint32_t, 8> header{width, height, stride, rotate ? 1u : 0u, 0, 0, 0, 0};
+    upload_->write_parts(header.data(), sizeof(header), input, static_cast<size_t>(span), (4 - span % 4) % 4);
+    submit_readback(bgr_command_, output, model_.task == "rec");
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
 void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
@@ -1086,14 +1092,42 @@ double GraphEngine::run_det_bgr(const uint8_t* input, uint64_t bytes, uint32_t w
     std::lock_guard<std::mutex> guard(mutex_);
     if (model_.task != "det" || !context_.gpu_det_preprocess)
         throw std::invalid_argument("GPU BGR preprocessing requires an enabled DET engine");
+    const auto span = prepare_bgr(input, bytes, width, height, stride, oh, ow);
+    if (!output || capacity < elements(plan_->output_shape()))
+        throw std::length_error("output capacity too small");
+    return plan_->run_bgr(input, span, width, height, stride, output);
+}
+uint64_t GraphEngine::prepare_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height,
+                                  uint32_t stride, uint32_t oh, uint32_t ow) {
     validate_bgr(input, bytes, width, height, stride);
     const uint64_t span = uint64_t(height - 1) * stride + uint64_t(width) * 3;
     if (span > UINT32_MAX - 35)
         throw std::length_error("raw BGR upload exceeds shader address range");
     prepare(oh, ow, 32 + ((span + 3) / 4) * 4);
-    if (!output || capacity < elements(plan_->output_shape()))
-        throw std::length_error("output capacity too small");
-    return plan_->run_bgr(input, span, width, height, stride, output);
+    return span;
+}
+double GraphEngine::classify_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, float* out) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (model_.task != "cls" || !context_.gpu_text_preprocess || !out)
+        throw std::invalid_argument("GPU BGR classification requires an enabled CLS engine and output");
+    const auto span = prepare_bgr(input, bytes, width, height, width * 3, 80, 160);
+    return plan_->run_bgr(input, span, width, height, width * 3, out);
+}
+TextResult GraphEngine::recognize_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height,
+                                      uint32_t stride, uint32_t target, bool rotate, double& ms) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (model_.task != "rec" || !context_.gpu_text_preprocess)
+        throw std::invalid_argument("GPU BGR recognition requires an enabled REC engine");
+    validate_bgr(input, bytes, width, height, stride);
+    const auto scaled = (uint64_t(48) * width + height - 1) / height;
+    if (!target)
+        target = uint32_t(std::clamp<uint64_t>((scaled + 7) / 8 * 8, 32, 960));
+    if (target < 32 || target > 960 || target % 8)
+        throw std::invalid_argument("REC width must be 0 (auto) or 32..960, multiple of 8");
+    const auto span = prepare_bgr(input, bytes, width, height, stride, 48, target);
+    std::vector<float> pairs(uint64_t(plan_->output_shape()[3]) * 2);
+    ms = plan_->run_bgr(input, span, width, height, stride, pairs.data(), rotate);
+    return decode_pairs(pairs);
 }
 TextResult GraphEngine::recognize(const float* input, uint32_t width, double& ms) {
     std::lock_guard<std::mutex> guard(mutex_);
@@ -1103,10 +1137,13 @@ TextResult GraphEngine::recognize(const float* input, uint32_t width, double& ms
     const uint32_t rows = plan_->output_shape()[3];
     std::vector<float> pairs(uint64_t(rows) * 2);
     ms = plan_->run(input, pairs.data(), true);
+    return decode_pairs(pairs);
+}
+TextResult GraphEngine::decode_pairs(const std::vector<float>& pairs) {
     TextResult result;
     uint32_t previous = UINT32_MAX, count = 0;
     double sum = 0;
-    for (uint32_t i = 0; i < rows; ++i) {
+    for (size_t i = 0; i < pairs.size() / 2; ++i) {
         float label = pairs[i * 2], score = pairs[i * 2 + 1];
         if (!std::isfinite(label) || label < 0 || label >= model_.dictionary.size() || label != std::floor(label) ||
             !std::isfinite(score) || score < 0 || score > 1)

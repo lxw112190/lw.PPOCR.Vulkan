@@ -17,6 +17,7 @@ p.add_argument("--host-only", action="store_true")
 p.add_argument("--device", type=int, default=0)
 p.add_argument("--repeat", type=int, default=1)
 p.add_argument("--gpu-det-preprocess", action="store_true", help="explicitly opt child process into the DET experiment")
+p.add_argument("--gpu-text-preprocess", action="store_true", help="explicitly opt child process into CLS/REC preprocessing")
 a = p.parse_args()
 package, output = a.package.resolve(), a.output.resolve()
 output.mkdir(parents=True, exist_ok=True)
@@ -39,6 +40,10 @@ if a.gpu_det_preprocess:
     if a.host_only:
         p.error('GPU DET experiment requires a physical GPU smoke test')
     env['LWVK_GPU_DET_PREPROCESS']='1'
+if a.gpu_text_preprocess:
+    if a.host_only:
+        p.error('GPU text experiment requires a physical GPU smoke test')
+    env['LWVK_GPU_TEXT_PREPROCESS']='1'
 completed = subprocess.run(args, cwd=output, env=env, timeout=180, capture_output=True, encoding="utf-8", errors="replace")
 if completed.returncode:
     detail = report.read_text(encoding="utf-8") if report.is_file() else completed.stdout+completed.stderr
