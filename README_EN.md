@@ -314,5 +314,3 @@ If this project helps you, optional donations support open-source maintenance.
 Thank you for using the project, reporting issues and contributing!
 
 <a href="www/sponsor.jpg"><img src="www/sponsor.jpg" alt="WeChat donation QR code" width="240"></a>
-
-[View the full-size QR code](www/sponsor.jpg). The HTTP web page also includes a donation button.

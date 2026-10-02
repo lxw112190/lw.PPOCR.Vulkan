@@ -313,5 +313,3 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 如果项目对你有帮助，欢迎自愿扫码支持开源维护。感谢你的使用、反馈和支持！
 
 <a href="www/sponsor.jpg"><img src="www/sponsor.jpg" alt="微信捐赠二维码" width="240"></a>
-
-[查看二维码原图](www/sponsor.jpg)。HTTP 网页顶部的“捐赠支持”也可打开二维码。
