@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "device": 0,
+  "checks": [
+    {
+      "model": "tiny",
+      "lanes": 2,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "43645447c974650b3e031005454a2935a8ebdd6a445efc2fcdb558a4e0be52d5"
+    },
+    {
+      "model": "tiny",
+      "lanes": 4,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "9ddb6e4aa4fa1cf4173925ec797caeead731deb0ea7fc5e245f7557e6caefa6e"
+    }
+  ],
+  "library_sha256": "74c467cc8a3816b4f65a04b648bc6e1cc6c2a93ff564e60712652e6bbd7e0491",
+  "limitations": "Local functional/synchronization checks, not timing, leak proof or all-driver qualification."
+}

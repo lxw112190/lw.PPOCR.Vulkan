@@ -5,6 +5,8 @@
 C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web 服务与 C# WinForms 示例。
 不依赖 OpenCV DNN、ONNX Runtime 或 CUDA **运行时**。
 
+新增 [REC 1/2/4 路实验报告](docs/REC-LANES-EXPERIMENT.md)：同一批 100 张图、三模型、正反两轮共 12,000 次调用，预测字段完全一致，但 2/4 路在 RTX 4060 上未超过已验证单路，且增加专用 GPU 内存。**不接入默认、不替换部署包**；研究代码仅通过默认 OFF 的 `LWVK_EXPERIMENTAL_REC_LANES` 构建选项启用。
+
 作者：天天代码码天天；QQ：819069052。
 群名称：天天代码码天天
 群号码：264292622

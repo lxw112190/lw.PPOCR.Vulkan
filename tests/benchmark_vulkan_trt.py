@@ -76,7 +76,8 @@ def worker(a):
                 else:
                     rows[i]['samples_ms'].append(elapsed)
                     if error:rows[i]['errors'].append(error)
-                    if signature(items)!=signature(rows[i]['predictions']):unstable.append(dict(repeat=repeat,file=record['file']))
+                    changed=(items!=rows[i]['predictions']) if getattr(a,'exact_results',False) else (signature(items)!=signature(rows[i]['predictions']))
+                    if changed:unstable.append(dict(repeat=repeat,file=record['file']))
                 if (step+1)%10==0:update('measure-'+str(repeat+1),step+1)
             round_memory.append(ram(monitor.process))
         monitor.phase='after';ending=ram(monitor.process);resources=monitor.finish()

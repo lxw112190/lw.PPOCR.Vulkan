@@ -86,6 +86,12 @@ if(BUILD_TESTING)
 endif()
 option(LWVK_SANITIZERS "Enable host ASan/UBSan (not GPU memory validation)" OFF)
 option(LWVK_EXPERIMENTAL_COOP "Build opt-in mixed-FP16 cooperative-matrix experiments (not a release default)" OFF)
+option(LWVK_EXPERIMENTAL_REC_LANES "Build the non-default multi-queue REC research fork" OFF)
+set(LWVK_REC_BATCH_SOURCE src/rec_batch.cpp)
+if(LWVK_EXPERIMENTAL_REC_LANES)
+  add_compile_definitions(LWVK_EXPERIMENTAL_REC_LANES)
+  set(LWVK_REC_BATCH_SOURCE tests/experiments/rec_batch_lanes.cpp)
+endif()
 set(shader_names conv_dense conv_gemm conv_gemm_tiled conv_gemm_vector conv_pointwise conv_pointwise_tiled conv_pointwise_tiled64 conv_pointwise_vector conv_pointwise_wide conv_pointwise_smallm conv_dw conv_dw4 convt2s2 elem gelu reduce_hw resize4 concat_c maxpool4 nchw2nhwc avgpool4 softmax softmax_parallel softmax_argmax attn layernorm)
 if(LWVK_EXPERIMENTAL_COOP)
   add_compile_definitions(LWVK_EXPERIMENTAL_COOP=1)
@@ -193,7 +199,7 @@ endif()
 add_library(lw_ppocr_vulkan SHARED src/api.cpp src/vulkan_context.cpp src/graph.cpp src/graph_optimizer.cpp src/onnx_import.cpp src/ctc_decode.cpp src/rec_preprocess.cpp src/cls_preprocess.cpp src/det_preprocess.cpp src/ocr_pipeline.cpp src/ocr_host.cpp)
 target_sources(lw_ppocr_vulkan PRIVATE src/crop_optimized.c)
 target_sources(lw_ppocr_vulkan PRIVATE src/cls_batch.cpp)
-target_sources(lw_ppocr_vulkan PRIVATE src/rec_batch.cpp)
+target_sources(lw_ppocr_vulkan PRIVATE ${LWVK_REC_BATCH_SOURCE})
 target_sources(lw_ppocr_vulkan PRIVATE src/gpu_crop.cpp)
 if(BUILD_TESTING)
   add_executable(lwvk_gpu_crop_probe tests/gpu_crop_probe.cpp src/gpu_crop.cpp src/vulkan_context.cpp
@@ -294,7 +300,7 @@ if(BUILD_TESTING)
   endif()
   add_test(NAME ocr-batch-host-unit COMMAND lwvk_ocr_batch_host_unit)
   # GPU engineering test, run manually; never installed and not a CPU-only CTest.
-  add_executable(lwvk_rec_batch_probe tests/rec_batch_probe.cpp src/cls_batch.cpp src/rec_batch.cpp
+  add_executable(lwvk_rec_batch_probe tests/rec_batch_probe.cpp src/cls_batch.cpp ${LWVK_REC_BATCH_SOURCE}
     src/graph.cpp src/vulkan_context.cpp src/graph_optimizer.cpp src/onnx_import.cpp
     src/ctc_decode.cpp src/rec_preprocess.cpp src/cls_preprocess.cpp src/det_preprocess.cpp
     src/ocr_host.cpp src/crop_optimized.c)
@@ -308,7 +314,7 @@ if(BUILD_TESTING)
     target_link_options(lwvk_rec_batch_probe PRIVATE -fsanitize=address,undefined)
   endif()
   add_executable(lwvk_cls_batch_probe tests/cls_batch_probe.cpp src/cls_batch.cpp
-    src/rec_batch.cpp
+    ${LWVK_REC_BATCH_SOURCE}
     src/graph.cpp src/vulkan_context.cpp src/graph_optimizer.cpp src/onnx_import.cpp
     src/ctc_decode.cpp src/rec_preprocess.cpp src/cls_preprocess.cpp src/det_preprocess.cpp
     src/ocr_host.cpp src/crop_optimized.c)

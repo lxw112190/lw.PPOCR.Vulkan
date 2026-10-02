@@ -1,0 +1,170 @@
+{
+  "passed": true,
+  "device": 1,
+  "checks": [
+    {
+      "model": "tiny",
+      "lanes": 1,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "c61fc9b18cb6ea906ae226a8b1aba32df3b74553a3964b1df23bfcbd038cb07b"
+    },
+    {
+      "model": "tiny",
+      "lanes": 1,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "b09d17d9aae7aafb579567591899424eb7cdd9b9e0d39e41f50c5c41c0b4da9f"
+    },
+    {
+      "model": "tiny",
+      "lanes": 2,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "fb6c1a914f5e2142fc14e71a814c12b1fc4b388478f8501c412d8dfeeb3fee5f"
+    },
+    {
+      "model": "tiny",
+      "lanes": 2,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "2ac2693fd27a67937674b289c4da3f32cae60563cf31d96cb4c48adf898371cc"
+    },
+    {
+      "model": "tiny",
+      "lanes": 4,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "b2b1ab6ee9c1b045a48572ef83f965e2b3b17fcc271ca46bb6ac6ad33742e702"
+    },
+    {
+      "model": "tiny",
+      "lanes": 4,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "d2780ead7fd5279a931cec126fb483e61703e24ff9c1caa612a792e87d0527ef"
+    },
+    {
+      "model": "small",
+      "lanes": 1,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "d4797c7ea107899e5564adbfb808b65a1669331bf1ed4916f2762ed1dcbcc541"
+    },
+    {
+      "model": "small",
+      "lanes": 1,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "62bfc58d867cd13adda77532dd2ea30bfa38d36bdfb534412292daeb0e332df9"
+    },
+    {
+      "model": "small",
+      "lanes": 2,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "beb0d1b5777df93072393d96a54883620211e9c7fc68cb3acc1628afec4b44e9"
+    },
+    {
+      "model": "small",
+      "lanes": 2,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "54b49713126fffe9a50f4d06c2e689cf40d69294a812b5cf44a94d6c979c5971"
+    },
+    {
+      "model": "small",
+      "lanes": 4,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "84cb2f776c43fd218d4bb2b92caa4fbd45dd010f37a17315df86ad90be66fb75"
+    },
+    {
+      "model": "small",
+      "lanes": 4,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "a7a436045044822f25b2a2feff4806e4df0b30527f9e006642721964d4377a79"
+    },
+    {
+      "model": "medium",
+      "lanes": 1,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "17f8dac94e4df358c8dbba00096255a9eec23a78bfc6d293b21edbecf9314cd5"
+    },
+    {
+      "model": "medium",
+      "lanes": 1,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "199f531e5a1c9f210acbe87d1160aeda39c380efbf39c77d7c411e9e186a025f"
+    },
+    {
+      "model": "medium",
+      "lanes": 2,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "8ad581eaae86996239d660d3f46561531268acc9973f70d2d9a903f530198941"
+    },
+    {
+      "model": "medium",
+      "lanes": 2,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "e726a07658db4439855a6f075d80991c7fb53eda56705c95b7de965e938e116c"
+    },
+    {
+      "model": "medium",
+      "lanes": 4,
+      "kind": "rec-probe",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "3af505c6b2f9157dc7ce0e88d0b02f24686e0c0f583c75579a4621bbb9275ea8"
+    },
+    {
+      "model": "medium",
+      "lanes": 4,
+      "kind": "full-ocr",
+      "passed": true,
+      "layer_loaded": true,
+      "synchronization_validation": true,
+      "log_sha256": "8b09ed612d5cf73c4a8de91423421a1a0c3d33a1fbe80ed6c6014be41067c72d"
+    }
+  ],
+  "library_sha256": "74c467cc8a3816b4f65a04b648bc6e1cc6c2a93ff564e60712652e6bbd7e0491",
+  "limitations": "Local functional/synchronization checks, not timing, leak proof or all-driver qualification."
+}

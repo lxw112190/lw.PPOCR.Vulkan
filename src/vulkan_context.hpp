@@ -57,6 +57,11 @@ class Context {
     VkPhysicalDevice physical{};
     VkDevice device{};
     VkQueue queue{};
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+    // Experimental REC lanes share a device/weights, not a complete OCR engine.
+    // Host scheduling remains serialized; only distinct queues execute concurrently.
+    std::vector<VkQueue> rec_queues;
+#endif
     uint32_t queue_family{};
     VkPhysicalDeviceProperties properties{};
     VkPhysicalDeviceMemoryProperties memory_properties{};

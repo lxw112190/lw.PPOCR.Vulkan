@@ -155,9 +155,23 @@ class GraphEngine {
         std::unique_ptr<Plan> plan;
     };
     std::vector<std::unique_ptr<BatchSlot>> cls_batch_;
-    // REC runs serially inside one submission; one arena, independent upload/CTC
-    // IO, and at most 32 slot/width plans. Commands must die before buffers.
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+    // One arena per lane, serial reuse inside each lane. Weights and crop source
+    // remain shared/read-only. All lanes count against ONE workspace budget.
+    // Commands must die before arenas/semaphores; do not reorder these members.
+    struct RecLane {
+        RecLane(Context&, bool);
+        ~RecLane();
+        Context& context;
+        std::unique_ptr<Buffer> arena;
+        VkSemaphore ready{};
+    };
+    std::vector<std::unique_ptr<RecLane>> rec_batch_lanes_;
+    uint32_t rec_batch_effective_lanes_{};
+#else
+    // Release path: serial REC submission with one shared arena.
     std::unique_ptr<Buffer> rec_batch_arena_;
+#endif
     std::vector<SharedWorkspace> rec_batch_io_;
     struct RecBatchPlan {
         uint32_t slot, width;

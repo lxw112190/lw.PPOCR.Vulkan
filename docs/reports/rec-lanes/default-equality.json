@@ -1,0 +1,6115 @@
+{
+  "passed": true,
+  "device": 1,
+  "before_sha256": "4e95bc3c32aa449480761f615097912a8a223429f7115a42fa3b2867474b2c06",
+  "after_sha256": "a69106876a7614b392f1e44ce0209b47bc0cb3965b0b0be633305dcfb76538a9",
+  "comparisons": [
+    {
+      "model": "tiny",
+      "exact_items_equal": true,
+      "passes": [
+        {
+          "pass_index": 0,
+          "mean_wall_ms": [
+            23.525655999983428,
+            22.74953300031484
+          ],
+          "reduction_percent": 3.2990493428499246,
+          "samples": [
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 90.7392999943113,
+                "total_ms": 90.041
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 32.12899999925867,
+                "total_ms": 31.5328
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 51.06009999872185,
+                "total_ms": 50.5365
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 30.811899996479042,
+                "total_ms": 30.4075
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 28.217099999892525,
+                "total_ms": 27.6347
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 24.013400005060248,
+                "total_ms": 23.5514
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 17.4853000062285,
+                "total_ms": 17.0065
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 20.799799996893853,
+                "total_ms": 20.3047
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 18.935200001578778,
+                "total_ms": 18.5042
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 21.07859999523498,
+                "total_ms": 20.5341
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 33.164899999974295,
+                "total_ms": 32.5222
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 19.514500003424473,
+                "total_ms": 19.0979
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 29.296799999428913,
+                "total_ms": 28.6361
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 16.294400003971532,
+                "total_ms": 15.9255
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 26.17640000244137,
+                "total_ms": 25.5413
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 56.99539999477565,
+                "total_ms": 56.4283
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 26.4861000032397,
+                "total_ms": 25.851
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 24.01010000903625,
+                "total_ms": 23.4084
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 24.541500009945594,
+                "total_ms": 24.0917
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 24.84669999103062,
+                "total_ms": 24.3194
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 20.20930001162924,
+                "total_ms": 19.5999
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 29.68910000345204,
+                "total_ms": 29.0986
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 16.702699998859316,
+                "total_ms": 16.3892
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 22.334299996146,
+                "total_ms": 21.7169
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 25.27909999480471,
+                "total_ms": 24.6734
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 27.730699992389418,
+                "total_ms": 27.0551
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 21.775500004878268,
+                "total_ms": 21.225
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 19.647399996756576,
+                "total_ms": 19.1718
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 14.46859999850858,
+                "total_ms": 14.101
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 16.650099991238676,
+                "total_ms": 16.2513
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 32.83470000314992,
+                "total_ms": 32.1723
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 26.537400000961497,
+                "total_ms": 25.873
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 24.236500001279637,
+                "total_ms": 23.4841
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 19.168700004229322,
+                "total_ms": 18.7736
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 20.8031999936793,
+                "total_ms": 20.2329
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 19.590800002333708,
+                "total_ms": 19.0445
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 23.8002999976743,
+                "total_ms": 23.2508
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 24.231200004578568,
+                "total_ms": 23.7105
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 22.043199991458096,
+                "total_ms": 21.4698
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 16.961400004220195,
+                "total_ms": 16.3738
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 22.529599998961203,
+                "total_ms": 22.0539
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 26.46160000585951,
+                "total_ms": 25.8544
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 17.623299994738773,
+                "total_ms": 17.2158
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 15.901000006124377,
+                "total_ms": 15.6328
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 20.19769999606069,
+                "total_ms": 19.6617
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 17.84369999950286,
+                "total_ms": 17.3211
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 15.936999989207834,
+                "total_ms": 15.5472
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 22.468299997854047,
+                "total_ms": 21.9124
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 18.459300001268275,
+                "total_ms": 18.038
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 25.50150000024587,
+                "total_ms": 24.9402
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 22.82609998655971,
+                "total_ms": 22.2711
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 25.057100006961264,
+                "total_ms": 24.3197
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 22.367500001564622,
+                "total_ms": 21.7972
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 25.25710000190884,
+                "total_ms": 24.6734
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 25.05110000493005,
+                "total_ms": 24.4387
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 20.27659998566378,
+                "total_ms": 19.7438
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 22.88580000458751,
+                "total_ms": 22.2596
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 12.971200005267747,
+                "total_ms": 12.6332
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 25.299100001575425,
+                "total_ms": 24.6868
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 20.907600002828985,
+                "total_ms": 20.2223
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 23.82930000021588,
+                "total_ms": 23.2117
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 19.395399998757057,
+                "total_ms": 18.9265
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 25.609799995436333,
+                "total_ms": 24.993
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 22.927900005015545,
+                "total_ms": 22.3678
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 16.15519999177195,
+                "total_ms": 15.7156
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 23.05670001078397,
+                "total_ms": 22.6234
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 25.4309000010835,
+                "total_ms": 24.8366
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 22.04939999501221,
+                "total_ms": 21.5685
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 17.288200004259124,
+                "total_ms": 16.7941
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 14.723799991770647,
+                "total_ms": 14.4508
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 23.986399988643825,
+                "total_ms": 23.4462
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 19.207499994081445,
+                "total_ms": 18.8559
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 21.51270001195371,
+                "total_ms": 20.8719
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 24.152400001185015,
+                "total_ms": 23.6058
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 24.055500005488284,
+                "total_ms": 23.4524
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 22.087800010922365,
+                "total_ms": 21.4779
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 23.23659999819938,
+                "total_ms": 22.7027
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 21.220399998128414,
+                "total_ms": 20.7567
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 23.32360000582412,
+                "total_ms": 22.743
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 21.472399996127933,
+                "total_ms": 20.8857
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 26.34280000347644,
+                "total_ms": 25.7012
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 19.042400002945215,
+                "total_ms": 18.6638
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 24.84710000862833,
+                "total_ms": 24.3176
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 15.304899992770515,
+                "total_ms": 14.9372
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 25.878599990392104,
+                "total_ms": 25.2578
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 22.166499999002554,
+                "total_ms": 21.669
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 24.41759999783244,
+                "total_ms": 23.7276
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 18.498100005672313,
+                "total_ms": 18.024
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 14.412799995625392,
+                "total_ms": 14.0004
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 29.365800000960007,
+                "total_ms": 28.8239
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 22.70120001048781,
+                "total_ms": 22.2696
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 19.65270000800956,
+                "total_ms": 19.3289
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 28.11709999514278,
+                "total_ms": 27.4861
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 16.395300001022406,
+                "total_ms": 16.0384
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 26.76229999633506,
+                "total_ms": 26.1432
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 14.875499997287989,
+                "total_ms": 14.4903
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 17.429499988793395,
+                "total_ms": 16.9334
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 15.517100007855333,
+                "total_ms": 15.129
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 25.330599994049408,
+                "total_ms": 24.7369
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 23.672900002566166,
+                "total_ms": 23.1792
+              }
+            ],
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 44.87309999240097,
+                "total_ms": 44.2484
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 39.894299989100546,
+                "total_ms": 39.2917
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 25.619599997298792,
+                "total_ms": 25.0376
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 29.6678000013344,
+                "total_ms": 29.1626
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 29.59750000445638,
+                "total_ms": 29.0156
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 23.3862000022782,
+                "total_ms": 22.8678
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 17.597300000488758,
+                "total_ms": 17.2174
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 20.382700007758103,
+                "total_ms": 19.7913
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 18.60950000991579,
+                "total_ms": 18.2209
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 22.371999992174096,
+                "total_ms": 21.8047
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 34.58160000445787,
+                "total_ms": 33.9661
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 19.474800006719306,
+                "total_ms": 19.1295
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 29.14170001167804,
+                "total_ms": 28.4689
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 14.969900003052317,
+                "total_ms": 14.4952
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 26.25860000262037,
+                "total_ms": 25.607
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 33.7714000052074,
+                "total_ms": 33.1455
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 27.602700007264502,
+                "total_ms": 27.0201
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 23.450500011676922,
+                "total_ms": 22.7845
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 25.14109999174252,
+                "total_ms": 24.5479
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 23.935099990922026,
+                "total_ms": 23.3753
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 20.36670000234153,
+                "total_ms": 19.8443
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 29.12389999255538,
+                "total_ms": 28.5175
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 15.491400001337752,
+                "total_ms": 15.0926
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 23.178399991593324,
+                "total_ms": 22.5698
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 25.690000009490177,
+                "total_ms": 25.0757
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 35.23510000377428,
+                "total_ms": 34.5667
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 21.358799989684485,
+                "total_ms": 20.8544
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 20.19139999174513,
+                "total_ms": 19.6278
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 15.148499995120801,
+                "total_ms": 14.7253
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 16.494100011186674,
+                "total_ms": 16.0259
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 32.862000007298775,
+                "total_ms": 32.2199
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 26.471400007721968,
+                "total_ms": 25.8131
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 23.923599990666844,
+                "total_ms": 23.3488
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 19.291200005682185,
+                "total_ms": 18.9103
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 19.84329998958856,
+                "total_ms": 19.4543
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 19.502800001646392,
+                "total_ms": 18.9667
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 23.490900013712235,
+                "total_ms": 22.9328
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 24.224900000263005,
+                "total_ms": 23.5539
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 22.58980000624433,
+                "total_ms": 22.028
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 15.9708999999566,
+                "total_ms": 15.5238
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 23.30640000582207,
+                "total_ms": 22.8203
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 26.39899999485351,
+                "total_ms": 25.8394
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 17.410000000381842,
+                "total_ms": 16.9826
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 16.31469999847468,
+                "total_ms": 15.9332
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 20.20970000012312,
+                "total_ms": 19.7406
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 18.929300000309013,
+                "total_ms": 18.4483
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 15.801600005943328,
+                "total_ms": 15.3929
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 22.509500005980954,
+                "total_ms": 21.9524
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 18.815799994627014,
+                "total_ms": 18.4582
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 25.573599996278062,
+                "total_ms": 24.8741
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 22.3002999991877,
+                "total_ms": 21.7925
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 24.759699997957796,
+                "total_ms": 24.1306
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 21.01349999429658,
+                "total_ms": 20.4901
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 24.82790000794921,
+                "total_ms": 24.2058
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 24.540099999285303,
+                "total_ms": 23.9224
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 21.05939999455586,
+                "total_ms": 20.5874
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 22.736600003554486,
+                "total_ms": 22.2975
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 12.802600002032705,
+                "total_ms": 12.5247
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 24.340799995115958,
+                "total_ms": 23.8052
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 20.791699993424118,
+                "total_ms": 20.272
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 24.239000005763955,
+                "total_ms": 23.6363
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 18.79469999403227,
+                "total_ms": 18.4259
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 25.460899996687658,
+                "total_ms": 24.8959
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 23.07460000156425,
+                "total_ms": 22.4205
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 15.876800011028536,
+                "total_ms": 15.4421
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 23.969100002432242,
+                "total_ms": 23.3762
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 25.611999997636303,
+                "total_ms": 24.973
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 22.9239000036614,
+                "total_ms": 22.3549
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 18.74909999605734,
+                "total_ms": 18.2628
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 15.156800000113435,
+                "total_ms": 14.7725
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 24.08570000261534,
+                "total_ms": 23.5521
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 19.360499994945712,
+                "total_ms": 18.8161
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 21.426199993584305,
+                "total_ms": 20.8641
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 24.597100011305884,
+                "total_ms": 23.9853
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 24.053100001765415,
+                "total_ms": 23.4578
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 22.826200001873076,
+                "total_ms": 22.2193
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 23.048999995808117,
+                "total_ms": 22.7191
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 21.84560000023339,
+                "total_ms": 21.4152
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 23.740100004943088,
+                "total_ms": 23.1441
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 20.143499990808778,
+                "total_ms": 19.6207
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 26.473599995370023,
+                "total_ms": 25.8635
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 19.797599990852177,
+                "total_ms": 19.4242
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 25.11110001069028,
+                "total_ms": 24.5813
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 14.563200005795807,
+                "total_ms": 14.1462
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 25.558799999998882,
+                "total_ms": 24.9304
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 21.348499998566695,
+                "total_ms": 20.8626
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 25.308700001914985,
+                "total_ms": 24.5509
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 18.88019999023527,
+                "total_ms": 18.4118
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 14.278100003139116,
+                "total_ms": 13.9952
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 30.510700002196245,
+                "total_ms": 29.8772
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 22.91020000120625,
+                "total_ms": 22.4913
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 18.92279999447055,
+                "total_ms": 18.4655
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 26.749799988465384,
+                "total_ms": 26.1287
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 16.318299996783026,
+                "total_ms": 15.9342
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 27.865700001711957,
+                "total_ms": 27.2046
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 15.559999999823049,
+                "total_ms": 15.176
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 17.563900008099154,
+                "total_ms": 17.0557
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 15.337600008933805,
+                "total_ms": 14.8678
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 25.20859999640379,
+                "total_ms": 24.6135
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 22.483299995656125,
+                "total_ms": 21.9387
+              }
+            ]
+          ]
+        },
+        {
+          "pass_index": 1,
+          "mean_wall_ms": [
+            25.106904999847757,
+            25.004429000255186
+          ],
+          "reduction_percent": 0.40815863043729417,
+          "samples": [
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 19.540599998435937,
+                "total_ms": 18.9868
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 20.492399999056943,
+                "total_ms": 19.9568
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 12.743900006171316,
+                "total_ms": 12.3426
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 16.4504999993369,
+                "total_ms": 15.8932
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 12.735399999655783,
+                "total_ms": 12.3583
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 22.46940000622999,
+                "total_ms": 21.9277
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 16.121400010888465,
+                "total_ms": 15.7519
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 26.90299999085255,
+                "total_ms": 26.2941
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 19.629400005214848,
+                "total_ms": 19.2497
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 22.920300005353056,
+                "total_ms": 22.362
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 28.65639999799896,
+                "total_ms": 28.1571
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 15.556300000753254,
+                "total_ms": 15.2014
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 18.91790000081528,
+                "total_ms": 18.4543
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 25.57899999374058,
+                "total_ms": 24.984
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 21.233199993730523,
+                "total_ms": 20.8257
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 26.51260000129696,
+                "total_ms": 25.9526
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 15.754000007291324,
+                "total_ms": 15.3245
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 21.6087000007974,
+                "total_ms": 21.0617
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 18.683500005863607,
+                "total_ms": 18.1551
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 33.17369999422226,
+                "total_ms": 32.5809
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 24.814299991703592,
+                "total_ms": 24.2782
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 28.45280000474304,
+                "total_ms": 27.904
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 27.64279999246355,
+                "total_ms": 26.8769
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 28.318800003034994,
+                "total_ms": 27.7408
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 28.52599999459926,
+                "total_ms": 27.9412
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 32.16190000239294,
+                "total_ms": 31.5815
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 30.014699994353577,
+                "total_ms": 29.3709
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 26.441299996804446,
+                "total_ms": 25.8521
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 22.98510000400711,
+                "total_ms": 22.424
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 27.396799996495247,
+                "total_ms": 26.8382
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 17.14860000356566,
+                "total_ms": 16.7746
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 22.077000001445413,
+                "total_ms": 21.6147
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 28.06579999742098,
+                "total_ms": 27.5028
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 29.878600005758926,
+                "total_ms": 29.2649
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 29.736199998296797,
+                "total_ms": 29.1359
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 20.13730000180658,
+                "total_ms": 19.682
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 29.071600001771003,
+                "total_ms": 28.4303
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 34.15540000423789,
+                "total_ms": 33.3623
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 26.935300003970042,
+                "total_ms": 26.4094
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 30.20519998972304,
+                "total_ms": 29.6194
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 23.294800004805438,
+                "total_ms": 22.7205
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 31.73649999371264,
+                "total_ms": 31.0644
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 15.00109999324195,
+                "total_ms": 14.6404
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 28.584600004251115,
+                "total_ms": 27.9791
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 26.379199989605695,
+                "total_ms": 25.8536
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 30.286599998362362,
+                "total_ms": 29.5641
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 29.052099998807535,
+                "total_ms": 28.3024
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 26.54639999673236,
+                "total_ms": 25.9606
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 30.077300005359575,
+                "total_ms": 29.4648
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 27.924399997573346,
+                "total_ms": 27.2861
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 31.369599993922748,
+                "total_ms": 30.7074
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 22.197999991476536,
+                "total_ms": 21.7205
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 28.04219999234192,
+                "total_ms": 27.4574
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 17.4059999990277,
+                "total_ms": 16.9862
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 22.976499996730126,
+                "total_ms": 22.4458
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 23.990200003026985,
+                "total_ms": 23.388
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 17.956299998331815,
+                "total_ms": 17.528
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 22.159799991641194,
+                "total_ms": 21.722
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 34.19370000483468,
+                "total_ms": 33.4994
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 22.933299987926148,
+                "total_ms": 22.5414
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 19.545300005120225,
+                "total_ms": 18.9955
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 27.960799998254515,
+                "total_ms": 27.4367
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 29.34860000095796,
+                "total_ms": 28.7635
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 26.590400011627935,
+                "total_ms": 25.968
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 23.610699994605966,
+                "total_ms": 23.0424
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 25.32410000276286,
+                "total_ms": 24.7315
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 23.869600001489744,
+                "total_ms": 23.3302
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 29.355199993005954,
+                "total_ms": 28.7329
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 32.4663000064902,
+                "total_ms": 31.8261
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 34.24910000467207,
+                "total_ms": 33.5202
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 20.498800004133955,
+                "total_ms": 20.0258
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 17.36230000096839,
+                "total_ms": 16.9425
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 25.073500000871718,
+                "total_ms": 24.5183
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 26.42579999519512,
+                "total_ms": 25.9139
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 27.28249999927357,
+                "total_ms": 26.7033
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 32.43589999328833,
+                "total_ms": 31.6755
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 29.69199999643024,
+                "total_ms": 29.063
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 14.423200002056547,
+                "total_ms": 14.029
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 31.591200007824227,
+                "total_ms": 30.981
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 22.518800004036166,
+                "total_ms": 22.0258
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 27.37870000419207,
+                "total_ms": 26.8086
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 32.138800001121126,
+                "total_ms": 31.5369
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 28.030500005115755,
+                "total_ms": 27.4183
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 29.42069999699015,
+                "total_ms": 28.8249
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 30.41440001106821,
+                "total_ms": 29.794
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 32.147199992323294,
+                "total_ms": 31.5121
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 17.08199999120552,
+                "total_ms": 16.6323
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 34.58979999413714,
+                "total_ms": 33.909
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 21.230399986961856,
+                "total_ms": 20.7439
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 33.18310000759084,
+                "total_ms": 32.5414
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 21.654099997249432,
+                "total_ms": 21.074
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 21.110200003022328,
+                "total_ms": 20.6626
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 22.09640000364743,
+                "total_ms": 21.6021
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 18.304900004295632,
+                "total_ms": 17.8947
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 21.473200002219528,
+                "total_ms": 20.9943
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 32.95280000020284,
+                "total_ms": 32.3554
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 22.286000006715767,
+                "total_ms": 21.7793
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 19.187199999578297,
+                "total_ms": 18.7637
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 25.96290000656154,
+                "total_ms": 25.3827
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 28.46739999949932,
+                "total_ms": 27.6015
+              }
+            ],
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 19.278500010841526,
+                "total_ms": 18.7032
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 20.28989999962505,
+                "total_ms": 19.7246
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 12.82329999958165,
+                "total_ms": 12.4866
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 16.94459999271203,
+                "total_ms": 16.4611
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 12.992700008908287,
+                "total_ms": 12.6647
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 22.642999989329837,
+                "total_ms": 22.0083
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 16.02850000199396,
+                "total_ms": 15.6542
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 27.517800001078285,
+                "total_ms": 26.9159
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 19.893300006515346,
+                "total_ms": 19.4508
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 22.61900001030881,
+                "total_ms": 22.0935
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 28.346499995677732,
+                "total_ms": 27.8341
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 15.408999999635853,
+                "total_ms": 15.022
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 19.12369999627117,
+                "total_ms": 18.6564
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 26.131699996767566,
+                "total_ms": 25.5706
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 21.792900006403215,
+                "total_ms": 21.4175
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 25.529000005917624,
+                "total_ms": 25.0897
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 15.491199999814853,
+                "total_ms": 15.0503
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 21.76540000073146,
+                "total_ms": 21.2487
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 19.239000001107343,
+                "total_ms": 18.7397
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 31.493499991483986,
+                "total_ms": 30.6787
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 24.562099992181174,
+                "total_ms": 23.936
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 28.076699993107468,
+                "total_ms": 27.4405
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 26.033699992694892,
+                "total_ms": 25.5258
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 28.994299995247275,
+                "total_ms": 28.4559
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 27.906800009077415,
+                "total_ms": 27.2633
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 32.91360000730492,
+                "total_ms": 32.2091
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 29.964400004246272,
+                "total_ms": 29.3678
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 25.360300001921132,
+                "total_ms": 24.7742
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 22.29310000257101,
+                "total_ms": 21.7583
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 27.440399993793108,
+                "total_ms": 26.8081
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 17.660400000750087,
+                "total_ms": 17.2673
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 21.465199999511242,
+                "total_ms": 21.0164
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 28.033299997332506,
+                "total_ms": 27.3455
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 29.044100010651164,
+                "total_ms": 28.3968
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 31.822200005990453,
+                "total_ms": 31.2584
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 20.160400003078394,
+                "total_ms": 19.6905
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 28.63699999579694,
+                "total_ms": 28.0005
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 31.16940001200419,
+                "total_ms": 30.4988
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 22.67430000938475,
+                "total_ms": 22.2389
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 30.104399993433617,
+                "total_ms": 29.4624
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 24.0302000020165,
+                "total_ms": 23.4044
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 31.61069999623578,
+                "total_ms": 31.0048
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 15.592799987643957,
+                "total_ms": 15.2692
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 28.87449999980163,
+                "total_ms": 28.2921
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 26.15769999101758,
+                "total_ms": 25.6425
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 30.071900007897057,
+                "total_ms": 29.3991
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 31.144799999310635,
+                "total_ms": 30.556
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 27.23089999926742,
+                "total_ms": 26.6645
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 30.43299999262672,
+                "total_ms": 29.8678
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 26.54659999825526,
+                "total_ms": 25.9415
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 31.354400009149686,
+                "total_ms": 30.7493
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 22.575499999220483,
+                "total_ms": 22.0924
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 27.264199990895577,
+                "total_ms": 26.7402
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 18.205499989562668,
+                "total_ms": 17.7923
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 22.942299998248927,
+                "total_ms": 22.3549
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 24.14850000059232,
+                "total_ms": 23.6309
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 17.524800001410767,
+                "total_ms": 17.0887
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 22.371799990651198,
+                "total_ms": 21.9582
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 34.24450001330115,
+                "total_ms": 33.6408
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 23.851899997680448,
+                "total_ms": 23.4379
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 19.3823000008706,
+                "total_ms": 18.9062
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 28.94959998957347,
+                "total_ms": 28.3591
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 29.318000000785105,
+                "total_ms": 28.7479
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 26.857399992877617,
+                "total_ms": 26.1524
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 23.51539999654051,
+                "total_ms": 22.9969
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 26.54679999977816,
+                "total_ms": 25.7556
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 24.75469998898916,
+                "total_ms": 24.2642
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 29.27800000179559,
+                "total_ms": 28.78
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 32.664300000760704,
+                "total_ms": 31.9993
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 34.045000007608905,
+                "total_ms": 33.3928
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 20.694100006949157,
+                "total_ms": 20.2741
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 16.36270000017248,
+                "total_ms": 15.9564
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 25.73790001042653,
+                "total_ms": 25.1879
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 26.49780000501778,
+                "total_ms": 25.8875
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 28.423099996871315,
+                "total_ms": 27.9076
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 31.618599998182617,
+                "total_ms": 30.9964
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 28.07359999860637,
+                "total_ms": 27.4088
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 14.064000002690591,
+                "total_ms": 13.6746
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 32.1371000027284,
+                "total_ms": 31.3106
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 22.09499999298714,
+                "total_ms": 21.4956
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 27.321999994455837,
+                "total_ms": 26.7684
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 32.51540000201203,
+                "total_ms": 31.9155
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 27.909800002817065,
+                "total_ms": 27.2649
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 30.114099994534627,
+                "total_ms": 29.484
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 31.409700008225627,
+                "total_ms": 30.8261
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 32.6370999973733,
+                "total_ms": 32.011
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 16.6116000036709,
+                "total_ms": 16.2011
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 33.493800001451746,
+                "total_ms": 32.8214
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 21.163600002182648,
+                "total_ms": 20.7303
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 33.48339999502059,
+                "total_ms": 32.8145
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 22.32489999732934,
+                "total_ms": 21.7169
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 21.204999997280538,
+                "total_ms": 20.7156
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 23.234799999045208,
+                "total_ms": 22.7584
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 18.58370000263676,
+                "total_ms": 18.1234
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 21.16519999981392,
+                "total_ms": 20.7678
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 25.087700007134117,
+                "total_ms": 24.3349
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 23.09300001070369,
+                "total_ms": 22.6835
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 19.21700000821147,
+                "total_ms": 18.7468
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 26.30880000651814,
+                "total_ms": 25.7605
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 26.701800001319498,
+                "total_ms": 25.9752
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "model": "small",
+      "exact_items_equal": true,
+      "passes": [
+        {
+          "pass_index": 0,
+          "mean_wall_ms": [
+            46.69622400033404,
+            44.733972000249196
+          ],
+          "reduction_percent": 4.202164183705326,
+          "samples": [
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 159.26800000306685,
+                "total_ms": 158.3939
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 78.40289999148808,
+                "total_ms": 77.8379
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 71.30840000172611,
+                "total_ms": 70.7441
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 83.85690000432078,
+                "total_ms": 83.3797
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 54.082299990113825,
+                "total_ms": 53.4124
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 45.574999996460974,
+                "total_ms": 45.1079
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 35.376100000576116,
+                "total_ms": 34.9326
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 37.24939998937771,
+                "total_ms": 36.735
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 48.90670000168029,
+                "total_ms": 48.4401
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 37.38740000699181,
+                "total_ms": 36.8291
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 65.90960000175983,
+                "total_ms": 65.1964
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 33.55110000120476,
+                "total_ms": 33.1135
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 61.707200002274476,
+                "total_ms": 60.9745
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 27.416999990236945,
+                "total_ms": 26.9935
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 50.26439999346621,
+                "total_ms": 49.5907
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 147.32940000249073,
+                "total_ms": 146.7473
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 54.427999988547526,
+                "total_ms": 53.7783
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 51.44039999868255,
+                "total_ms": 50.8139
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 54.86400000518188,
+                "total_ms": 54.1737
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 48.15770000277553,
+                "total_ms": 47.6442
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 37.39100000530016,
+                "total_ms": 36.7355
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 62.068100000033155,
+                "total_ms": 61.385
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 29.28980000433512,
+                "total_ms": 28.8929
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 45.503900008043274,
+                "total_ms": 44.9311
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 49.655900002107956,
+                "total_ms": 48.9542
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 53.76189999515191,
+                "total_ms": 53.1603
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 39.25570000137668,
+                "total_ms": 38.6414
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 41.75609999219887,
+                "total_ms": 41.1712
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 29.516599999624304,
+                "total_ms": 28.9312
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 31.28570000990294,
+                "total_ms": 30.779
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 63.600999987102114,
+                "total_ms": 62.8942
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 55.223899995326065,
+                "total_ms": 54.2193
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 51.045000000158325,
+                "total_ms": 50.3957
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 42.23009999259375,
+                "total_ms": 41.722
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 42.88090000045486,
+                "total_ms": 42.2562
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 38.16209999786224,
+                "total_ms": 37.5626
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 45.133899999200366,
+                "total_ms": 44.3827
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 52.5888000120176,
+                "total_ms": 51.9086
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 41.79360000125598,
+                "total_ms": 41.154
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 34.35719999833964,
+                "total_ms": 33.8268
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 44.9125000013737,
+                "total_ms": 44.4471
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 54.80569999781437,
+                "total_ms": 54.1044
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 34.142999997129664,
+                "total_ms": 33.7003
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 34.840600012103096,
+                "total_ms": 34.4232
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 36.46260000823531,
+                "total_ms": 35.8736
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 36.717199996928684,
+                "total_ms": 36.1128
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 30.63290000136476,
+                "total_ms": 30.2036
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 40.33499999786727,
+                "total_ms": 39.7421
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 33.7374000082491,
+                "total_ms": 33.2738
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 50.2210999984527,
+                "total_ms": 49.57
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 42.92659999919124,
+                "total_ms": 42.2911
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 44.41209998913109,
+                "total_ms": 43.7663
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 42.933800010359846,
+                "total_ms": 42.272
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 47.88790000020526,
+                "total_ms": 47.2758
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 48.896699998294935,
+                "total_ms": 48.221
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 41.232199990190566,
+                "total_ms": 40.559
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 44.485000005806796,
+                "total_ms": 43.7935
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 22.47289998922497,
+                "total_ms": 22.1807
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 48.37910000060219,
+                "total_ms": 47.7559
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 39.19809999933932,
+                "total_ms": 38.6274
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 44.121200000518,
+                "total_ms": 43.5132
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 35.00560000247788,
+                "total_ms": 34.4762
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 49.20789999596309,
+                "total_ms": 48.5285
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 44.0567000041483,
+                "total_ms": 43.1496
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 33.60580001026392,
+                "total_ms": 33.1513
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 46.93089998909272,
+                "total_ms": 46.2696
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 46.634799989988096,
+                "total_ms": 45.9763
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 44.06669999298174,
+                "total_ms": 43.44
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 37.07759999088012,
+                "total_ms": 36.6148
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 29.73530000599567,
+                "total_ms": 29.2991
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 41.968500008806586,
+                "total_ms": 41.3478
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 34.27370000281371,
+                "total_ms": 33.7295
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 40.128699998604134,
+                "total_ms": 39.4223
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 46.34270000678953,
+                "total_ms": 45.7285
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 50.55189999984577,
+                "total_ms": 49.8236
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 44.823700009146705,
+                "total_ms": 44.0898
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 51.407999999355525,
+                "total_ms": 50.8088
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 41.49499999766704,
+                "total_ms": 40.9913
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 44.2825000063749,
+                "total_ms": 43.6523
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 41.193199998815544,
+                "total_ms": 40.6576
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 50.76749999716412,
+                "total_ms": 50.0049
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 36.644099993282,
+                "total_ms": 35.9557
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 50.959800006239675,
+                "total_ms": 50.343
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 26.756600011140108,
+                "total_ms": 26.3371
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 52.86970001179725,
+                "total_ms": 51.96
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 47.606799998902716,
+                "total_ms": 47.1032
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 47.57190000964329,
+                "total_ms": 46.8986
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 37.22389999893494,
+                "total_ms": 36.7198
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 25.861699992674403,
+                "total_ms": 25.4345
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 61.341200009337626,
+                "total_ms": 60.7137
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 48.087500006658956,
+                "total_ms": 47.5072
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 40.085000000544824,
+                "total_ms": 39.6351
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 58.08390000311192,
+                "total_ms": 57.3016
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 35.37060000235215,
+                "total_ms": 34.9333
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 53.32510000152979,
+                "total_ms": 52.5855
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 30.360000004293397,
+                "total_ms": 29.8933
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 39.224600011948496,
+                "total_ms": 38.6169
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 30.31949998694472,
+                "total_ms": 29.8667
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 52.25959999370389,
+                "total_ms": 51.5797
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 45.37750000599772,
+                "total_ms": 44.6838
+              }
+            ],
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 78.23980000102893,
+                "total_ms": 77.5863
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 54.7245999914594,
+                "total_ms": 54.0955
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 47.14500000409316,
+                "total_ms": 46.6274
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 59.82640000001993,
+                "total_ms": 59.3519
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 53.81000001216307,
+                "total_ms": 53.2826
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 43.535499993595295,
+                "total_ms": 43.037
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 35.01410000899341,
+                "total_ms": 34.5938
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 37.09089999028947,
+                "total_ms": 36.5604
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 35.94490000978112,
+                "total_ms": 35.4326
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 39.42559999995865,
+                "total_ms": 38.864
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 68.5766000096919,
+                "total_ms": 67.806
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 33.83390000090003,
+                "total_ms": 33.3185
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 58.59720001171809,
+                "total_ms": 57.8458
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 27.767099993070588,
+                "total_ms": 27.3164
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 50.224999999045394,
+                "total_ms": 49.6092
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 113.46229999617208,
+                "total_ms": 112.8925
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 55.964499988476746,
+                "total_ms": 55.3352
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 45.99509999388829,
+                "total_ms": 45.3791
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 54.66829999932088,
+                "total_ms": 53.9147
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 48.58770000282675,
+                "total_ms": 47.8923
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 38.28409999550786,
+                "total_ms": 37.7049
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 61.59940001089126,
+                "total_ms": 60.923
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 30.523000008543022,
+                "total_ms": 30.0635
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 45.46340000524651,
+                "total_ms": 44.8293
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 75.83169999998063,
+                "total_ms": 75.1942
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 53.010499992524274,
+                "total_ms": 52.4193
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 39.995300001464784,
+                "total_ms": 39.4491
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 42.204199999105185,
+                "total_ms": 41.5709
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 29.955400008475408,
+                "total_ms": 29.3174
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 30.67590000864584,
+                "total_ms": 30.1481
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 62.80529999639839,
+                "total_ms": 62.1215
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 53.65889999666251,
+                "total_ms": 52.9042
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 52.235299997846596,
+                "total_ms": 51.3884
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 41.824799991445616,
+                "total_ms": 41.3267
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 42.05340000044089,
+                "total_ms": 41.3781
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 39.5219000056386,
+                "total_ms": 38.9835
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 44.95599999791011,
+                "total_ms": 44.3951
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 51.18170000787359,
+                "total_ms": 50.457
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 40.33599999092985,
+                "total_ms": 39.6911
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 29.983700005686842,
+                "total_ms": 29.471
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 44.21990000992082,
+                "total_ms": 43.7539
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 52.77449999994133,
+                "total_ms": 51.9938
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 34.68689999135677,
+                "total_ms": 34.2749
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 34.05960000236519,
+                "total_ms": 33.5851
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 35.954699997091666,
+                "total_ms": 35.4246
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 35.84169999521691,
+                "total_ms": 35.2786
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 30.497399988234974,
+                "total_ms": 30.033
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 38.58320000290405,
+                "total_ms": 37.9741
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 33.967900002608076,
+                "total_ms": 33.5102
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 50.32700000447221,
+                "total_ms": 49.6826
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 42.86169999977574,
+                "total_ms": 42.2511
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 45.96339999989141,
+                "total_ms": 45.339
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 41.937500005587935,
+                "total_ms": 41.3298
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 49.495399987790734,
+                "total_ms": 48.7008
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 49.04920000990387,
+                "total_ms": 48.1733
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 39.99739998835139,
+                "total_ms": 39.3889
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 44.67010000371374,
+                "total_ms": 44.003
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 22.954799991566688,
+                "total_ms": 22.2991
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 48.78090000420343,
+                "total_ms": 48.1091
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 38.88340000412427,
+                "total_ms": 38.2814
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 44.53309999371413,
+                "total_ms": 43.9138
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 34.474599990062416,
+                "total_ms": 33.9299
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 49.553800010471605,
+                "total_ms": 48.8765
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 44.337800005450845,
+                "total_ms": 43.6979
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 32.4838000087766,
+                "total_ms": 32.0231
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 46.544500000891276,
+                "total_ms": 45.8812
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 46.370700001716614,
+                "total_ms": 45.7275
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 44.12480001337826,
+                "total_ms": 43.5143
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 37.041000003227964,
+                "total_ms": 36.5898
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 29.464299994288012,
+                "total_ms": 28.9978
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 42.00200000195764,
+                "total_ms": 41.4182
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 34.577900005388074,
+                "total_ms": 33.9658
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 39.99350000231061,
+                "total_ms": 39.3344
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 45.18630000529811,
+                "total_ms": 44.532
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 50.96860000048764,
+                "total_ms": 50.3
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 42.891799996141344,
+                "total_ms": 42.2438
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 46.33759999705944,
+                "total_ms": 45.7447
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 41.14299999491777,
+                "total_ms": 40.5728
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 45.039999997243285,
+                "total_ms": 44.4778
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 40.965699998196214,
+                "total_ms": 40.3496
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 51.58869999286253,
+                "total_ms": 50.9138
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 36.89519999898039,
+                "total_ms": 36.3035
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 50.49930000677705,
+                "total_ms": 49.8839
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 27.062599998316728,
+                "total_ms": 26.636
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 53.899200007435866,
+                "total_ms": 53.1914
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 48.13809999905061,
+                "total_ms": 47.3942
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 46.80959999677725,
+                "total_ms": 46.1641
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 39.385399999446236,
+                "total_ms": 38.5348
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 26.917399998637848,
+                "total_ms": 26.4458
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 51.360699988435954,
+                "total_ms": 50.652
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 48.66659999242984,
+                "total_ms": 48.0694
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 41.445600014412776,
+                "total_ms": 40.9664
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 57.20929999370128,
+                "total_ms": 56.498
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 36.029100010637194,
+                "total_ms": 35.5704
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 53.752599997096695,
+                "total_ms": 53.1347
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 30.321700003696606,
+                "total_ms": 29.8971
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 38.85509999236092,
+                "total_ms": 38.2933
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 31.031099992105737,
+                "total_ms": 30.581
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 51.68650000996422,
+                "total_ms": 51.1153
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 49.76759999408387,
+                "total_ms": 49.2331
+              }
+            ]
+          ]
+        },
+        {
+          "pass_index": 1,
+          "mean_wall_ms": [
+            41.37563899872475,
+            41.411625000910135
+          ],
+          "reduction_percent": -0.08697388863647681,
+          "samples": [
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 35.39229999296367,
+                "total_ms": 34.8303
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 40.109399997163564,
+                "total_ms": 39.5307
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 23.98699999321252,
+                "total_ms": 23.5898
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 37.71440000855364,
+                "total_ms": 37.1161
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 24.76869999372866,
+                "total_ms": 24.37
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 45.85159999260213,
+                "total_ms": 45.2877
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 26.244099994073622,
+                "total_ms": 25.84
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 55.978499993216246,
+                "total_ms": 55.3052
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 39.60940000251867,
+                "total_ms": 39.2116
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 46.542500000214204,
+                "total_ms": 46.0634
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 50.89119999320246,
+                "total_ms": 50.2844
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 30.655900001875125,
+                "total_ms": 30.1174
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 37.24779999174643,
+                "total_ms": 36.7253
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 53.233299986459315,
+                "total_ms": 52.5627
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 46.21909999696072,
+                "total_ms": 45.7092
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 51.3440999930026,
+                "total_ms": 50.679
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 31.04400000302121,
+                "total_ms": 30.6241
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 45.020599995041266,
+                "total_ms": 44.5217
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 34.433299995725974,
+                "total_ms": 33.895
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 52.571699998225085,
+                "total_ms": 51.9792
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 40.55520000110846,
+                "total_ms": 39.4512
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 44.454999995650724,
+                "total_ms": 43.8257
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 43.67230000207201,
+                "total_ms": 43.1307
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 49.69560001336504,
+                "total_ms": 49.1751
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 48.304899988579564,
+                "total_ms": 47.6468
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 46.90159999881871,
+                "total_ms": 46.3166
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 44.099199993070215,
+                "total_ms": 43.513
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 40.30590000911616,
+                "total_ms": 39.7483
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 34.352300004684366,
+                "total_ms": 33.7667
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 44.26490000332706,
+                "total_ms": 43.6193
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 28.535199991893023,
+                "total_ms": 28.0086
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 37.07419999409467,
+                "total_ms": 36.6281
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 42.483699988224544,
+                "total_ms": 41.9031
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 48.66339999716729,
+                "total_ms": 48.0682
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 44.01329999382142,
+                "total_ms": 43.4227
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 32.983500001137145,
+                "total_ms": 32.5778
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 44.03889999957755,
+                "total_ms": 43.2437
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 49.77389999839943,
+                "total_ms": 49.1501
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 36.412799992831424,
+                "total_ms": 35.9108
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 45.15239999454934,
+                "total_ms": 44.5416
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 37.26539999479428,
+                "total_ms": 36.6576
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 47.58600000059232,
+                "total_ms": 46.99
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 24.674500004039146,
+                "total_ms": 24.2473
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 47.653000001446344,
+                "total_ms": 46.9633
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 37.48870000708848,
+                "total_ms": 36.9162
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 49.41760000656359,
+                "total_ms": 48.697
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 51.20329999772366,
+                "total_ms": 50.5814
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 41.514500000630505,
+                "total_ms": 40.9941
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 45.41320000134874,
+                "total_ms": 44.8573
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 46.75320000387728,
+                "total_ms": 46.118
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 51.69639999803621,
+                "total_ms": 50.9814
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 34.789699988323264,
+                "total_ms": 34.3194
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 40.67899999790825,
+                "total_ms": 40.1091
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 32.5343000004068,
+                "total_ms": 32.0965
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 34.52040000411216,
+                "total_ms": 33.9612
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 36.091700007091276,
+                "total_ms": 35.4957
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 33.59679999994114,
+                "total_ms": 33.1431
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 39.532900002086535,
+                "total_ms": 39.048
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 58.59119999513496,
+                "total_ms": 57.9049
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 39.022700002533384,
+                "total_ms": 38.5229
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 29.187299995101057,
+                "total_ms": 28.4977
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 41.904099998646416,
+                "total_ms": 41.3183
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 48.325299998396076,
+                "total_ms": 47.6835
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 43.83360000792891,
+                "total_ms": 43.2198
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 34.98369999579154,
+                "total_ms": 34.3955
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 39.70600001048297,
+                "total_ms": 39.0881
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 41.444899994530715,
+                "total_ms": 40.973
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 49.91699999663979,
+                "total_ms": 49.3078
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 54.88689999037888,
+                "total_ms": 54.1996
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 55.01149999327026,
+                "total_ms": 54.24
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 31.686300004366785,
+                "total_ms": 31.2307
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 28.877999997348525,
+                "total_ms": 28.4624
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 40.51839999738149,
+                "total_ms": 39.8906
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 41.23020000406541,
+                "total_ms": 40.653
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 45.660800009500235,
+                "total_ms": 45.0986
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 49.498799999128096,
+                "total_ms": 48.8396
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 45.80379999242723,
+                "total_ms": 45.1429
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 22.29079999960959,
+                "total_ms": 21.8975
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 52.678499996545725,
+                "total_ms": 52.0152
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 34.25170000991784,
+                "total_ms": 33.742
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 42.022599998745136,
+                "total_ms": 41.4345
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 50.02510000485927,
+                "total_ms": 49.3638
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 42.68009999941569,
+                "total_ms": 42.0983
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 52.067900003748946,
+                "total_ms": 51.2625
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 52.60629999975208,
+                "total_ms": 51.925
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 52.57129999517929,
+                "total_ms": 51.9294
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 25.70670000568498,
+                "total_ms": 25.2856
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 53.65049999090843,
+                "total_ms": 52.9964
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 34.68050000083167,
+                "total_ms": 34.1466
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 51.33119999663904,
+                "total_ms": 50.5946
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 33.48790000018198,
+                "total_ms": 32.705
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 33.86999999929685,
+                "total_ms": 33.4342
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 31.42929999739863,
+                "total_ms": 31.0506
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 30.47760001209099,
+                "total_ms": 30.058
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 36.59370000241324,
+                "total_ms": 36.1054
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 36.402999990968965,
+                "total_ms": 35.5862
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 39.21999999147374,
+                "total_ms": 38.7247
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 31.976999991456978,
+                "total_ms": 31.5264
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 43.658599999616854,
+                "total_ms": 43.0212
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 46.78540000168141,
+                "total_ms": 46.1209
+              }
+            ],
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 35.01739999046549,
+                "total_ms": 34.4291
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 39.95520000171382,
+                "total_ms": 39.3828
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 23.78350000071805,
+                "total_ms": 23.409
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 35.02250000019558,
+                "total_ms": 34.4323
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 24.331299995537847,
+                "total_ms": 23.9827
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 45.067599989124574,
+                "total_ms": 44.4366
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 26.41089999815449,
+                "total_ms": 26.0142
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 57.017900006030686,
+                "total_ms": 56.3697
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 39.8393999930704,
+                "total_ms": 39.3727
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 47.94519999995828,
+                "total_ms": 47.1905
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 51.21919998782687,
+                "total_ms": 50.6192
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 28.96889999101404,
+                "total_ms": 28.5618
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 36.68950000428595,
+                "total_ms": 36.1904
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 53.41900000348687,
+                "total_ms": 52.791
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 46.648500006995164,
+                "total_ms": 46.1445
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 52.13060000096448,
+                "total_ms": 51.4126
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 30.902800004696473,
+                "total_ms": 30.5369
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 44.601500005228445,
+                "total_ms": 43.9682
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 35.15379999589641,
+                "total_ms": 34.5092
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 52.81569999351632,
+                "total_ms": 52.1808
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 40.4774000053294,
+                "total_ms": 39.9433
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 45.08610001357738,
+                "total_ms": 44.287
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 42.850199999520555,
+                "total_ms": 42.3312
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 48.869999998714775,
+                "total_ms": 48.0612
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 46.907800002372824,
+                "total_ms": 46.2949
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 47.260799998184666,
+                "total_ms": 46.6498
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 44.45030000351835,
+                "total_ms": 43.8309
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 40.01730000891257,
+                "total_ms": 39.3989
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 35.13780000503175,
+                "total_ms": 34.5775
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 43.3134000049904,
+                "total_ms": 42.6646
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 29.284899996127933,
+                "total_ms": 28.8474
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 37.44509999523871,
+                "total_ms": 36.9552
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 41.910700005246326,
+                "total_ms": 41.3797
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 47.93939999944996,
+                "total_ms": 47.1887
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 44.53119999379851,
+                "total_ms": 43.7406
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 32.504100003279746,
+                "total_ms": 32.0423
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 43.739800006733276,
+                "total_ms": 43.0779
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 51.65120000310708,
+                "total_ms": 50.8513
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 36.76640000776388,
+                "total_ms": 36.2319
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 45.55960001016501,
+                "total_ms": 44.8957
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 36.84620000422001,
+                "total_ms": 36.2783
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 46.997299999929965,
+                "total_ms": 46.3676
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 25.3147000039462,
+                "total_ms": 24.9136
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 47.11689999385271,
+                "total_ms": 46.4743
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 36.847399998805486,
+                "total_ms": 36.227
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 48.01020000013523,
+                "total_ms": 47.3325
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 51.15129999467172,
+                "total_ms": 50.5351
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 49.917399999685585,
+                "total_ms": 49.3168
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 45.86270000436343,
+                "total_ms": 45.2209
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 45.92330000014044,
+                "total_ms": 45.334
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 48.45770000247285,
+                "total_ms": 47.8025
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 34.12170000956394,
+                "total_ms": 33.6463
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 44.347500006551854,
+                "total_ms": 43.7157
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 32.05829999933485,
+                "total_ms": 31.6437
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 33.619100009673275,
+                "total_ms": 33.0508
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 35.732599993934855,
+                "total_ms": 35.1185
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 35.562100005336106,
+                "total_ms": 35.0433
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 40.38560000481084,
+                "total_ms": 39.6118
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 55.011199990985915,
+                "total_ms": 54.3655
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 39.13279999687802,
+                "total_ms": 38.5953
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 30.23830000893213,
+                "total_ms": 29.6911
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 41.83960000227671,
+                "total_ms": 41.2199
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 48.12219999439549,
+                "total_ms": 47.5198
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 43.499900013557635,
+                "total_ms": 42.8789
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 35.294899993459694,
+                "total_ms": 34.7799
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 40.20440000749659,
+                "total_ms": 39.4478
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 42.17050000443123,
+                "total_ms": 41.6411
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 48.60630001348909,
+                "total_ms": 47.9871
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 53.79059999540914,
+                "total_ms": 52.9826
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 52.79449999216013,
+                "total_ms": 52.0819
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 33.52189999714028,
+                "total_ms": 32.8704
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 31.983099994249642,
+                "total_ms": 31.4237
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 40.48060000059195,
+                "total_ms": 39.9496
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 41.95830000389833,
+                "total_ms": 41.3414
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 47.17089999758173,
+                "total_ms": 46.5606
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 50.650999997742474,
+                "total_ms": 50.0126
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 46.261600000434555,
+                "total_ms": 45.6726
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 22.383799994713627,
+                "total_ms": 21.9462
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 52.317499998025596,
+                "total_ms": 51.6272
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 34.50670000165701,
+                "total_ms": 33.9475
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 41.17200001201127,
+                "total_ms": 40.5438
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 51.09989999618847,
+                "total_ms": 50.3971
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 42.80789999756962,
+                "total_ms": 42.0444
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 52.37799999304116,
+                "total_ms": 51.7272
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 53.46169999393169,
+                "total_ms": 52.7026
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 52.89730000367854,
+                "total_ms": 52.1973
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 26.1229000025196,
+                "total_ms": 25.7434
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 51.83539999416098,
+                "total_ms": 51.156
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 34.5309999975143,
+                "total_ms": 33.9484
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 50.68790000223089,
+                "total_ms": 50.0469
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 33.009400009177625,
+                "total_ms": 32.4108
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 34.033799995086156,
+                "total_ms": 33.6192
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 31.68040000309702,
+                "total_ms": 31.1762
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 30.228899995563552,
+                "total_ms": 29.8404
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 36.71020000183489,
+                "total_ms": 36.3181
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 36.75320000911597,
+                "total_ms": 36.0013
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 38.42770001210738,
+                "total_ms": 37.9617
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 31.52290001162328,
+                "total_ms": 30.9826
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 43.4951000061119,
+                "total_ms": 42.8757
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 45.45039999356959,
+                "total_ms": 44.8163
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "model": "medium",
+      "exact_items_equal": true,
+      "passes": [
+        {
+          "pass_index": 0,
+          "mean_wall_ms": [
+            86.15487100047176,
+            85.37408000047435
+          ],
+          "reduction_percent": 0.9062644873475967,
+          "samples": [
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 306.83099999441765,
+                "total_ms": 306.1638
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 122.43269999453332,
+                "total_ms": 121.826
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 108.0258000001777,
+                "total_ms": 107.4646
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 118.20070000248961,
+                "total_ms": 117.6878
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 95.50630000012461,
+                "total_ms": 94.8683
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 79.07590000831988,
+                "total_ms": 78.6547
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 59.45479999354575,
+                "total_ms": 59.0132
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 68.2682000042405,
+                "total_ms": 67.7207
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 69.36550000682473,
+                "total_ms": 68.9125
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 72.32449999719393,
+                "total_ms": 71.8055
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 122.33879999257624,
+                "total_ms": 121.6254
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 63.236999994842336,
+                "total_ms": 62.6837
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 116.95660000259522,
+                "total_ms": 116.2128
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 54.323100004694425,
+                "total_ms": 53.8845
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 102.82390000065789,
+                "total_ms": 101.9815
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 111.97030000039376,
+                "total_ms": 111.2825
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 98.21729999384843,
+                "total_ms": 97.5775
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 87.47920001042075,
+                "total_ms": 86.8375
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 104.18850000132807,
+                "total_ms": 103.2362
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 89.56100000068545,
+                "total_ms": 88.9456
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 69.87610000942368,
+                "total_ms": 69.2781
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 100.2128999971319,
+                "total_ms": 99.5514
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 57.30250000488013,
+                "total_ms": 56.8512
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 95.52280000934843,
+                "total_ms": 94.87
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 102.2740999906091,
+                "total_ms": 101.6411
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 104.86530000343919,
+                "total_ms": 104.2194
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 81.66199999686796,
+                "total_ms": 81.0679
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 82.19980000285432,
+                "total_ms": 81.5953
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 57.23629999556579,
+                "total_ms": 56.8045
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 58.51230000553187,
+                "total_ms": 58.0189
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 122.61620000936091,
+                "total_ms": 121.9365
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 98.91689999494702,
+                "total_ms": 98.3027
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 93.63239999220241,
+                "total_ms": 93.0064
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 78.02760000049602,
+                "total_ms": 77.5335
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 78.9671999955317,
+                "total_ms": 78.3089
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 75.71150000148918,
+                "total_ms": 75.1138
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 92.89169999829028,
+                "total_ms": 92.278
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 99.20860000420362,
+                "total_ms": 98.5452
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 87.19599999312777,
+                "total_ms": 86.5514
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 57.978700002422556,
+                "total_ms": 57.328
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 79.59030001075007,
+                "total_ms": 79.0933
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 108.9912000024924,
+                "total_ms": 108.268
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 69.27889998769388,
+                "total_ms": 68.7881
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 62.5997000024654,
+                "total_ms": 62.1028
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 68.54020000901073,
+                "total_ms": 67.9308
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 65.89480000548065,
+                "total_ms": 65.2702
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 59.755199996288866,
+                "total_ms": 59.2834
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 85.69629999692552,
+                "total_ms": 85.078
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 68.60400000005029,
+                "total_ms": 68.1115
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 98.884300008649,
+                "total_ms": 98.2164
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 88.90770000289194,
+                "total_ms": 88.2552
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 91.81620000163093,
+                "total_ms": 91.2395
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 81.89719999791123,
+                "total_ms": 81.2354
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 100.52260001248214,
+                "total_ms": 99.8892
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 101.35080000327434,
+                "total_ms": 100.6686
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 77.19329999235924,
+                "total_ms": 76.3136
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 81.32449998811353,
+                "total_ms": 80.6909
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 43.32100000465289,
+                "total_ms": 42.9328
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 89.78749999369029,
+                "total_ms": 89.1218
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 76.41359999252018,
+                "total_ms": 75.7734
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 96.74300000187941,
+                "total_ms": 96.0807
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 68.96679999772459,
+                "total_ms": 68.4091
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 94.20429999590851,
+                "total_ms": 93.5043
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 87.11360000597779,
+                "total_ms": 86.5085
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 59.885800001211464,
+                "total_ms": 59.3624
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 85.50489999470301,
+                "total_ms": 84.9267
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 84.8344999976689,
+                "total_ms": 84.1343
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 91.71840001363307,
+                "total_ms": 91.1236
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 69.59850000566803,
+                "total_ms": 69.1732
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 58.30190000415314,
+                "total_ms": 57.8733
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 88.57910000369884,
+                "total_ms": 87.8959
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 72.60340001084842,
+                "total_ms": 71.9412
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 78.63430000725202,
+                "total_ms": 77.9593
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 84.67670000391081,
+                "total_ms": 84.0683
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 92.3328000062611,
+                "total_ms": 91.7027
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 89.15240000351332,
+                "total_ms": 88.549
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 87.09419998922385,
+                "total_ms": 86.4234
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 81.46440000564326,
+                "total_ms": 80.8741
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 84.4894000038039,
+                "total_ms": 83.8368
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 74.16049999301322,
+                "total_ms": 73.5834
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 98.80499998689629,
+                "total_ms": 98.1504
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 68.63229999726173,
+                "total_ms": 68.0692
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 96.01379999367055,
+                "total_ms": 95.3931
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 61.09689999721013,
+                "total_ms": 60.5332
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 100.44229999766685,
+                "total_ms": 99.5635
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 88.3073000004515,
+                "total_ms": 87.7721
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 98.6172999982955,
+                "total_ms": 97.959
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 71.48540001071524,
+                "total_ms": 70.9477
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 55.77439999615308,
+                "total_ms": 55.3438
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 97.04819999751635,
+                "total_ms": 96.3902
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 83.5460999951465,
+                "total_ms": 82.9647
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 74.833699996816,
+                "total_ms": 74.3321
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 109.80150000250433,
+                "total_ms": 109.091
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 64.59049999830313,
+                "total_ms": 64.2057
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 109.06560000148602,
+                "total_ms": 108.3869
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 55.54899999697227,
+                "total_ms": 55.0607
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 74.90020000841469,
+                "total_ms": 74.304
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 53.450399995199405,
+                "total_ms": 53.0343
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 93.14710000762716,
+                "total_ms": 92.5249
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 84.55990000220481,
+                "total_ms": 83.9384
+              }
+            ],
+            [
+              {
+                "image_index": 0,
+                "wall_ms": 231.6620000055991,
+                "total_ms": 230.9618
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 143.91769999929238,
+                "total_ms": 143.2815
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 81.45990000048187,
+                "total_ms": 80.9283
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 99.49150000466034,
+                "total_ms": 98.9737
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 96.53230001276825,
+                "total_ms": 95.9578
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 77.71839998895302,
+                "total_ms": 77.2161
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 60.40120001125615,
+                "total_ms": 59.9554
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 68.12979999813251,
+                "total_ms": 67.604
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 69.7541999979876,
+                "total_ms": 69.3559
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 72.43470000685193,
+                "total_ms": 71.9337
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 122.40679998649284,
+                "total_ms": 121.7811
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 63.514699999359436,
+                "total_ms": 62.9263
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 115.39590000757016,
+                "total_ms": 114.6716
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 54.516400006832555,
+                "total_ms": 54.0296
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 101.24259999429341,
+                "total_ms": 100.5549
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 160.81479999411386,
+                "total_ms": 160.169
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 100.73819999524858,
+                "total_ms": 100.0525
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 86.36770000157412,
+                "total_ms": 85.88
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 104.08889999962412,
+                "total_ms": 103.4395
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 89.83759999682661,
+                "total_ms": 89.2004
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 72.06079999741632,
+                "total_ms": 71.474
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 104.18739999295212,
+                "total_ms": 103.5359
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 58.859600001596846,
+                "total_ms": 58.4357
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 97.16900000057649,
+                "total_ms": 96.4844
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 100.20329999679234,
+                "total_ms": 99.4528
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 105.99680000450462,
+                "total_ms": 105.4013
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 80.96700000169221,
+                "total_ms": 80.3273
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 76.48380000318866,
+                "total_ms": 75.6415
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 57.025400004931726,
+                "total_ms": 56.5716
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 60.19859999651089,
+                "total_ms": 59.5273
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 118.7841000064509,
+                "total_ms": 118.1512
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 103.21210000256542,
+                "total_ms": 102.5084
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 94.66650000831578,
+                "total_ms": 94.0542
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 77.87259999895468,
+                "total_ms": 77.3329
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 77.75659998878837,
+                "total_ms": 77.1158
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 73.43059999402612,
+                "total_ms": 72.8588
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 93.62400000100024,
+                "total_ms": 93.019
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 101.2166000000434,
+                "total_ms": 100.563
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 85.28559999831486,
+                "total_ms": 84.6877
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 57.13910001213662,
+                "total_ms": 56.4829
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 80.33720000821631,
+                "total_ms": 79.8181
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 110.68110000633169,
+                "total_ms": 109.9872
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 70.84340001165401,
+                "total_ms": 70.4364
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 62.634200003230944,
+                "total_ms": 62.1827
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 69.99560000258498,
+                "total_ms": 69.3883
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 64.78210000204854,
+                "total_ms": 64.2246
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 58.630899991840124,
+                "total_ms": 58.2909
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 86.28060000773985,
+                "total_ms": 85.659
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 70.103799997014,
+                "total_ms": 69.6669
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 100.14270000101533,
+                "total_ms": 99.471
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 90.94989999721292,
+                "total_ms": 90.239
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 91.17339999647811,
+                "total_ms": 90.5783
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 80.25710000947583,
+                "total_ms": 79.6561
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 101.27009999996517,
+                "total_ms": 100.5806
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 101.94619999674615,
+                "total_ms": 101.2759
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 76.82349999959115,
+                "total_ms": 76.2359
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 81.24239998869598,
+                "total_ms": 80.6955
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 43.852699993294664,
+                "total_ms": 43.3905
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 89.39949999330565,
+                "total_ms": 88.7151
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 74.82249999884516,
+                "total_ms": 74.1999
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 87.56960000027902,
+                "total_ms": 86.9034
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 68.34789999993518,
+                "total_ms": 67.7634
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 91.77569999883417,
+                "total_ms": 91.1096
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 86.39419999963138,
+                "total_ms": 85.7186
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 58.76459999126382,
+                "total_ms": 58.2905
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 85.64449999539647,
+                "total_ms": 85.0137
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 85.43340000323951,
+                "total_ms": 84.7517
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 88.78310000000056,
+                "total_ms": 88.168
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 70.14180000987835,
+                "total_ms": 69.6993
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 57.38359999668319,
+                "total_ms": 56.9602
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 86.26880000520032,
+                "total_ms": 85.6029
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 71.73320000583772,
+                "total_ms": 71.1596
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 79.29339999100193,
+                "total_ms": 78.7346
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 85.55909999995492,
+                "total_ms": 84.9181
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 91.56010000151582,
+                "total_ms": 90.9988
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 89.51029999298044,
+                "total_ms": 88.8477
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 85.11929999804124,
+                "total_ms": 84.5325
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 81.12360000086483,
+                "total_ms": 80.556
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 83.96029999130405,
+                "total_ms": 83.2868
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 71.27490000857506,
+                "total_ms": 70.6603
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 97.80299999692943,
+                "total_ms": 97.0805
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 69.07110000611283,
+                "total_ms": 68.4462
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 93.89399999054149,
+                "total_ms": 93.3116
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 61.537700006738305,
+                "total_ms": 61.0246
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 98.46620001189876,
+                "total_ms": 97.7309
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 85.1181999896653,
+                "total_ms": 84.5386
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 98.308900007396,
+                "total_ms": 97.6038
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 72.8129000053741,
+                "total_ms": 72.287
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 54.95840001094621,
+                "total_ms": 54.5151
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 94.58809999341611,
+                "total_ms": 93.9321
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 85.03090000886004,
+                "total_ms": 84.307
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 75.98320000397507,
+                "total_ms": 75.4435
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 108.39549999218434,
+                "total_ms": 107.7058
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 65.37140000727959,
+                "total_ms": 64.9049
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 106.94329999387264,
+                "total_ms": 106.2623
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 56.11239999416284,
+                "total_ms": 55.5969
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 74.70640000246931,
+                "total_ms": 74.124
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 53.66780000622384,
+                "total_ms": 53.2192
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 93.6511000036262,
+                "total_ms": 92.985
+              },
+              {
+                "image_index": 99,
+                "wall_ms": 82.61240000138059,
+                "total_ms": 81.9926
+              }
+            ]
+          ]
+        },
+        {
+          "pass_index": 1,
+          "mean_wall_ms": [
+            78.26182300035725,
+            78.31807400099933
+          ],
+          "reduction_percent": -0.07187540295581218,
+          "samples": [
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 74.346900000819,
+                "total_ms": 73.7891
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 87.98359999491367,
+                "total_ms": 87.3662
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 48.99640000076033,
+                "total_ms": 48.5789
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 72.02910000341944,
+                "total_ms": 71.5038
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 51.858199993148446,
+                "total_ms": 51.4694
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 97.19740001310129,
+                "total_ms": 96.6049
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 62.007500004256144,
+                "total_ms": 61.5793
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 107.95730000245385,
+                "total_ms": 107.3009
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 82.05539999471512,
+                "total_ms": 81.5385
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 82.61420000053477,
+                "total_ms": 81.9903
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 99.31200000573881,
+                "total_ms": 98.6809
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 52.469400005065836,
+                "total_ms": 52.0314
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 72.46979999763425,
+                "total_ms": 72.0023
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 95.68759999820031,
+                "total_ms": 95.0365
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 86.24360000248998,
+                "total_ms": 85.7586
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 100.97600000153761,
+                "total_ms": 100.3574
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 63.25129998731427,
+                "total_ms": 62.7803
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 91.37949999421835,
+                "total_ms": 90.7758
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 68.54340000427328,
+                "total_ms": 67.8119
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 98.81550000864081,
+                "total_ms": 98.1477
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 73.76260000455659,
+                "total_ms": 73.1404
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 82.25390000734478,
+                "total_ms": 81.6385
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 83.18929999950342,
+                "total_ms": 82.4087
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 86.26820000063162,
+                "total_ms": 85.6757
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 90.34159999282565,
+                "total_ms": 89.4833
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 90.75360000133514,
+                "total_ms": 90.0752
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 88.3456000010483,
+                "total_ms": 87.6826
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 80.19549999153242,
+                "total_ms": 79.4613
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 71.83240000449587,
+                "total_ms": 71.247
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 87.06269999674987,
+                "total_ms": 86.2979
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 57.55389999831095,
+                "total_ms": 56.9436
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 70.74509999074508,
+                "total_ms": 70.2673
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 88.83239999704529,
+                "total_ms": 88.1191
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 89.98970000538975,
+                "total_ms": 89.3616
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 89.84800000325777,
+                "total_ms": 88.8619
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 55.552899997564964,
+                "total_ms": 54.9658
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 83.19429999392014,
+                "total_ms": 82.5185
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 84.17929999995977,
+                "total_ms": 83.7128
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 64.84620000992436,
+                "total_ms": 63.9458
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 94.94140000606421,
+                "total_ms": 94.278
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 79.34430000022985,
+                "total_ms": 78.4941
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 84.93610000004992,
+                "total_ms": 84.3669
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 41.839899990009144,
+                "total_ms": 41.3499
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 78.15480000863317,
+                "total_ms": 77.6788
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 69.28219999826979,
+                "total_ms": 68.5809
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 98.5989999899175,
+                "total_ms": 98.0889
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 91.33409999776632,
+                "total_ms": 90.8602
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 78.83199999923818,
+                "total_ms": 78.1919
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 86.72950000618584,
+                "total_ms": 86.1891
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 85.08520000032149,
+                "total_ms": 84.4526
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 91.93910000612959,
+                "total_ms": 91.2658
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 62.59479999425821,
+                "total_ms": 62.0805
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 83.16439999907743,
+                "total_ms": 82.5176
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 55.232600003364496,
+                "total_ms": 54.8697
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 59.542799994233064,
+                "total_ms": 58.9652
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 67.11940000241157,
+                "total_ms": 66.5311
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 59.03479999687988,
+                "total_ms": 58.6598
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 66.7916999955196,
+                "total_ms": 66.3947
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 104.34710000117775,
+                "total_ms": 103.6711
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 69.18629999563564,
+                "total_ms": 68.7089
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 55.088199995225295,
+                "total_ms": 54.6401
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 87.37000000837725,
+                "total_ms": 86.8315
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 94.49210000457242,
+                "total_ms": 93.9653
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 85.2320999983931,
+                "total_ms": 84.7718
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 72.69899999664631,
+                "total_ms": 72.2403
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 74.52370000828523,
+                "total_ms": 73.8989
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 71.82110000576358,
+                "total_ms": 71.3066
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 86.86199999647215,
+                "total_ms": 86.1908
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 94.66160000010859,
+                "total_ms": 93.9779
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 105.9184999903664,
+                "total_ms": 105.3692
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 61.06110000109766,
+                "total_ms": 60.5369
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 55.0643000024138,
+                "total_ms": 54.5862
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 72.68570001178887,
+                "total_ms": 72.2278
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 71.95759999740403,
+                "total_ms": 71.4085
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 89.37269999296404,
+                "total_ms": 88.7852
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 94.0753000031691,
+                "total_ms": 93.4007
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 91.16150000772905,
+                "total_ms": 90.4848
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 47.919000004185364,
+                "total_ms": 47.4583
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 95.02649999922141,
+                "total_ms": 94.3813
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 64.13750001229346,
+                "total_ms": 63.5973
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 78.39930000773165,
+                "total_ms": 77.7915
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 99.82849999505561,
+                "total_ms": 99.2962
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 81.99099999910686,
+                "total_ms": 81.483
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 90.84940000320785,
+                "total_ms": 90.2714
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 92.15900000708643,
+                "total_ms": 91.472
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 94.98639999947045,
+                "total_ms": 94.4431
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 50.5671999999322,
+                "total_ms": 50.0385
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 105.28960000374354,
+                "total_ms": 104.5854
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 62.07449999055825,
+                "total_ms": 61.5064
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 97.08750000572763,
+                "total_ms": 96.5703
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 63.16589999187272,
+                "total_ms": 62.6472
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 63.7843000004068,
+                "total_ms": 63.4574
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 66.00259999686386,
+                "total_ms": 65.4628
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 55.68689999927301,
+                "total_ms": 55.2639
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 59.156600007554516,
+                "total_ms": 58.6124
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 75.76439999684226,
+                "total_ms": 75.1652
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 75.16419999592472,
+                "total_ms": 74.7169
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 60.78020000131801,
+                "total_ms": 60.2813
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 74.96230000106152,
+                "total_ms": 74.2755
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 84.38020000176039,
+                "total_ms": 83.735
+              }
+            ],
+            [
+              {
+                "image_index": 99,
+                "wall_ms": 74.35399999667425,
+                "total_ms": 73.7587
+              },
+              {
+                "image_index": 98,
+                "wall_ms": 87.43660000618547,
+                "total_ms": 86.8256
+              },
+              {
+                "image_index": 97,
+                "wall_ms": 49.569399998290464,
+                "total_ms": 49.0896
+              },
+              {
+                "image_index": 96,
+                "wall_ms": 72.62739998986945,
+                "total_ms": 72.0535
+              },
+              {
+                "image_index": 95,
+                "wall_ms": 50.913800005218945,
+                "total_ms": 50.5104
+              },
+              {
+                "image_index": 94,
+                "wall_ms": 96.9933000014862,
+                "total_ms": 96.3701
+              },
+              {
+                "image_index": 93,
+                "wall_ms": 60.26189999829512,
+                "total_ms": 59.8284
+              },
+              {
+                "image_index": 92,
+                "wall_ms": 111.03440000442788,
+                "total_ms": 110.3933
+              },
+              {
+                "image_index": 91,
+                "wall_ms": 83.050600005663,
+                "total_ms": 82.4585
+              },
+              {
+                "image_index": 90,
+                "wall_ms": 83.89290000195615,
+                "total_ms": 83.1848
+              },
+              {
+                "image_index": 89,
+                "wall_ms": 98.57970000302885,
+                "total_ms": 97.9955
+              },
+              {
+                "image_index": 88,
+                "wall_ms": 52.19370000122581,
+                "total_ms": 51.769
+              },
+              {
+                "image_index": 87,
+                "wall_ms": 74.11849999334663,
+                "total_ms": 73.6218
+              },
+              {
+                "image_index": 86,
+                "wall_ms": 97.1603999932995,
+                "total_ms": 96.3724
+              },
+              {
+                "image_index": 85,
+                "wall_ms": 87.6255999901332,
+                "total_ms": 87.2356
+              },
+              {
+                "image_index": 84,
+                "wall_ms": 102.80430001148488,
+                "total_ms": 101.9954
+              },
+              {
+                "image_index": 83,
+                "wall_ms": 62.85980000393465,
+                "total_ms": 62.4487
+              },
+              {
+                "image_index": 82,
+                "wall_ms": 90.40420000383165,
+                "total_ms": 89.6689
+              },
+              {
+                "image_index": 81,
+                "wall_ms": 68.16880000405945,
+                "total_ms": 67.6233
+              },
+              {
+                "image_index": 80,
+                "wall_ms": 97.20540000125766,
+                "total_ms": 96.5698
+              },
+              {
+                "image_index": 79,
+                "wall_ms": 74.52599999669474,
+                "total_ms": 73.8881
+              },
+              {
+                "image_index": 78,
+                "wall_ms": 82.55469999858178,
+                "total_ms": 81.94
+              },
+              {
+                "image_index": 77,
+                "wall_ms": 84.82020000519697,
+                "total_ms": 84.2626
+              },
+              {
+                "image_index": 76,
+                "wall_ms": 84.8322000092594,
+                "total_ms": 84.2586
+              },
+              {
+                "image_index": 75,
+                "wall_ms": 89.42640000896063,
+                "total_ms": 88.7087
+              },
+              {
+                "image_index": 74,
+                "wall_ms": 92.175000012503,
+                "total_ms": 91.524
+              },
+              {
+                "image_index": 73,
+                "wall_ms": 87.47630000289064,
+                "total_ms": 86.8138
+              },
+              {
+                "image_index": 72,
+                "wall_ms": 80.25130000896752,
+                "total_ms": 79.5523
+              },
+              {
+                "image_index": 71,
+                "wall_ms": 71.0321000078693,
+                "total_ms": 70.4126
+              },
+              {
+                "image_index": 70,
+                "wall_ms": 87.83659999608062,
+                "total_ms": 87.1696
+              },
+              {
+                "image_index": 69,
+                "wall_ms": 57.87630000850186,
+                "total_ms": 57.3915
+              },
+              {
+                "image_index": 68,
+                "wall_ms": 69.45840000116732,
+                "total_ms": 68.939
+              },
+              {
+                "image_index": 67,
+                "wall_ms": 86.6750000132015,
+                "total_ms": 86.0129
+              },
+              {
+                "image_index": 66,
+                "wall_ms": 88.86380000330973,
+                "total_ms": 88.2208
+              },
+              {
+                "image_index": 65,
+                "wall_ms": 88.13979999104049,
+                "total_ms": 87.4232
+              },
+              {
+                "image_index": 64,
+                "wall_ms": 55.43459999898914,
+                "total_ms": 54.7911
+              },
+              {
+                "image_index": 63,
+                "wall_ms": 84.32680000260007,
+                "total_ms": 83.7395
+              },
+              {
+                "image_index": 62,
+                "wall_ms": 85.79690000624396,
+                "total_ms": 85.1534
+              },
+              {
+                "image_index": 61,
+                "wall_ms": 67.1755000075791,
+                "total_ms": 66.6998
+              },
+              {
+                "image_index": 60,
+                "wall_ms": 90.28349998698104,
+                "total_ms": 89.6473
+              },
+              {
+                "image_index": 59,
+                "wall_ms": 78.62119999481365,
+                "total_ms": 77.939
+              },
+              {
+                "image_index": 58,
+                "wall_ms": 96.7221999890171,
+                "total_ms": 95.8766
+              },
+              {
+                "image_index": 57,
+                "wall_ms": 40.33089999575168,
+                "total_ms": 39.7521
+              },
+              {
+                "image_index": 56,
+                "wall_ms": 79.10820000688545,
+                "total_ms": 78.2753
+              },
+              {
+                "image_index": 55,
+                "wall_ms": 71.26359999529086,
+                "total_ms": 70.7614
+              },
+              {
+                "image_index": 54,
+                "wall_ms": 95.66430000995751,
+                "total_ms": 95.0561
+              },
+              {
+                "image_index": 53,
+                "wall_ms": 90.52209999936167,
+                "total_ms": 89.9437
+              },
+              {
+                "image_index": 52,
+                "wall_ms": 78.16180000372697,
+                "total_ms": 77.6155
+              },
+              {
+                "image_index": 51,
+                "wall_ms": 85.72519999870565,
+                "total_ms": 85.0829
+              },
+              {
+                "image_index": 50,
+                "wall_ms": 85.82570000726264,
+                "total_ms": 85.3316
+              },
+              {
+                "image_index": 49,
+                "wall_ms": 93.4008000040194,
+                "total_ms": 92.9069
+              },
+              {
+                "image_index": 48,
+                "wall_ms": 62.79090000316501,
+                "total_ms": 62.4084
+              },
+              {
+                "image_index": 47,
+                "wall_ms": 82.39070000126958,
+                "total_ms": 81.8104
+              },
+              {
+                "image_index": 46,
+                "wall_ms": 57.32150000403635,
+                "total_ms": 56.8312
+              },
+              {
+                "image_index": 45,
+                "wall_ms": 59.38659999810625,
+                "total_ms": 58.8249
+              },
+              {
+                "image_index": 44,
+                "wall_ms": 67.37579999025911,
+                "total_ms": 66.7714
+              },
+              {
+                "image_index": 43,
+                "wall_ms": 58.04770000395365,
+                "total_ms": 57.5719
+              },
+              {
+                "image_index": 42,
+                "wall_ms": 67.68469999951776,
+                "total_ms": 67.1836
+              },
+              {
+                "image_index": 41,
+                "wall_ms": 104.25519999989774,
+                "total_ms": 103.4133
+              },
+              {
+                "image_index": 40,
+                "wall_ms": 68.38219999917783,
+                "total_ms": 67.9878
+              },
+              {
+                "image_index": 39,
+                "wall_ms": 55.45890000939835,
+                "total_ms": 54.9515
+              },
+              {
+                "image_index": 38,
+                "wall_ms": 82.21700000285637,
+                "total_ms": 81.7212
+              },
+              {
+                "image_index": 37,
+                "wall_ms": 98.35919999750331,
+                "total_ms": 97.819
+              },
+              {
+                "image_index": 36,
+                "wall_ms": 86.15960000315681,
+                "total_ms": 85.688
+              },
+              {
+                "image_index": 35,
+                "wall_ms": 72.53570000466425,
+                "total_ms": 72.0476
+              },
+              {
+                "image_index": 34,
+                "wall_ms": 73.15080000262242,
+                "total_ms": 72.5332
+              },
+              {
+                "image_index": 33,
+                "wall_ms": 70.40880000567995,
+                "total_ms": 69.9905
+              },
+              {
+                "image_index": 32,
+                "wall_ms": 87.57770000374876,
+                "total_ms": 86.9488
+              },
+              {
+                "image_index": 31,
+                "wall_ms": 98.80150000390131,
+                "total_ms": 98.1096
+              },
+              {
+                "image_index": 30,
+                "wall_ms": 103.487700005644,
+                "total_ms": 102.8946
+              },
+              {
+                "image_index": 29,
+                "wall_ms": 59.43299998762086,
+                "total_ms": 58.9831
+              },
+              {
+                "image_index": 28,
+                "wall_ms": 55.42509999941103,
+                "total_ms": 54.9378
+              },
+              {
+                "image_index": 27,
+                "wall_ms": 71.6783999960171,
+                "total_ms": 71.1172
+              },
+              {
+                "image_index": 26,
+                "wall_ms": 72.43049998942297,
+                "total_ms": 71.8076
+              },
+              {
+                "image_index": 25,
+                "wall_ms": 91.84649999951944,
+                "total_ms": 91.2575
+              },
+              {
+                "image_index": 24,
+                "wall_ms": 93.72059999441262,
+                "total_ms": 93.2008
+              },
+              {
+                "image_index": 23,
+                "wall_ms": 90.56709999276791,
+                "total_ms": 89.8996
+              },
+              {
+                "image_index": 22,
+                "wall_ms": 48.276700006681494,
+                "total_ms": 47.8101
+              },
+              {
+                "image_index": 21,
+                "wall_ms": 96.01619999739341,
+                "total_ms": 95.5587
+              },
+              {
+                "image_index": 20,
+                "wall_ms": 62.903099998948164,
+                "total_ms": 62.3208
+              },
+              {
+                "image_index": 19,
+                "wall_ms": 78.22899999155197,
+                "total_ms": 77.6638
+              },
+              {
+                "image_index": 18,
+                "wall_ms": 97.53290000662673,
+                "total_ms": 96.9254
+              },
+              {
+                "image_index": 17,
+                "wall_ms": 82.01100000587758,
+                "total_ms": 81.3769
+              },
+              {
+                "image_index": 16,
+                "wall_ms": 93.2046999951126,
+                "total_ms": 92.5271
+              },
+              {
+                "image_index": 15,
+                "wall_ms": 95.29289999045432,
+                "total_ms": 94.5423
+              },
+              {
+                "image_index": 14,
+                "wall_ms": 94.24040000885725,
+                "total_ms": 93.5048
+              },
+              {
+                "image_index": 13,
+                "wall_ms": 49.99580000003334,
+                "total_ms": 49.6512
+              },
+              {
+                "image_index": 12,
+                "wall_ms": 102.53760000341572,
+                "total_ms": 101.8354
+              },
+              {
+                "image_index": 11,
+                "wall_ms": 60.59120000281837,
+                "total_ms": 60.0604
+              },
+              {
+                "image_index": 10,
+                "wall_ms": 95.46830000181217,
+                "total_ms": 94.9136
+              },
+              {
+                "image_index": 9,
+                "wall_ms": 62.43580000591464,
+                "total_ms": 61.7308
+              },
+              {
+                "image_index": 8,
+                "wall_ms": 62.990599995828234,
+                "total_ms": 62.5931
+              },
+              {
+                "image_index": 7,
+                "wall_ms": 65.56450000789482,
+                "total_ms": 65.0376
+              },
+              {
+                "image_index": 6,
+                "wall_ms": 56.79069999314379,
+                "total_ms": 56.3209
+              },
+              {
+                "image_index": 5,
+                "wall_ms": 59.80440000712406,
+                "total_ms": 59.3157
+              },
+              {
+                "image_index": 4,
+                "wall_ms": 74.20680001087021,
+                "total_ms": 73.6279
+              },
+              {
+                "image_index": 3,
+                "wall_ms": 75.22999998764135,
+                "total_ms": 74.5129
+              },
+              {
+                "image_index": 2,
+                "wall_ms": 62.06489999021869,
+                "total_ms": 61.5493
+              },
+              {
+                "image_index": 1,
+                "wall_ms": 74.77300000027753,
+                "total_ms": 74.3124
+              },
+              {
+                "image_index": 0,
+                "wall_ms": 85.19140000862535,
+                "total_ms": 84.5097
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "gpu_det_preprocess": "unset (library default)",
+  "gpu_text_preprocess": "unset (library default)",
+  "gpu_crop_preprocess": "unset (library default)",
+  "method": "100 predecoded images; alternating old/new order; no per-image warmup; pass 0 includes first-use plans, pass 1 reverses image order; FP32, DET960, CLS enabled; excludes model initialization and GUI",
+  "limitations": "One local changing stream, not universal latency or memory/leak qualification"
+}

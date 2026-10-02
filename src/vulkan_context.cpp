@@ -9,6 +9,28 @@
 #include <cstdlib>
 
 namespace lwvk {
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+static uint32_t requested_rec_lanes() {
+#ifdef _MSC_VER
+    size_t length{};
+    getenv_s(&length, nullptr, 0, "LWVK_REC_LANES");
+    std::vector<char> value(std::max<size_t>(length, 1), 0);
+    if (length)
+        getenv_s(&length, value.data(), value.size(), "LWVK_REC_LANES");
+    const std::string option(value.data());
+#else
+    const char* value = std::getenv("LWVK_REC_LANES");
+    const std::string option = value ? value : "";
+#endif
+    if (option.empty() || option == "1")
+        return 1;
+    if (option == "2")
+        return 2;
+    if (option == "4")
+        return 4;
+    throw std::invalid_argument("LWVK_REC_LANES must be 1, 2 or 4");
+}
+#endif
 static PreprocessOption preprocess_option(const char* name) {
 #ifdef _MSC_VER
     size_t length{};
@@ -118,11 +140,23 @@ Context::Context(uint32_t index) {
         if (gpu_profile &&
             (!timestamp_valid_bits || timestamp_valid_bits > 64 || !(properties.limits.timestampPeriod > 0)))
             throw std::runtime_error("GPU profiling requires compute-queue timestamps");
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        const auto lane_count = requested_rec_lanes();
+        if (lane_count > families[queue_family].queueCount)
+            throw std::invalid_argument("LWVK_REC_LANES exceeds available compute queues");
+        const std::vector<float> priorities(lane_count, 1.0f);
+#else
         float priority = 1.0f;
+#endif
         VkDeviceQueueCreateInfo qi{VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
         qi.queueFamilyIndex = queue_family;
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        qi.queueCount = lane_count;
+        qi.pQueuePriorities = priorities.data();
+#else
         qi.queueCount = 1;
         qi.pQueuePriorities = &priority;
+#endif
         VkDeviceCreateInfo ci{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
         ci.queueCreateInfoCount = 1;
         ci.pQueueCreateInfos = &qi;
@@ -135,6 +169,10 @@ Context::Context(uint32_t index) {
         gpu_det_preprocess = policy.det;
         gpu_text_preprocess = policy.text;
         gpu_crop_preprocess = policy.crop;
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        if (lane_count > 1 && (!gpu_text_preprocess || gpu_profile))
+            throw std::invalid_argument("multiple REC lanes require GPU text preprocessing without GPU profiling");
+#endif
         if (gpu_det_preprocess || gpu_text_preprocess) {
             enabled.shaderFloat64 = VK_TRUE;
             ci.pEnabledFeatures = &enabled;
@@ -239,6 +277,11 @@ Context::Context(uint32_t index) {
 #endif
         check(vkCreateDevice(physical, &ci, nullptr, &device), "vkCreateDevice");
         vkGetDeviceQueue(device, queue_family, 0, &queue);
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        rec_queues.resize(lane_count);
+        for (uint32_t i = 0; i < lane_count; ++i)
+            vkGetDeviceQueue(device, queue_family, i, &rec_queues[i]);
+#endif
     } catch (...) {
         close();
         throw;

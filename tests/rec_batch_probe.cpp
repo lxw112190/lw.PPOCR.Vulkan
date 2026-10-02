@@ -28,7 +28,31 @@ struct RecBatchProbe {
         for (const auto& work : e.rec_batch_io_)
             if (work.arena || work.readback)
                 return false;
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        return !e.rec_batch_lanes_.empty();
+#else
         return bool(e.rec_batch_arena_);
+#endif
+    }
+    static uint32_t lanes(const GraphEngine& e) {
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        return e.rec_batch_effective_lanes_;
+#else
+        return e.rec_batch_io_.empty() ? 0 : 1;
+#endif
+    }
+    static uint32_t requested_lanes(const GraphEngine& e) {
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        return static_cast<uint32_t>(e.context_.rec_queues.size());
+#else
+        return 1;
+#endif
+    }
+    static uint64_t serial_batch_budget(GraphEngine& e) {
+        Plan plan(e.context_, e.model_, *e.constants_, 48, 320, e.max_bytes_);
+        const auto needs = plan.workspace_requirements();
+        return std::max(needs[0] + 8 * (32 + 320 * 48 * 3 + needs[3]), needs[0] + needs[1] + needs[2] + needs[3]) +
+               4096;
     }
 };
 } // namespace lwvk
@@ -128,6 +152,8 @@ int main(int argc, char** argv) {
         }
         batch.recognize_batch(views, rotations, output);
         compare(output, expected, 8);
+        require(lwvk::RecBatchProbe::lanes(batch) == lwvk::RecBatchProbe::requested_lanes(batch),
+                "requested REC lanes not exercised");
         std::vector<std::future<void>> tasks;
         for (int i = 0; i < 4; ++i)
             tasks.push_back(std::async(std::launch::async, [&] {
@@ -149,6 +175,16 @@ int main(int argc, char** argv) {
         require(output.size() == 8 && lwvk::RecBatchProbe::slots(tight) == 0, "tight budget did not fall back");
         tight.recognize_batch({views[0]}, {rotations[0]}, output);
         compare(output, expected, 1);
+        const auto serial_budget = lwvk::RecBatchProbe::serial_batch_budget(single);
+        lwvk::GraphEngine bounded(argv[1], device, serial_budget, "rec");
+        Image uniform(320, 48, 0);
+        const auto serial_expected = reference(single, uniform.view(), false);
+        bounded.recognize_batch(std::vector<lwvk::BgrView>(8, uniform.view()), std::vector<uint8_t>(8), output);
+        require(lwvk::RecBatchProbe::lanes(bounded) == 1 && output.size() == 8,
+                "parallel batch did not reduce lanes under aggregate budget");
+        require(lwvk::RecBatchProbe::bytes(bounded) <= serial_budget, "aggregate REC lane budget exceeded");
+        for (const auto& result : output)
+            require(equal(result, serial_expected), "lane reduction changed result");
         require(lwvk::RecBatchProbe::slots(tight) == 1, "batch recovery failed");
         Image larger(1000, 2000, 0);
         reference(tight, larger.view(), false);
@@ -158,7 +194,7 @@ int main(int argc, char** argv) {
         std::cout << "PASS: device=" << device << " model=" << argv[1]
                   << " exact text/score, counts 1..8, rotation/stride, invalid recovery, LRU40/32 cap, 20 concurrent "
                      "batches, shared arena, tight budget="
-                  << budget << "\n";
+                  << budget << " effective_lanes=" << lwvk::RecBatchProbe::lanes(batch) << "\n";
         return 0;
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
