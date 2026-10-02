@@ -5,7 +5,7 @@
 Implemented: portable FP32 shaders, device probe,
 complete Tiny DET graph, C ABI, Python/C# examples, malformed inputs/models,
 CPU reference tests, Windows/Linux CI definitions and preview packaging.
-Windows physical devices are tested locally; CI definitions have not been run remotely yet.
+Historical initial stage: Windows physical devices were tested locally; CI was not yet run at that point.
 
 ## 0.2.0-dev.1: CLS/REC and recognition-only
 
@@ -49,19 +49,28 @@ fused LayerNorm/attention, tiled FP32 kernels, GPU greedy CTC, resident weights
 and byte-bounded LRU plans. WinForms model selection and HTTP config paths updated.
 No generic arbitrary-model ONNX support, FP16 or cooperative matrices claimed.
 
+## 0.6.0-dev.1: machine-checked v1 candidate contracts
+
+Implemented: OpenAPI + config/HTTP response/access-log JSON Schema, canonical hashes,
+19-symbol C ABI candidate baseline and native/Python x64 layouts, config/native
+process equivalence cases, live response/log validation, packaged schemas and
+per-file archive integrity checks. RELEASE_VERSION is the single version source.
+No production freeze, LTS or full security audit is claimed.
+
 ## Next: validation and hardening
 
 1. Wider correctness corpus, driver/device matrix and 1000..5000 full OCR stress.
 2. Linux physical GPU and service-account deployment checks; wider WinForms usage.
 3. GPU validation layers, sanitizer and fault recovery/shutdown tests.
-4. Only if justified: explicit CPU reference/fallback, `cpu/vulkan/auto` and reasons.
+4. Supply-chain inventory/SBOM, license and vulnerability review, upgrade/rollback,
+   final artifact qualification, RC and explicit support policy. See [release gates](RELEASE-GATES.md).
 
-## Optimization / release gates
+## Optional optimization / release gates
 
-- Port cooperative-matrix GEMM and FP16 variants together with feature gates;
+- Optional research, not a v1.0 prerequisite: port cooperative-matrix GEMM and FP16 variants with feature gates;
   do not assume subgroup size, shared memory or matrix shapes across vendors.
 - Keep correctness-first FP32 mode available; track CER/boxes for FP16 separately.
-- Bounded shape-plan LRU only after evidence justifies replacing the one-plan policy.
+- A bounded 32-plan metadata LRU and shared arena/IO are implemented; retain resource-cap and changing-width regression tests.
 - Independent Intel/AMD/NVIDIA tests; OS-specific loader/package and service tests.
 - ASan/UBSan, GPU-assisted/synchronization validation, concurrent calls, shutdown,
   fault recovery, 1000..5000 varied real-image requests; do not infer leak freedom from RSS alone.

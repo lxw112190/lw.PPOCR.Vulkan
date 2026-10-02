@@ -39,6 +39,8 @@ python scripts/format_cpp.py --check
 ```powershell
 python scripts/repository_preflight.py
 python scripts/verify_assets.py
+python -m pip install -r requirements-dev.txt
+python scripts/contracts.py --check
 cmake -S . -B build/local -G "Visual Studio 17 2022" -A x64
 cmake --build build/local --config Release --parallel 4
 ctest --test-dir build/local -C Release --output-on-failure
@@ -49,6 +51,16 @@ GPU 正确性、HTTP 与部署包测试必须额外执行，不能把 host 单�
 这次文档/格式整理不会覆盖此前已验证的 `pipeline-opt2` 分享 ZIP；包内旧群信息随该历史包保留，新包应重新生成并验证。
 
 English: Format first-party C/C++ with clang-format 17 only. Keep vendored snapshots unchanged, explain ownership/synchronization/resource bounds, and rerun native plus GPU/deployment tests after code changes. Historical report hashes apply to their original binaries, not automatically to today's source.
+
+## v1 候选契约维护
+
+`scripts/contracts.py --check` 是只读门禁，核对 Schema、OpenAPI、C ABI 头文件 token 指纹及五份契约的规范化 LF SHA-256。`--write` 仅用于明确审查后的候选变更，CI 禁止使用。不要为了消除报错直接重写基线；先判断是实现错、文档错还是确实需要公共变更。正式冻结前仍可审查调整，RC 开始后不再破坏契约。
+
+本轮运行通用发布技能预检：仓库/分支/脚本/依赖哈希检查通过；其“未约束 OpenCV 5”失败及 OpenCV 版本提醒不适用于本纯 Vulkan 项目，明确接受为不适用项，不为消除提醒引入 OpenCV。SBOM、sanitizer 等实际欠项继续保留在发布门槛中。
+
+配置 Schema 是标准 JSON Schema 2020-12。原生程序另外检查 UTF-8 字节数（API Key <=1024 bytes）、JSON 整数 token（拒绝 `1.0`）和默认值填充后的 crop 交叉关系；这些无法完整用标准 Schema 表达的限制写在 `$comment`，并通过实际进程测试覆盖。`--check-config` 不初始化 GPU，因此该矩阵可在 GPU-less CI 运行。
+
+19 个实际导出由 PE 导出表或 Linux `nm -D` 检查；native static_assert 与 Python ctypes 分别验证 x64 布局。`RELEASE_VERSION` 是版本源，CMake 项目版本自动提取其三段数字，DLL/服务沿用完整版本字符串。构建与打包是候选验收，不是自动正式发布；参考 [RELEASE-GATES.md](RELEASE-GATES.md)。
 
 ## FP32 kernel 回归
 

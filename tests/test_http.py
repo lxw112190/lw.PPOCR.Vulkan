@@ -12,6 +12,7 @@ import sys
 import time
 from PIL import Image
 from http_common import Service,json_request,request
+from contract_common import validate_access
 for stream in (sys.stdout,sys.stderr):
     if hasattr(stream,'reconfigure'): stream.reconfigure(encoding='utf-8',errors='backslashreplace')
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--package',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--device',type=int,default=0)
@@ -64,7 +65,7 @@ assert logs
 for path in logs:
     text=path.read_text(encoding='utf-8');assert key not in text and '纯臻营养护发素' not in text
 for line in (a.output/'normal/logs/access.log').read_text(encoding='utf-8').splitlines():
-    entry=json.loads(line);assert entry['timestamp'].endswith('Z') and entry['log_schema_version']==1 and entry['request_id']
+    entry=json.loads(line);validate_access(entry);assert entry['timestamp'].endswith('Z') and entry['log_schema_version']==1 and entry['request_id']
 checks.append('JSONL timestamps / request IDs / secret and OCR-text privacy / graceful shutdown')
 with Service(a.package,a.output/'wait',a.device,engine_wait_timeout_ms=1,worker_threads=4) as s:
     def send(_): return request(s.url+'/api/ocr',sample)[0]

@@ -1,0 +1,98 @@
+{
+  "version": "0.6.0-dev.1",
+  "device": "AMD Radeon(TM) Graphics",
+  "reference": "ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
+  "comparisons": [
+    {
+      "variant": "sample",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】：代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】：YM-X-3011",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醍",
+        "(成品包材）",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 10.256,
+        "det_ms": 5.507099999999999,
+        "rec_ms": 30.861800000000002,
+        "total_ms": 96.597
+      }
+    },
+    {
+      "variant": "rotated-180",
+      "items": 16,
+      "texts": [
+        "发足够的滋养",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "(成品包材)",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "【适用人群】：适合所有肤质",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【产品编号】：YM-X-3011",
+        "【品名】：纯臻营养护发素",
+        "【品牌】：代加工方式/OEMODM",
+        "每瓶22元，1000瓶起订)",
+        "(45元/每公斤，100公斤起订)",
+        "产品信息/参数",
+        "纯臻营养护发素"
+      ],
+      "timing": {
+        "cls_ms": 9.9433,
+        "det_ms": 5.4843,
+        "rec_ms": 31.741699999999998,
+        "total_ms": 65.3549
+      }
+    },
+    {
+      "variant": "blank",
+      "items": 0,
+      "texts": [],
+      "timing": {
+        "cls_ms": 0.0,
+        "det_ms": 3.3442,
+        "rec_ms": 0.0,
+        "total_ms": 8.2508
+      }
+    }
+  ],
+  "iterations": 2,
+  "rss": [
+    {
+      "iteration": 1,
+      "rss_mib": 257.58984375
+    },
+    {
+      "iteration": 2,
+      "rss_mib": 257.59375
+    }
+  ],
+  "preprocessing_environment": {
+    "LWVK_GPU_DET_PREPROCESS": "unset (native auto)",
+    "LWVK_GPU_TEXT_PREPROCESS": "unset (native auto)",
+    "LWVK_GPU_CROP_PREPROCESS": "unset (native auto)"
+  },
+  "software_graph_timeout_ms": "unset (native 30000)",
+  "rss_before_engine_mib": 124.80859375,
+  "rss_after_engine_destroy_mib": 254.6640625,
+  "limitations": "Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
+  "input_recovery": "passed",
+  "result_lifetime": "passed",
+  "classifier_disabled": "passed",
+  "concurrency": "4 workers / 4 calls passed"
+}

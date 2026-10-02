@@ -19,7 +19,17 @@ QQ: 819069052<br>
 QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
-## Status: 0.5.0-dev.2 / Tiny, Small and Medium full OCR preview
+## Status: 0.6.0-dev.1 / v1.0 contract preparation
+
+Added machine-checked v1 **candidate** contracts: 19 C exports and native/ctypes
+layout baselines, OpenAPI, config/response/access-log JSON Schemas and reviewed
+contract hashes. Tests compare config cases with the actual service, validate live
+HTTP responses and JSONL logs, and check each archived payload file against
+`PACKAGE-MANIFEST.json`. CI packages include `schemas/`. This is not an ABI-frozen
+or LTS release; see the [release gates](docs/RELEASE-GATES.md) for remaining work.
+The [local v0.6 report](docs/LOCAL-VALIDATION-060.md) records 21 host tests, 111 config
+cases, three-model AMD/NVIDIA references, and 1000 varied-size HTTP OCR requests
+per model on NVIDIA. RSS/thread/handle signals are not leak-proof or remote CI evidence.
 
 Implemented: Vulkan device enumeration, experimental length-aware C ABI,
 the entire 242-node PP-OCRv6 Tiny DET graph on Vulkan, portable FP32 shaders

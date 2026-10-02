@@ -12,7 +12,10 @@ QQ：819069052<br>
 群名称：天天代码码天天<br>
 群号码：264292622
 
-## 当前阶段：0.5.0-dev.2
+## 当前阶段：0.6.0-dev.1 / v1.0 契约准备
+
+新增可自动验收的 v1 **候选**契约：C ABI 的 19 个导出/结构布局基线、HTTP OpenAPI、配置与响应 JSON Schema、访问日志 JSONL Schema，以及契约哈希检查。配置执行 Schema/原生程序对照测试；HTTP 实测响应和日志严格校验。CI 包含 `schemas/` 与逐文件 `PACKAGE-MANIFEST.json`，压缩后再次验证附件及所有文件的 SHA-256。候选契约不等于正式冻结或 LTS；详细路线和未完成门槛见 [v1.0 发布验收](docs/RELEASE-GATES.md)。
+本机 [0.6 验收记录](docs/LOCAL-VALIDATION-060.md)：21 项主机测试、111 项配置矩阵、AMD/NVIDIA 三模型对拍，以及 NVIDIA 三模型各 1000 次混合尺寸 HTTP 回归通过；RSS/线程/句柄未见无界增长，不据此宣称无泄漏或远程 CI 已通过。
 
 已将 [共享原图与 GPU 前处理/透视裁剪](docs/GPU-DEFAULT.md) 接入**原生默认路径**，C#、Python 与 HTTP 无需额外开启：支持 `shaderFloat64` 的所选 GPU 自动启用，三网络共享 device，原图一次上传，裁剪结果不回读再上传；不支持时保留 CPU 图像处理，网络仍在 GPU。网络 FP32、DET960、预算和公共接口不变。可用 `Start-CSharp-Demo-CPU-Preprocess.bat` 显式关闭作兼容/性能对照。性能依据见 [历史实验报告](docs/GPU-CROP-EXPERIMENT.md)，当前开关规则见默认策略文档。
 
@@ -317,7 +320,7 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 
 兼容证据见 [COMPATIBILITY.md](docs/COMPATIBILITY.md)，开发边界见 [ROADMAP.md](docs/ROADMAP.md)。
 
-下一阶段：更广的样本与显卡验证、GPU validation/sanitizer 与长期稳定性 → 性能档与正式发布包。
+下一阶段：ASan/UBSan 与更广正确性集 → SBOM/供应链和兼容性审计 → 最终包长测/实体机部署验收 → RC → v1.0。正式发布不以超过 DML/TensorRT 或支持所有平台为前提，也不把软件 Vulkan 测试当作硬件 GPU 验收。
 
 开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。
 

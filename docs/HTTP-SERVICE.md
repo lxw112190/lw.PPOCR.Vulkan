@@ -1,6 +1,7 @@
 # Vulkan HTTP 服务 / HTTP service
 
-0.5.0-dev.2 技术验证版。HTTP/config/log v1 是开发期版本标记，尚未正式冻结。
+0.6.0-dev.1 技术验证版。HTTP/config/log v1 已提供机器可读候选契约，尚未正式冻结。
+规范文件在 `schemas/`：OpenAPI、配置/响应/访问日志 JSON Schema、契约哈希锁。CI 与真实 HTTP 测试会验证输出；JSON Schema 验证库仅是开发依赖，客户运行程序不需要 Python。
 单引擎串行处理，Vulkan FP32，不依赖 OpenCV、CUDA、ONNX Runtime。WinForms 同时保留。
 
 ## 启动 / Start
@@ -77,7 +78,7 @@ Linux 用 `curl` 替换 `curl.exe`。未启用认证时省略 `X-API-Key`。
 网页移除 JPEG APP1 元数据后再预览/上传（不重编码 JPEG 像素），避免浏览器自动 EXIF 旋转与原生坐标错位。
 因此网页展示原始像素方向，而非手机相册方向；网页固定编码图片上限为 20 MiB。
 仅识别 `result` 为文字、置信度、图像尺寸、`gpu_rec_ms`；批量 `result.items` 是这些对象的数组。
-响应 header `X-Request-ID` 与 body 相同。开发期此输出还可调整。
+响应 header `X-Request-ID` 与 body 相同，`X-API-Version: 1` 标识 API。开发期变更须审查候选契约和对应测试；不要通过宽松解析掩盖字段漂移。
 
 ## 上限、排队和超时
 
@@ -137,6 +138,6 @@ python tests/test_http.py --package dist/staging --output build/reports/http --d
 python tests/stress_http.py --package dist/staging --output build/reports/http-long --device 1 --iterations 1000
 ```
 
-测试需 Pillow、psutil（运行包不需要）。本机 AMD/NVIDIA 已通过二进制/Base64、完整/仅识别/批量、
+测试需 `pip install -r requirements-dev.txt`（包括 JSON Schema 验证库；运行包不需要）。本机 AMD/NVIDIA 已通过二进制/Base64、完整/仅识别/批量、
 配置、认证、无效/超限图片、过载 429、等待超时 503、恢复与正常关闭。
 长测观察多个尺寸的结果一致性、RSS、线程和句柄；不能因此宣称无 GPU 显存泄漏或 sanitizer 已通过。

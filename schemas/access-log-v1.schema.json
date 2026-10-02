@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Access JSONL v1 candidate",
+  "$comment": "One record per parsed HTTP request. Transport queue rejection precedes parsing and has no request ID/access record. runtime.log is human-readable and not governed by this schema.",
+  "type": "object",
+  "properties": {
+    "log_schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "peer_ip": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 599
+    },
+    "request_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "response_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "error_code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    }
+  },
+  "required": [
+    "log_schema_version",
+    "timestamp",
+    "request_id",
+    "peer_ip",
+    "method",
+    "path",
+    "status",
+    "request_bytes",
+    "response_bytes",
+    "duration_ms"
+  ],
+  "additionalProperties": false
+}

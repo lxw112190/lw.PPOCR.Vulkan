@@ -1,0 +1,75 @@
+{
+  "contract_version": 1,
+  "status": "candidate",
+  "architecture": "x64",
+  "calling_convention": "cdecl",
+  "encoding": "UTF-8",
+  "public_header_token_sha256": "2413f160af22e01a3b67c455b4c8cf898242110ba35c9d3828e99f4bf49f9fad",
+  "symbols": [
+    "lwvk_detector_create",
+    "lwvk_detector_destroy",
+    "lwvk_detector_run",
+    "lwvk_device_count",
+    "lwvk_device_get",
+    "lwvk_last_error",
+    "lwvk_network_create",
+    "lwvk_network_destroy",
+    "lwvk_network_run",
+    "lwvk_network_shape",
+    "lwvk_ocr_config_default",
+    "lwvk_ocr_create",
+    "lwvk_ocr_destroy",
+    "lwvk_ocr_result_destroy",
+    "lwvk_ocr_result_json",
+    "lwvk_ocr_run_bgr",
+    "lwvk_recognize_bgr",
+    "lwvk_recognize_tensor",
+    "lwvk_version"
+  ],
+  "status_codes": {
+    "LWVK_OK": 0,
+    "LWVK_INVALID_ARGUMENT": 1,
+    "LWVK_UNAVAILABLE": 2,
+    "LWVK_MODEL_ERROR": 3,
+    "LWVK_RUNTIME_ERROR": 4,
+    "LWVK_BUFFER_TOO_SMALL": 5
+  },
+  "structures": {
+    "lwvk_device_info": {
+      "size": 288,
+      "alignment": 4,
+      "offsets": {
+        "struct_size": 0,
+        "device_index": 4,
+        "vendor_id": 8,
+        "device_id": 12,
+        "api_version": 16,
+        "device_type": 20,
+        "max_shared_memory_bytes": 24,
+        "subgroup_size": 28,
+        "name": 32
+      }
+    },
+    "lwvk_ocr_config": {
+      "size": 72,
+      "alignment": 8,
+      "offsets": {
+        "struct_size": 0,
+        "device_index": 4,
+        "det_limit_side": 8,
+        "max_candidates": 12,
+        "enable_classifier": 16,
+        "use_dilation": 20,
+        "reading_order": 24,
+        "reserved": 28,
+        "max_workspace_bytes": 32,
+        "max_crop_pixels": 40,
+        "max_total_crop_pixels": 48,
+        "bitmap_threshold": 56,
+        "box_threshold": 60,
+        "unclip_ratio": 64,
+        "cls_threshold": 68
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # WinForms 测试程序 / WinForms tester
 
-版本：0.5.0-dev.2，技术验证版，接口尚未冻结。
+版本：0.6.0-dev.1，技术验证版，已提供 v1 候选契约，接口尚未正式冻结。
 
 参考 `PP-OCRv5_Test_dml` 的操作布局，但只调用本项目 Vulkan C ABI；
 不引入 DML、OpenCVSharp、ONNX Runtime 或 NuGet 包。支持 PP-OCRv6 Tiny/Small/Medium。

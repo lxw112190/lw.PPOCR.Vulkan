@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HTTP config v1 candidate",
+  "$comment": "Runtime additionally requires integer JSON tokens (not 1.0), finite numbers, api_key <=1024 UTF-8 bytes after LWVK_API_KEY override, and max_total_crop_pixels >= max_crop_pixels after defaults. Paths resolve relative to the config file. Schema defaults describe missing fields, not the shipped ONNX config.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
+      "default": 8787
+    },
+    "device_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295,
+      "default": 0
+    },
+    "worker_threads": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32,
+      "default": 4
+    },
+    "max_queued_requests": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 128,
+      "default": 32
+    },
+    "engine_wait_timeout_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60000,
+      "default": 5000
+    },
+    "max_request_bytes": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 67108864,
+      "default": 20971520
+    },
+    "max_image_pixels": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 40000000,
+      "default": 40000000
+    },
+    "max_batch_images": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256,
+      "default": 32
+    },
+    "max_batch_total_pixels": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000000,
+      "default": 40000000
+    },
+    "max_batch_decoded_bytes": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 300000000,
+      "default": 120000000
+    },
+    "max_decode_work_bytes": {
+      "type": "integer",
+      "minimum": 1048576,
+      "maximum": 536870912,
+      "default": 268435456
+    },
+    "log_max_bytes": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 104857600,
+      "default": 10485760
+    },
+    "log_files": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "default": 3
+    },
+    "det_limit_side": {
+      "type": "integer",
+      "minimum": 32,
+      "maximum": 960,
+      "default": 960,
+      "multipleOf": 32
+    },
+    "max_workspace_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1073741824,
+      "default": 0
+    },
+    "max_crop_pixels": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8000000,
+      "default": 4000000
+    },
+    "max_total_crop_pixels": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64000000,
+      "default": 32000000
+    },
+    "listen_host": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "default": "127.0.0.1",
+      "minLength": 1
+    },
+    "model_root": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "default": "models/ppocrv6-tiny"
+    },
+    "web_root": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "default": "www"
+    },
+    "log_dir": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "default": "logs"
+    },
+    "api_key": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "default": "",
+      "maxLength": 1024
+    },
+    "logging_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "access_log_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_classifier": {
+      "type": "boolean",
+      "default": true
+    },
+    "use_dilation": {
+      "type": "boolean",
+      "default": false
+    },
+    "bitmap_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.3
+    },
+    "box_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.6
+    },
+    "unclip_ratio": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 5,
+      "default": 1.5
+    },
+    "cls_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.9
+    }
+  },
+  "required": [
+    "schema_version"
+  ],
+  "additionalProperties": false
+}

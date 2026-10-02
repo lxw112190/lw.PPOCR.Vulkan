@@ -1,0 +1,428 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HTTP response v1 candidate",
+  "$defs": {
+    "OcrItem": {
+      "type": "object",
+      "properties": {
+        "x1": {
+          "type": "number"
+        },
+        "y1": {
+          "type": "number"
+        },
+        "x2": {
+          "type": "number"
+        },
+        "y2": {
+          "type": "number"
+        },
+        "x3": {
+          "type": "number"
+        },
+        "y3": {
+          "type": "number"
+        },
+        "x4": {
+          "type": "number"
+        },
+        "y4": {
+          "type": "number"
+        },
+        "text": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "det_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cls_label": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "-1 when classification is disabled; otherwise 0 or 1"
+        },
+        "cls_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        "x3",
+        "y3",
+        "x4",
+        "y4",
+        "text",
+        "score",
+        "det_score",
+        "cls_label",
+        "cls_score"
+      ],
+      "additionalProperties": false
+    },
+    "OcrResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OcrItem"
+          },
+          "maxItems": 1000
+        },
+        "image_width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "image_height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "det_width": {
+          "type": "integer",
+          "minimum": 32,
+          "maximum": 960,
+          "multipleOf": 32
+        },
+        "det_height": {
+          "type": "integer",
+          "minimum": 32,
+          "maximum": 960,
+          "multipleOf": 32
+        },
+        "classifier_enabled": {
+          "type": "boolean"
+        },
+        "timing": {
+          "type": "object",
+          "properties": {
+            "det_ms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "cls_ms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rec_ms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "total_ms": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "det_ms",
+            "cls_ms",
+            "rec_ms",
+            "total_ms"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "items",
+        "image_width",
+        "image_height",
+        "det_width",
+        "det_height",
+        "classifier_enabled",
+        "timing"
+      ],
+      "additionalProperties": false
+    },
+    "RecognitionResult": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "gpu_rec_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "image_width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "image_height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        }
+      },
+      "required": [
+        "text",
+        "score",
+        "gpu_rec_ms",
+        "image_width",
+        "image_height"
+      ],
+      "additionalProperties": false
+    },
+    "OcrSuccess": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "const": "ocr"
+        },
+        "result": {
+          "$ref": "#/$defs/OcrResult"
+        },
+        "server_total_ms": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "operation",
+        "result",
+        "server_total_ms"
+      ],
+      "additionalProperties": false
+    },
+    "RecognitionSuccess": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "const": "recognize"
+        },
+        "result": {
+          "$ref": "#/$defs/RecognitionResult"
+        },
+        "server_total_ms": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "operation",
+        "result",
+        "server_total_ms"
+      ],
+      "additionalProperties": false
+    },
+    "BatchSuccess": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "const": "recognize_batch"
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 256,
+              "items": {
+                "$ref": "#/$defs/RecognitionResult"
+              }
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        "server_total_ms": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "operation",
+        "result",
+        "server_total_ms"
+      ],
+      "additionalProperties": false
+    },
+    "Health": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "unavailable"
+          ]
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "Info": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        },
+        "device_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "device_name": {
+          "type": "string"
+        },
+        "backend": {
+          "const": "vulkan-fp32"
+        },
+        "engine_instances": {
+          "const": 1
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "version",
+        "device_index",
+        "device_name",
+        "backend",
+        "engine_instances"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "api_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "error_code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ok",
+        "api_version",
+        "request_id",
+        "error_code",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/OcrSuccess"
+    },
+    {
+      "$ref": "#/$defs/RecognitionSuccess"
+    },
+    {
+      "$ref": "#/$defs/BatchSuccess"
+    },
+    {
+      "$ref": "#/$defs/Health"
+    },
+    {
+      "$ref": "#/$defs/Info"
+    },
+    {
+      "$ref": "#/$defs/Error"
+    }
+  ]
+}

@@ -1,0 +1,821 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "lw.PPOCR.Vulkan HTTP API",
+    "version": "1",
+    "description": "v1 candidate, not yet a frozen production contract. API Key requirements depend on configuration. Full OCR coordinates refer to decoded original pixels; no EXIF auto rotation. Network timings include host submit/wait/readback, not GPU timestamps."
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Engine unavailable or stopping, not necessarily busy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Health"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/info": {
+      "get": {
+        "operationId": "api_info",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Info"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          },
+          {}
+        ]
+      }
+    },
+    "/api/ocr": {
+      "post": {
+        "operationId": "api_ocr",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/OcrSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          },
+          {}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/bmp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image_base64": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "image_base64"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recognize": {
+      "post": {
+        "operationId": "api_recognize",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "http-response-v1.schema.json#/$defs/RecognitionSuccess"
+                    },
+                    {
+                      "$ref": "http-response-v1.schema.json#/$defs/BatchSuccess"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Stable error_code; diagnostic text is not a client contract. Queue overflow at transport level may instead close the connection.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-API-Version": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "http-response-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          },
+          {}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/bmp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "image_base64": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "image_base64"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "images_base64": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 256,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "images_base64"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}

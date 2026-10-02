@@ -9,6 +9,7 @@ import subprocess
 import time
 import urllib.error
 import urllib.request
+from contract_common import validate_response
 
 def request(url,body=None,content_type='application/octet-stream',key=None):
     headers={'Content-Type':content_type}
@@ -66,6 +67,7 @@ class Service:
 def json_request(service,path,body=None,kind='application/octet-stream',key=None,expected=200):
     status,headers,data=request(service.url+path,body,kind,key)
     value=json.loads(data)
+    validate_response(value)
     assert status==expected,(status,value)
     assert value['ok']==(status<400)
     assert value['api_version']==1

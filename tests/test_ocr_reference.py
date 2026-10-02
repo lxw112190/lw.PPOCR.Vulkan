@@ -85,6 +85,8 @@ def reference(bgr, geometry, sessions, dictionary, classifier=True, limit=960):
 
 
 def compare(actual, expected):
+    from contract_common import validate_ocr_result
+    validate_ocr_result(actual)
     assert len(actual["items"]) == len(expected), (len(actual["items"]), len(expected))
     for left, right in zip(actual["items"], expected):
         assert "box" not in left

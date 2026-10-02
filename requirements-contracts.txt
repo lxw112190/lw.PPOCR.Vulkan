@@ -1,0 +1,2 @@
+# Development/CI only, never required by deployed binaries.
+jsonschema==4.23.0

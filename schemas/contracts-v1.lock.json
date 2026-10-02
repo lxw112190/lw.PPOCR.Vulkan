@@ -1,0 +1,11 @@
+{
+  "contract_version": 1,
+  "status": "candidate",
+  "files": {
+    "http-service-config-v1.schema.json": "f928b56bdc01bcfe73cf4dd45024b5eed0d1bec5293886974bb1ed0dd05814ec",
+    "http-response-v1.schema.json": "bdfbe32145293db76f4ecf89008612d34dee792c0f550dd21f8c9023718afc3d",
+    "access-log-v1.schema.json": "e9d02eb6789f444135cb7c04feee0b58f19eaa2a37b4df99d3ebd3c7a3ede1e5",
+    "http-api-v1.openapi.json": "5dda256b848eaf9124a2ff5fa7754823eecc0f7a7cee184976ff78d569d7eefd",
+    "c-abi-v1.json": "a6a576caecebfd395edb0c34fdbc55eda6ef0a27d4be16c1828d194e5f735edb"
+  }
+}
