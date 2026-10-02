@@ -113,10 +113,18 @@ add_custom_command(OUTPUT "${derived_dir}/bgr_text_preprocess.comp"
   DEPENDS src/shaders/bgr_text_preprocess.comp VERBATIM)
 list(APPEND shader_names bgr_text_preprocess)
 list(APPEND spirv_files "${derived_dir}/bgr_text_preprocess.spv")
+add_custom_command(OUTPUT "${derived_dir}/bgr_crop.comp"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "${derived_dir}"
+  COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/bgr_crop.comp" "${derived_dir}/bgr_crop.comp"
+  DEPENDS src/shaders/bgr_crop.comp VERBATIM)
+list(APPEND shader_names bgr_crop bgr_shared_text_preprocess)
+list(APPEND derived_sources "${derived_dir}/bgr_shared_text_preprocess.comp")
+list(APPEND spirv_files "${derived_dir}/bgr_crop.spv" "${derived_dir}/bgr_shared_text_preprocess.spv")
 add_custom_command(OUTPUT ${derived_sources}
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/prepare_shaders.py"
     "${CMAKE_CURRENT_SOURCE_DIR}/third_party/simd-paddleocr/shaders" "${derived_dir}"
-  DEPENDS ${shader_sources} src/shaders/conv_gemm_vector.comp src/shaders/conv_pointwise_vector.comp src/shaders/conv_pointwise_wide.comp src/shaders/conv_pointwise_smallm.comp scripts/prepare_shaders.py VERBATIM)
+  DEPENDS ${shader_sources} src/shaders/conv_gemm_vector.comp src/shaders/conv_pointwise_vector.comp src/shaders/conv_pointwise_wide.comp src/shaders/conv_pointwise_smallm.comp src/shaders/bgr_text_preprocess.comp scripts/prepare_shaders.py VERBATIM)
 foreach(name IN LISTS shader_names)
   set(validate_command)
   if(LWVK_SPIRV_VAL)
@@ -186,6 +194,14 @@ add_library(lw_ppocr_vulkan SHARED src/api.cpp src/vulkan_context.cpp src/graph.
 target_sources(lw_ppocr_vulkan PRIVATE src/crop_optimized.c)
 target_sources(lw_ppocr_vulkan PRIVATE src/cls_batch.cpp)
 target_sources(lw_ppocr_vulkan PRIVATE src/rec_batch.cpp)
+target_sources(lw_ppocr_vulkan PRIVATE src/gpu_crop.cpp)
+if(BUILD_TESTING)
+  add_executable(lwvk_gpu_crop_probe tests/gpu_crop_probe.cpp src/gpu_crop.cpp src/vulkan_context.cpp
+    src/ocr_host.cpp src/crop_optimized.c src/ctc_decode.cpp src/rec_preprocess.cpp src/cls_preprocess.cpp src/det_preprocess.cpp)
+  add_dependencies(lwvk_gpu_crop_probe lwvk_embedded_shaders)
+  target_include_directories(lwvk_gpu_crop_probe PRIVATE src include third_party "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  target_link_libraries(lwvk_gpu_crop_probe PRIVATE Vulkan::Vulkan lwvk_geometry Threads::Threads)
+endif()
 add_dependencies(lw_ppocr_vulkan lwvk_embedded_shaders)
 set_target_properties(lw_ppocr_vulkan PROPERTIES OUTPUT_NAME "lw.PPOCR.Vulkan"
   CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
@@ -222,6 +238,9 @@ if(LWVK_SANITIZERS AND NOT MSVC)
 endif()
 add_executable(lw-ppocr-vulkan-probe apps/probe.cpp)
 if(BUILD_TESTING)
+  add_executable(lwvk_preprocess_policy_unit tests/preprocess_policy_unit.cpp)
+  target_include_directories(lwvk_preprocess_policy_unit PRIVATE src)
+  add_test(NAME preprocess-policy-host-unit COMMAND lwvk_preprocess_policy_unit)
   add_executable(lwvk_det_preprocess_unit tests/det_preprocess_unit.cpp src/det_preprocess.cpp)
   target_include_directories(lwvk_det_preprocess_unit PRIVATE src third_party)
   target_link_libraries(lwvk_det_preprocess_unit PRIVATE lwvk_geometry)

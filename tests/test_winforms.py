@@ -18,7 +18,13 @@ p.add_argument("--device", type=int, default=0)
 p.add_argument("--repeat", type=int, default=1)
 p.add_argument("--gpu-det-preprocess", action="store_true", help="explicitly opt child process into the DET experiment")
 p.add_argument("--gpu-text-preprocess", action="store_true", help="explicitly opt child process into CLS/REC preprocessing")
+p.add_argument("--gpu-crop-preprocess", action="store_true", help="shared original image and GPU perspective crops")
+p.add_argument("--cpu-preprocess", action="store_true")
 a = p.parse_args()
+if a.cpu_preprocess and (a.gpu_det_preprocess or a.gpu_text_preprocess or a.gpu_crop_preprocess):
+    p.error('CPU preprocessing cannot be combined with forced GPU preprocessing')
+if a.gpu_crop_preprocess and not (a.gpu_det_preprocess and a.gpu_text_preprocess):
+    p.error('GPU crop requires GPU DET and GPU text preprocessing')
 package, output = a.package.resolve(), a.output.resolve()
 output.mkdir(parents=True, exist_ok=True)
 prefix = "host" if a.host_only else f"device{a.device}"
@@ -44,6 +50,11 @@ if a.gpu_text_preprocess:
     if a.host_only:
         p.error('GPU text experiment requires a physical GPU smoke test')
     env['LWVK_GPU_TEXT_PREPROCESS']='1'
+if a.gpu_crop_preprocess:
+    env['LWVK_GPU_CROP_PREPROCESS']='1'
+if a.cpu_preprocess:
+    for key in ('LWVK_GPU_DET_PREPROCESS','LWVK_GPU_TEXT_PREPROCESS','LWVK_GPU_CROP_PREPROCESS'):
+        env[key]='0'
 completed = subprocess.run(args, cwd=output, env=env, timeout=180, capture_output=True, encoding="utf-8", errors="replace")
 if completed.returncode:
     detail = report.read_text(encoding="utf-8") if report.is_file() else completed.stdout+completed.stderr

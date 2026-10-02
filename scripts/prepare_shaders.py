@@ -20,6 +20,13 @@ vec4 lwvk_gelu(vec4 v) { return vec4(lwvk_gelu(v.x),lwvk_gelu(v.y),lwvk_gelu(v.z
 
 def prepare(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
+    # Reuse exactly the existing interpolation/normalization source. Only
+    # orientation comes from a tiny host header instead of the GPU crop header.
+    shared = (Path(__file__).resolve().parents[1]/'src/shaders/bgr_text_preprocess.comp').read_text(encoding='utf-8')
+    shared = shared.replace('layout(binding = 1, std430)',
+        'layout(binding = 1, std430) readonly buffer Orientation { uint words[]; } orientation;\nlayout(binding = 2, std430)',1)
+    shared = shared.replace('src.words[3]', 'orientation.words[3]')
+    (destination/'bgr_shared_text_preprocess.comp').write_text(shared,encoding='utf-8',newline='\n')
     paths = list(source.glob("*.comp")) + list((Path(__file__).resolve().parents[1]/"src/shaders").glob("conv_*.comp"))
     for path in sorted(paths):
         text = path.read_text(encoding="utf-8")

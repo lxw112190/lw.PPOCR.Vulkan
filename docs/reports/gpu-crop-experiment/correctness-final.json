@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "device": 1,
+  "gpu_det_preprocess": true,
+  "rows": [
+    {
+      "model": "tiny",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "d4ead301d64fb79f511278f0d0484c5fa2c697053c12272d2160db7a5a3b7292",
+      "before_after_mean_wall_ms": [
+        19.673689999690396,
+        17.717656000022544
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 9.942384980644881
+    },
+    {
+      "model": "small",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "493100b6fddf528490825a5d134e22a3697b68610071246217ead1ce09c3aab7",
+      "before_after_mean_wall_ms": [
+        33.55960449989652,
+        31.49920200001361
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 6.139531530799969
+    },
+    {
+      "model": "medium",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "28f4e01e0d4195a51a00ab2523216b03d92d28ab00e022ffc118ed555e43a6c0",
+      "before_after_mean_wall_ms": [
+        73.09687400022085,
+        71.04816899987782
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 2.8027258735262017
+    }
+  ],
+  "gpu_text_preprocess": true,
+  "gpu_crop_preprocess": true,
+  "before_sha256": "056b9b567a9b40b69407591a0ebc66b284ccd26835b4e289c0d05c4255393a6d",
+  "after_sha256": "518073024b6d39cc18b6357b3475c0015ae3a6bea732b214e4753efc1daeafa6",
+  "lru_40_shapes": "passed",
+  "raw_upload_budget_and_recovery": "passed",
+  "method": "one shape warmup, alternating order, FP32 networks, DET cap 960, classifier enabled",
+  "limitations": "No Vulkan validation-layer claim, long soak/leak proof or cross-device equivalence claim."
+}

@@ -46,6 +46,7 @@ class Plan {
     double run(const float* input, float* output, bool ctc = false);
     double run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride, float* output,
                    bool rotate = false);
+    double run_gpu_bgr(const BgrView&, float* output, bool rotate = false);
     std::array<uint64_t, 4> workspace_requirements() const {
         return {arena_bytes_, input_bytes_, output_bytes_, ctc_bytes_};
     }
@@ -63,7 +64,9 @@ class Plan {
   private:
     friend class GraphEngine;
     void stage_bgr(const BgrView&, bool rotate = false);
-    void attach_buffers(Buffer*, Buffer*, Buffer*, Buffer*, bool bgr_only = false);
+    void attach_buffers(Buffer*, Buffer*, Buffer*, Buffer*, bool bgr_only = false, Buffer* gpu_source = nullptr);
+    void bind_gpu_source(Buffer*);
+    Buffer* gpu_source_{};
     bool bgr_only_{};
     void close() noexcept;
     struct Profile {
@@ -99,6 +102,9 @@ class GraphEngine {
     // 权重常驻并独立限额；max_bytes 仅约束共享工作区，不代表整个进程内存。
     GraphEngine(const std::filesystem::path& model_path, uint32_t index, uint64_t max_bytes,
                 const std::string& required_task = "det");
+    GraphEngine(const std::filesystem::path&, std::shared_ptr<Context>, uint64_t, const std::string&);
+    void reserve_shared_source(uint64_t, const std::vector<Buffer*>&);
+    double run_det_gpu_bgr(const BgrView&, uint32_t, uint32_t, float*, uint64_t);
     double run(const float* input, uint32_t height, uint32_t width, float* output, uint64_t capacity = UINT64_MAX);
     double run_det_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
                        uint32_t out_height, uint32_t out_width, float* output, uint64_t capacity);
@@ -128,12 +134,14 @@ class GraphEngine {
     uint64_t batch_workspace_bytes() const;
     uint64_t rec_batch_workspace_bytes() const;
     void clear_batch_workspaces();
+    void initialize(const std::string& required_task);
     uint64_t prepare_bgr(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
     TextResult decode_pairs(const std::vector<float>& pairs);
     void prepare(uint32_t height, uint32_t width, uint64_t min_upload = 0);
     void ensure_workspace(Plan& plan, uint64_t min_upload = 0);
     Model model_;
-    Context context_;
+    std::shared_ptr<Context> context_owner_;
+    Context& context_;
     std::unique_ptr<Buffer> constants_;
     SharedWorkspace workspace_;
     struct CachedPlan {
@@ -161,6 +169,7 @@ class GraphEngine {
     Plan* plan_{};
     uint64_t stamp_{};
     uint64_t max_bytes_;
+    uint64_t base_max_bytes_, source_reservation_{};
     std::mutex mutex_;
 };
 } // namespace lwvk

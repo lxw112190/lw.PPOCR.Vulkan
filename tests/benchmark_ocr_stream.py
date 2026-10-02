@@ -46,7 +46,8 @@ def main():
             for engine in engines:engine.close()
     report=dict(passed=True,device=a.device,before_sha256=hashlib.sha256(a.before.read_bytes()).hexdigest(),
         after_sha256=hashlib.sha256(a.after.read_bytes()).hexdigest(),comparisons=rows,
-        gpu_det_preprocess=os.environ.get('LWVK_GPU_DET_PREPROCESS','0'),gpu_text_preprocess=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','0'),
+        gpu_det_preprocess=os.environ.get('LWVK_GPU_DET_PREPROCESS','unset (library default)'),gpu_text_preprocess=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','unset (library default)'),
+        gpu_crop_preprocess=os.environ.get('LWVK_GPU_CROP_PREPROCESS','unset (library default)'),
         method='100 predecoded images; alternating old/new order; no per-image warmup; pass 0 includes first-use plans, pass 1 reverses image order; FP32, DET960, CLS enabled; excludes model initialization and GUI',
         limitations='One local changing stream, not universal latency or memory/leak qualification')
     a.report.parent.mkdir(parents=True,exist_ok=True)

@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "package": "lw.PPOCR.Vulkan-CSharpDemo-v0.5.0-dev.2-win-x64-20261002-gpu-default1",
+  "version": "0.5.0-dev.2",
+  "library_sha256": "4e95bc3c32aa449480761f615097912a8a223429f7115a42fa3b2867474b2c06",
+  "loader_sha256": "0419974f00e82a3d619077ba414da265a774f8db9d45ad93bc1843f44b2c2c1f",
+  "loader_origin": "package directory verified via GetModuleFileNameW",
+  "development_path_removed": true,
+  "working_directory": "outside package",
+  "checked_manifest_files": 0,
+  "models_and_devices": [
+    {
+      "device": 1,
+      "model": "tiny",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 1,
+      "model": "small",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 1,
+      "model": "medium",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    }
+  ],
+  "preprocessing_requested": {
+    "LWVK_GPU_DET_PREPROCESS": "0",
+    "LWVK_GPU_TEXT_PREPROCESS": "0",
+    "LWVK_GPU_CROP_PREPROCESS": "0"
+  },
+  "limitations": "Installed local GPU drivers and .NET Framework are still present; not a clean OS VM, universal compatibility or a leak proof."
+}

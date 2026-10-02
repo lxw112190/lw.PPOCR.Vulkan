@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "package": "lw.PPOCR.Vulkan-CSharpDemo-v0.5.0-dev.2-win-x64-20261002-gpu-crop-experiment1",
+  "version": "0.5.0-dev.2",
+  "library_sha256": "518073024b6d39cc18b6357b3475c0015ae3a6bea732b214e4753efc1daeafa6",
+  "loader_sha256": "0419974f00e82a3d619077ba414da265a774f8db9d45ad93bc1843f44b2c2c1f",
+  "loader_origin": "package directory verified via GetModuleFileNameW",
+  "development_path_removed": true,
+  "working_directory": "outside package",
+  "checked_manifest_files": 0,
+  "models_and_devices": [
+    {
+      "device": 1,
+      "model": "tiny",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 1,
+      "model": "small",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 1,
+      "model": "medium",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 0,
+      "model": "tiny",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 0,
+      "model": "small",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    },
+    {
+      "device": 0,
+      "model": "medium",
+      "full_items": 16,
+      "full_title_and_roi": "passed"
+    }
+  ],
+  "gpu_det_preprocess_experiment": true,
+  "gpu_text_preprocess_experiment": true,
+  "gpu_crop_preprocess_experiment": true,
+  "limitations": "Installed local GPU drivers and .NET Framework are still present; not a clean OS VM, universal compatibility or a leak proof."
+}

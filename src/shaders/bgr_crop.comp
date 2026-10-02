@@ -1,0 +1,47 @@
+#version 450
+#extension GL_ARB_gpu_shader_fp64 : require
+// Apache-2.0. Preserve the CPU crop's projective/bilinear/BGR8 math, including
+// rounding BEFORE the subsequent network resize. Four packed bytes per thread;
+// no byte-storage extension, atomics or overlapping output word writes.
+layout(local_size_x=256) in;
+layout(binding=0,std430) readonly buffer Original { uint words[]; } src;
+struct Mapping { uvec4 dims; uvec4 flags; double c[8]; };
+layout(binding=1,std430) readonly buffer Maps { Mapping values[]; } maps;
+layout(binding=2,std430) writeonly buffer Crop { uint words[]; } dst;
+layout(push_constant) uniform Index { uint index; } p;
+double source_byte(uint x,uint y,uint c) {
+    uint offset=y*src.words[2]+x*3u+c;
+    return double((src.words[8u+offset/4u]>>((offset%4u)*8u))&255u);
+}
+uint sample_crop(uint byte_id,Mapping m) {
+    uint channel=byte_id%3u, dx=(byte_id/3u)%m.dims.z,dy=byte_id/(3u*m.dims.z);
+    uint x=m.flags.x!=0u?dy:dx;
+    uint y=m.flags.x!=0u?m.dims.y-1u-dx:dy;
+    precise double u=double(x)/double(m.dims.x),v=double(y)/double(m.dims.y);
+    precise double denominator=m.c[6]*u+m.c[7]*v+1.0lf;
+    precise double sx=(m.c[0]*u+m.c[1]*v+m.c[2])/denominator;
+    precise double sy=(m.c[3]*u+m.c[4]*v+m.c[5])/denominator;
+    precise double ix=floor(sx),iy=floor(sy),fx=sx-ix,fy=sy-iy;
+    uint x0=uint(clamp(ix,0.0lf,double(src.words[0]-1u)));
+    uint x1=uint(clamp(ix+1.0lf,0.0lf,double(src.words[0]-1u)));
+    uint y0=uint(clamp(iy,0.0lf,double(src.words[1]-1u)));
+    uint y1=uint(clamp(iy+1.0lf,0.0lf,double(src.words[1]-1u)));
+    precise double tl=source_byte(x0,y0,channel),tr=source_byte(x1,y0,channel);
+    precise double bl=source_byte(x0,y1,channel),br=source_byte(x1,y1,channel);
+    precise double top=tl+(tr-tl)*fx,bottom=bl+(br-bl)*fx;
+    precise double value=top+(bottom-top)*fy;
+    return value<=0.0lf?0u:value>=255.0lf?255u:uint(floor(value+0.5lf));
+}
+void main() {
+    Mapping m=maps.values[p.index];
+    uint id=gl_GlobalInvocationID.x;
+    if (id<8u) {
+        dst.words[id]=id==0u?m.dims.z:id==1u?m.dims.w:id==2u?m.dims.z*3u:0u;
+        return;
+    }
+    uint bytes=m.dims.z*m.dims.w*3u,offset=(id-8u)*4u;
+    if (offset>=bytes) return;
+    uint packed=0u;
+    for (uint j=0u;j<4u;++j) if (offset+j<bytes) packed|=sample_crop(offset+j,m)<<(j*8u);
+    dst.words[id]=packed;
+}

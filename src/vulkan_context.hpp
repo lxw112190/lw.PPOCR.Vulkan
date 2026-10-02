@@ -13,6 +13,7 @@ struct DeviceInfo {
     uint32_t subgroup_size{};
 };
 std::vector<DeviceInfo> enumerate_devices();
+bool gpu_crop_preprocess_requested();
 class Context;
 class Buffer {
   public:
@@ -24,6 +25,9 @@ class Buffer {
     void write_parts(const void* prefix, size_t prefix_size, const void* data, size_t size, size_t tail_padding);
     void read(void* data, size_t size);
     void copy_from(const Buffer& source);
+    bool belongs_to(const Context& context) const {
+        return &context_ == &context;
+    }
     VkBuffer handle{};
     VkDeviceSize size{};
 
@@ -59,8 +63,9 @@ class Context {
     bool cooperative_matrix{}; // experimental opt-in; tensors/accumulators stay FP32
     bool required_subgroup_size{};
     bool gpu_profile{};         // engineering diagnostics only; default off
-    bool gpu_det_preprocess{};  // opt-in FP64 resize/normalization, network remains FP32
-    bool gpu_text_preprocess{}; // opt-in CLS/REC preprocessing; independent of DET
+    bool gpu_det_preprocess{};  // capability-aware default, network remains FP32
+    bool gpu_text_preprocess{}; // capability-aware CLS/REC preprocessing
+    bool gpu_crop_preprocess{}; // OCR shared device/source; auto needs both stages
     uint32_t timestamp_valid_bits{};
 
   private:

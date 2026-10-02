@@ -16,6 +16,7 @@ void validate_bgr(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t);
 // Shared native host pipeline for production and optional test-only DML oracle.
 // Backends own synchronization and probabilities/CTC execution; no ABI exposure.
 struct OcrGraphs {
+    std::function<double(const std::vector<lw_detection_box>&, std::vector<BgrView>&)> crop_batch;
     std::function<double(const float*, uint32_t, uint32_t, float*, uint64_t)> det, cls;
     std::function<double(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, float*, uint64_t)>
         det_bgr;

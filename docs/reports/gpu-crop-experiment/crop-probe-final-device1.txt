@@ -1,0 +1,9 @@
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x1201ff1bff0
+
+{"passed":true,"device":"NVIDIA GeForce RTX 4060 Laptop GPU","cases":111,"crop_pixels_exact":true,"invalid_recovery":true,"reserved_bytes":558392}

@@ -72,7 +72,7 @@ def prepare(a):
     shutil.copytree(ROOT/'models/onnx',a.staging/'models/onnx',ignore=SKIP)
     for file in ('LICENSE','NOTICE','RELEASE_VERSION','dependencies.lock.json'):
         shutil.copyfile(ROOT/file,a.staging/file)
-    for file in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Start-CSharp-Demo-GPU-Preprocess-Experiment.bat','Check-GPU.bat'):
+    for file in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-CPU-Preprocess.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Start-CSharp-Demo-GPU-Preprocess-Experiment.bat','Start-CSharp-Demo-GPU-Crop-Experiment.bat','Check-GPU.bat'):
         shutil.copyfile(ROOT/'deploy/windows'/file,a.staging/file)
     (a.staging/'sdk/include').mkdir(parents=True)
     shutil.copyfile(ROOT/'include/lw_ppocr_vulkan.h',a.staging/'sdk/include/lw_ppocr_vulkan.h')
@@ -102,10 +102,13 @@ def prepare(a):
         native_system_imports={'lw.PPOCR.Vulkan.dll':['vulkan-1.dll','KERNEL32.dll'],
             'vulkan-1.dll':['CFGMGR32.dll','KERNEL32.dll','ADVAPI32.dll']},
         requirements='Windows x64 / .NET Framework >=4.0 / installed compatible Vulkan GPU vendor driver',
-        model_variants=['tiny','small','medium'],precision='FP32, experimental paths off by default',
-        gpu_preprocess_launchers={'Start-CSharp-Demo.bat':'both off',
+        model_variants=['tiny','small','medium'],precision='FP32 networks; FP64 image preprocessing on capable GPUs',
+        gpu_preprocessing_default='auto: shaderFloat64 and no GPU profiling; otherwise CPU image preprocessing, still GPU inference',
+        gpu_preprocess_launchers={'Start-CSharp-Demo.bat':'all three auto',
+            'Start-CSharp-Demo-CPU-Preprocess.bat':'all three off; networks still GPU',
             'Start-CSharp-Demo-GPU-DET-Experiment.bat':'DET only',
-            'Start-CSharp-Demo-GPU-Preprocess-Experiment.bat':'DET + CLS + REC'},
+            'Start-CSharp-Demo-GPU-Preprocess-Experiment.bat':'DET + CLS + REC; CPU crop',
+            'Start-CSharp-Demo-GPU-Crop-Experiment.bat':'DET + CLS + REC + shared original/GPU crop'},
         note='Application-local loader is for portable testing; prefer system driver/runtime for long-term deployment. Not a driver bundle.')
     write_json(a.staging/'PACKAGE-INFO.json',info)
     write_json(a.staging/'validation/native-qualification.json',qualification)
@@ -133,7 +136,7 @@ def archive(a):
         if sha(a.staging/name)!=digest:raise ValueError('application changed after preparation: '+name)
     if {p.name for p in a.staging.glob('*.dll')}!={'lw.PPOCR.Vulkan.dll','vulkan-1.dll'}:
         raise ValueError('unexpected runtime DLL; do not bundle benchmark/driver libraries')
-    for name in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Start-CSharp-Demo-GPU-Preprocess-Experiment.bat','Check-GPU.bat','lw.PPOCR.Vulkan.WinFormsDemo.exe',
+    for name in ('Start-CSharp-Demo.bat','Start-CSharp-Demo-CPU-Preprocess.bat','Start-CSharp-Demo-GPU-DET-Experiment.bat','Start-CSharp-Demo-GPU-Preprocess-Experiment.bat','Start-CSharp-Demo-GPU-Crop-Experiment.bat','Check-GPU.bat','lw.PPOCR.Vulkan.WinFormsDemo.exe',
                  'lw.PPOCR.Vulkan.WinFormsDemo.exe.config','test-images/sample.jpg','prerequisites/VulkanRT-License.txt'):
         if not (a.staging/name).is_file():raise ValueError('missing package file: '+name)
     a.output.mkdir(parents=True,exist_ok=True)

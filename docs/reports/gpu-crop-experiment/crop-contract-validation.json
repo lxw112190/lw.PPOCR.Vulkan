@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "device": 1,
+  "library_sha256": "518073024b6d39cc18b6357b3475c0015ae3a6bea732b214e4753efc1daeafa6",
+  "missing_prerequisites": "3 rejected in fresh processes",
+  "classifier_on_off": "exact items",
+  "independent_handles": "alternating image/blank/recovery",
+  "retained_source_budget_recovery": "network-pressure rejection followed by smaller image passed",
+  "limitations": "Serial local GPU contract, not concurrent multi-handle stress, memory/leak proof or device-loss injection"
+}

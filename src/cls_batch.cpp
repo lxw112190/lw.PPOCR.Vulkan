@@ -30,11 +30,15 @@ double GraphEngine::classify_batch(const std::vector<BgrView>& images, std::vect
             throw std::runtime_error("GPU plan failed; recreate handle before reuse");
     std::vector<uint64_t> uploads;
     for (const auto& image : images) {
-        validate_bgr(image.pixels, image.bytes, image.width, image.height, image.stride);
+        validate_bgr(image.gpu_buffer ? reinterpret_cast<const uint8_t*>(image.gpu_buffer) : image.pixels, image.bytes,
+                     image.width, image.height, image.stride);
         const uint64_t span = uint64_t(image.height - 1) * image.stride + uint64_t(image.width) * 3;
         if (span > UINT32_MAX - 35)
             throw std::length_error("raw BGR upload exceeds shader address range");
-        uploads.push_back(32 + (span + 3) / 4 * 4);
+        if (image.gpu_buffer && (!context_.gpu_crop_preprocess || !image.gpu_buffer->belongs_to(context_) ||
+                                 image.gpu_buffer->size < 32 + (span + 3) / 4 * 4))
+            throw std::invalid_argument("invalid shared CLS crop");
+        uploads.push_back(image.gpu_buffer ? 32 : 32 + (span + 3) / 4 * 4);
     }
     // At most eight tiny classifier plans, with shared resident model weights.
     while (cls_batch_.size() < images.size()) {
@@ -77,8 +81,14 @@ double GraphEngine::classify_batch(const std::vector<BgrView>& images, std::vect
         double ms = 0;
         for (size_t i = 0; i < images.size(); ++i) {
             const auto& image = images[i];
-            auto span = prepare_bgr(image.pixels, image.bytes, image.width, image.height, image.stride, 80, 160);
-            ms += plan_->run_bgr(image.pixels, span, image.width, image.height, image.stride, output[i].data());
+            if (image.gpu_buffer) {
+                prepare(80, 160);
+                plan_->bind_gpu_source(image.gpu_buffer);
+                ms += plan_->run_gpu_bgr(image, output[i].data());
+            } else {
+                auto span = prepare_bgr(image.pixels, image.bytes, image.width, image.height, image.stride, 80, 160);
+                ms += plan_->run_bgr(image.pixels, span, image.width, image.height, image.stride, output[i].data());
+            }
         }
         return ms;
     }
@@ -109,7 +119,8 @@ double GraphEngine::classify_batch(const std::vector<BgrView>& images, std::vect
         for (size_t j = 0; j < 4; ++j)
             if (capacity[i][j] && !*buffers[j])
                 *buffers[j] = std::make_unique<Buffer>(context_, capacity[i][j], j != 0, j >= 2);
-        slot.plan->attach(slot.workspace);
+        slot.plan->attach_buffers(slot.workspace.arena.get(), slot.workspace.upload.get(),
+                                  slot.workspace.readback.get(), slot.workspace.ctc.get(), false, images[i].gpu_buffer);
     }
     const auto start = std::chrono::steady_clock::now();
     std::vector<VkCommandBuffer> commands;

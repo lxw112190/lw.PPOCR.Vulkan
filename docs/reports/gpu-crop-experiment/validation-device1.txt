@@ -1,0 +1,99 @@
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x26285161010
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a30a3c0560
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a30aab77d0
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a30b0f0b30
+
+{"model": "tiny", "size": 500, "regions": 16, "exact_items_equal": true, "before_median_ms": {"wall_ms": 24.71980000336771, "cls_ms": 5.98895, "det_ms": 3.00095, "rec_ms": 9.4042, "total_ms": 24.17165}, "after_median_ms": {"wall_ms": 23.766549998981645, "cls_ms": 6.07555, "det_ms": 3.4518, "rec_ms": 9.87645, "total_ms": 23.2023}, "wall_reduction_percent": 3.856220536801258}
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x26285160fe0
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x26284e44cf0
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a30a8b9180
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a311972f90
+
+{"model": "small", "size": 500, "regions": 16, "exact_items_equal": true, "before_median_ms": {"wall_ms": 43.28990000067279, "cls_ms": 5.9455, "det_ms": 4.8683499999999995, "rec_ms": 25.457500000000003, "total_ms": 42.82225}, "after_median_ms": {"wall_ms": 40.67949999807752, "cls_ms": 5.804, "det_ms": 5.16835, "rec_ms": 25.124699999999997, "total_ms": 40.1131}, "wall_reduction_percent": 6.030043965346888}
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x26285160fe0
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a3118d6a90
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a3118d1130
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x2a30f958e80
+
+{"model": "medium", "size": 500, "regions": 16, "exact_items_equal": true, "before_median_ms": {"wall_ms": 94.21775000009802, "cls_ms": 6.0165500000000005, "det_ms": 12.319949999999999, "rec_ms": 69.39005, "total_ms": 93.7186}, "after_median_ms": {"wall_ms": 93.15005000462406, "cls_ms": 5.86855, "det_ms": 12.9497, "rec_ms": 69.44454999999999, "total_ms": 92.62215}, "wall_reduction_percent": 1.1332259531487976}

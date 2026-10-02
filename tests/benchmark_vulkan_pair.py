@@ -62,8 +62,9 @@ def main():
     report=dict(passed=True,before_sha256=sha(a.before),after_sha256=sha(a.after),device=a.device,
         method=dict(warmup_calls=3,iterations=a.iterations,order='alternating and reversed on odd iterations',
             initialization_order='candidate-first' if a.reverse_initialization else 'baseline-first',
-            gpu_det_preprocess_environment=os.environ.get('LWVK_GPU_DET_PREPROCESS','0'),
-            gpu_text_preprocess_environment=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','0'),
+            gpu_det_preprocess_environment=os.environ.get('LWVK_GPU_DET_PREPROCESS','unset (library default)'),
+            gpu_text_preprocess_environment=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','unset (library default)'),
+            gpu_crop_preprocess_environment=os.environ.get('LWVK_GPU_CROP_PREPROCESS','unset (library default)'),
             scope='predecoded BGR -> native OCR -> JSON copy and Python parsing; no GUI/file decoding; one active GPU workload',
             det_limit_side=960,classifier=True,precision='default FP32'),comparisons=rows)
     a.report.parent.mkdir(parents=True,exist_ok=True)

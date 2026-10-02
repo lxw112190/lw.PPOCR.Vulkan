@@ -1,6 +1,7 @@
 #include "vulkan_context.hpp"
 #include "embedded_spirv.hpp"
 #include "memory_policy.hpp"
+#include "preprocess_policy.hpp"
 #include <algorithm>
 #include <cstring>
 #include <stdexcept>
@@ -8,6 +9,27 @@
 #include <cstdlib>
 
 namespace lwvk {
+static PreprocessOption preprocess_option(const char* name) {
+#ifdef _MSC_VER
+    size_t length{};
+    getenv_s(&length, nullptr, 0, name);
+    if (!length)
+        return PreprocessOption::Auto;
+    std::vector<char> value(length);
+    getenv_s(&length, value.data(), value.size(), name);
+    const std::string option(value.data());
+#else
+    const char* value = std::getenv(name);
+    const std::string option = value ? value : "";
+#endif
+    if (option.empty() || option == "auto")
+        return PreprocessOption::Auto;
+    if (option == "0")
+        return PreprocessOption::Off;
+    if (option == "1")
+        return PreprocessOption::On;
+    throw std::invalid_argument(std::string(name) + " must be auto, 0 or 1");
+}
 void check(VkResult result, const char* operation) {
     if (result != VK_SUCCESS)
         throw std::runtime_error(std::string(operation) + ": VkResult=" + std::to_string(result));
@@ -105,35 +127,15 @@ Context::Context(uint32_t index) {
         ci.queueCreateInfoCount = 1;
         ci.pQueueCreateInfos = &qi;
         VkPhysicalDeviceFeatures enabled{};
-#ifdef _MSC_VER
-        char det_value[2]{};
-        size_t det_length{};
-        getenv_s(&det_length, nullptr, 0, "LWVK_GPU_DET_PREPROCESS");
-        if (det_length == 2)
-            getenv_s(&det_length, det_value, sizeof(det_value), "LWVK_GPU_DET_PREPROCESS");
-        gpu_det_preprocess = det_value[0] == '1';
-#else
-        const char* det_value = std::getenv("LWVK_GPU_DET_PREPROCESS");
-        gpu_det_preprocess = det_value && std::strcmp(det_value, "1") == 0;
-#endif
-#ifdef _MSC_VER
-        char text_value[2]{};
-        size_t text_length{};
-        getenv_s(&text_length, nullptr, 0, "LWVK_GPU_TEXT_PREPROCESS");
-        if (text_length == 2)
-            getenv_s(&text_length, text_value, sizeof(text_value), "LWVK_GPU_TEXT_PREPROCESS");
-        gpu_text_preprocess = text_value[0] == '1';
-#else
-        const char* text_value = std::getenv("LWVK_GPU_TEXT_PREPROCESS");
-        gpu_text_preprocess = text_value && std::strcmp(text_value, "1") == 0;
-#endif
+        VkPhysicalDeviceFeatures available{};
+        vkGetPhysicalDeviceFeatures(physical, &available);
+        const auto policy = resolve_preprocess_policy(
+            preprocess_option("LWVK_GPU_DET_PREPROCESS"), preprocess_option("LWVK_GPU_TEXT_PREPROCESS"),
+            preprocess_option("LWVK_GPU_CROP_PREPROCESS"), available.shaderFloat64 != VK_FALSE, gpu_profile);
+        gpu_det_preprocess = policy.det;
+        gpu_text_preprocess = policy.text;
+        gpu_crop_preprocess = policy.crop;
         if (gpu_det_preprocess || gpu_text_preprocess) {
-            VkPhysicalDeviceFeatures available{};
-            vkGetPhysicalDeviceFeatures(physical, &available);
-            if (!available.shaderFloat64)
-                throw std::runtime_error("experimental GPU preprocessing requires shaderFloat64");
-            if (gpu_profile)
-                throw std::invalid_argument("disable LWVK_GPU_PROFILE for GPU preprocessing experiments");
             enabled.shaderFloat64 = VK_TRUE;
             ci.pEnabledFeatures = &enabled;
         }
@@ -327,6 +329,9 @@ Pipeline& Context::pipeline(const std::string& name, uint32_t bindings, uint32_t
             vkDestroyDescriptorSetLayout(device, p.descriptor_layout, nullptr);
         throw;
     }
+}
+bool gpu_crop_preprocess_requested() {
+    return preprocess_option("LWVK_GPU_CROP_PREPROCESS") != PreprocessOption::Off;
 }
 Buffer::Buffer(Context& context, VkDeviceSize bytes, bool host, bool readback)
     : size(bytes), context_(context), host_visible_(host) {

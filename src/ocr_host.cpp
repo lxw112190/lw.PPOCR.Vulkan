@@ -72,6 +72,8 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
     // 原图 BGR -> DET -> DB/阅读排序 -> 单行透视裁剪 -> 可选 CLS/翻转 -> REC/CTC。
     // CLS 可按最多八行合并提交；裁剪暂存有界，不一次保存全部文字行。
     HostProfile profile;
+    if (graphs.crop_batch && (!graphs.rec_batch || ((graphs.cls || graphs.cls_bgr) && !graphs.cls_batch)))
+        throw std::invalid_argument("GPU crop requires compatible batch consumers");
     profile.begin();
     uint32_t rw = 0, rh = 0;
     float wr = 0, hr = 0;
@@ -104,6 +106,7 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
         uint32_t index, width, height;
         uint64_t bytes;
         std::vector<uint8_t> pixels;
+        Buffer* gpu_buffer{};
         int label = -1;
         float cls_score = 0;
         bool rotate = false;
@@ -128,19 +131,40 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
             if (pixels > config.max_crop_pixels || pixels > config.max_total_crop_pixels - total_pixels)
                 throw std::invalid_argument("OCR crop pixel limit exceeded; no partial result returned");
             total_pixels += pixels;
-            std::vector<uint8_t> crop(static_cast<size_t>(crop_bytes));
-            host_check(
-                lwvk_crop_quad_bgr_u8(p, bytes, w, h, stride, &box, crop.data(), crop.size(), &cw, &ch, &crop_bytes),
-                "perspective crop");
+            std::vector<uint8_t> crop;
+            if (!graphs.crop_batch) {
+                crop.resize(static_cast<size_t>(crop_bytes));
+                host_check(lwvk_crop_quad_bgr_u8(p, bytes, w, h, stride, &box, crop.data(), crop.size(), &cw, &ch,
+                                                 &crop_bytes),
+                           "perspective crop");
+            }
             profile.end(3);
             chunk_bytes += crop_bytes;
             chunk.push_back({cursor++, cw, ch, crop_bytes, std::move(crop)});
+        }
+        if (graphs.crop_batch) {
+            std::vector<lw_detection_box> quads;
+            for (const auto& crop : chunk)
+                quads.push_back(boxes[crop.index]);
+            std::vector<BgrView> views;
+            profile.begin();
+            graphs.crop_batch(quads, views);
+            profile.end(3);
+            if (views.size() != chunk.size())
+                throw std::runtime_error("GPU crop result count mismatch");
+            for (size_t i = 0; i < chunk.size(); ++i) {
+                if (!views[i].gpu_buffer || views[i].width != chunk[i].width || views[i].height != chunk[i].height ||
+                    views[i].bytes != chunk[i].bytes || views[i].stride != chunk[i].width * 3)
+                    throw std::runtime_error("GPU crop shape mismatch");
+                chunk[i].gpu_buffer = views[i].gpu_buffer;
+            }
         }
         std::vector<std::array<float, 2>> batch_probabilities;
         if (graphs.cls_batch) {
             std::vector<BgrView> views;
             for (const auto& crop : chunk)
-                views.push_back({crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3});
+                views.push_back(
+                    {crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3, crop.gpu_buffer});
             profile.begin();
             cls_ms += graphs.cls_batch(views, batch_probabilities);
             profile.end(5);
@@ -185,7 +209,8 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
             std::vector<BgrView> views;
             std::vector<uint8_t> rotations;
             for (const auto& crop : chunk) {
-                views.push_back({crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3});
+                views.push_back(
+                    {crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3, crop.gpu_buffer});
                 rotations.push_back(crop.rotate ? 1 : 0);
             }
             profile.begin();

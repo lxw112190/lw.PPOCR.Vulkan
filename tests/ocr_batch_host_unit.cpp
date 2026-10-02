@@ -8,7 +8,7 @@ void require(bool value, const char* message) {
     if (!value)
         throw std::runtime_error(message);
 }
-void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversized) {
+void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversized, bool gpu_crop = false) {
     std::vector<uint8_t> image(uint64_t(side) * side * 3, 255);
     lwvk_ocr_config config{};
     config.struct_size = sizeof(config);
@@ -34,11 +34,31 @@ void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversi
     std::vector<size_t> chunks;
     uint64_t maximum_bytes = 0;
     bool wrong_count = false, invalid_probability = false, wrong_rec_count = false;
+    int invalid_crop = 0;
+    if (gpu_crop)
+        graphs.crop_batch = [&](const std::vector<lw_detection_box>& boxes, std::vector<lwvk::BgrView>& views) {
+            views.clear();
+            for (const auto& box : boxes) {
+                uint32_t w = 0, h = 0;
+                uint64_t bytes = 0;
+                require(lw_crop_quad_size(&box, &w, &h, &bytes) == LW_STATUS_OK, "mock GPU crop size");
+                views.push_back({nullptr, bytes, w, h, w * 3, reinterpret_cast<lwvk::Buffer*>(uintptr_t(1))});
+            }
+            if (invalid_crop == 1)
+                views.clear();
+            if (invalid_crop == 2)
+                views[0].width += 1;
+            if (invalid_crop == 3)
+                views[0].gpu_buffer = nullptr;
+            return 0.2;
+        };
     graphs.cls_batch = [&](const std::vector<lwvk::BgrView>& views, std::vector<std::array<float, 2>>& output) {
         require(!views.empty() && views.size() <= 8, "invalid host chunk count");
         uint64_t bytes = 0;
-        for (const auto& v : views)
+        for (const auto& v : views) {
+            require(gpu_crop ? (!v.pixels && v.gpu_buffer) : (v.pixels && !v.gpu_buffer), "crop transport changed");
             bytes += v.bytes;
+        }
         require(bytes <= 16ull * 1024 * 1024 || views.size() == 1, "unbounded cropped staging bytes");
         maximum_bytes = std::max(bytes, maximum_bytes);
         chunks.push_back(views.size());
@@ -88,11 +108,12 @@ void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversi
         if (oversized)
             require(maximum_bytes > 16ull * 1024 * 1024, "oversized single-crop path was not exercised");
         if (side < 1000) {
-            for (int which = 0; which < 4; ++which) {
+            for (int which = 0; which < (gpu_crop ? 7 : 4); ++which) {
                 config.max_total_crop_pixels = 64000000;
                 wrong_count = which == 0;
                 invalid_probability = which == 1;
                 wrong_rec_count = which == 3;
+                invalid_crop = which >= 4 ? which - 3 : 0;
                 if (which == 2)
                     config.max_total_crop_pixels = 1;
                 bool rejected = false;
@@ -105,6 +126,7 @@ void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversi
             }
             config.max_total_crop_pixels = 64000000;
             wrong_count = invalid_probability = wrong_rec_count = false;
+            invalid_crop = 0;
             require(run()["items"].size() == regions, "host did not recover after exception");
             graphs.cls_batch = {};
             config.enable_classifier = 0;
@@ -124,6 +146,7 @@ void exercise(uint32_t side, uint32_t regions, uint32_t band_height, bool oversi
 int main() {
     try {
         exercise(800, 20, 20, false);
+        exercise(800, 20, 20, false, true);
         exercise(5120, 3, 190, false);
         exercise(5120, 3, 225, true);
         std::cout

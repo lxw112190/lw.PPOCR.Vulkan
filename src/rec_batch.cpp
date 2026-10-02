@@ -40,13 +40,17 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
     std::vector<uint64_t> uploads;
     for (size_t i = 0; i < images.size(); ++i) {
         const auto& image = images[i];
-        validate_bgr(image.pixels, image.bytes, image.width, image.height, image.stride);
+        validate_bgr(image.gpu_buffer ? reinterpret_cast<const uint8_t*>(image.gpu_buffer) : image.pixels, image.bytes,
+                     image.width, image.height, image.stride);
         if (rotations[i] > 1)
             throw std::invalid_argument("REC rotation flag must be zero or one");
         const auto span = uint64_t(image.height - 1) * image.stride + uint64_t(image.width) * 3;
         if (span > UINT32_MAX - 35)
             throw std::length_error("raw BGR upload exceeds shader address range");
-        uploads.push_back(32 + (span + 3) / 4 * 4);
+        if (image.gpu_buffer && (!context_.gpu_crop_preprocess || !image.gpu_buffer->belongs_to(context_) ||
+                                 image.gpu_buffer->size < 32 + (span + 3) / 4 * 4))
+            throw std::invalid_argument("invalid shared REC crop");
+        uploads.push_back(image.gpu_buffer ? 32 : 32 + (span + 3) / 4 * 4);
         const auto scaled = (uint64_t(48) * image.width + image.height - 1) / image.height;
         widths.push_back(uint32_t(std::clamp<uint64_t>((scaled + 7) / 8 * 8, 32, 960)));
     }
@@ -111,11 +115,18 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
         std::vector<TextResult> results;
         for (size_t i = 0; i < images.size(); ++i) {
             const auto& image = images[i];
-            const auto span =
-                prepare_bgr(image.pixels, image.bytes, image.width, image.height, image.stride, 48, widths[i]);
+            uint64_t span = 0;
+            if (image.gpu_buffer)
+                prepare(48, widths[i]);
+            else
+                span = prepare_bgr(image.pixels, image.bytes, image.width, image.height, image.stride, 48, widths[i]);
             std::vector<float> pairs(uint64_t(plan_->output_shape()[3]) * 2);
-            elapsed += plan_->run_bgr(image.pixels, span, image.width, image.height, image.stride, pairs.data(),
-                                      rotations[i] != 0);
+            if (image.gpu_buffer) {
+                plan_->bind_gpu_source(image.gpu_buffer);
+                elapsed += plan_->run_gpu_bgr(image, pairs.data(), rotations[i] != 0);
+            } else
+                elapsed += plan_->run_bgr(image.pixels, span, image.width, image.height, image.stride, pairs.data(),
+                                          rotations[i] != 0);
             results.push_back(decode_pairs(pairs));
         }
         output = std::move(results);
@@ -157,7 +168,8 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
             work.upload = std::make_unique<Buffer>(context_, capacity[i][0], true);
         if (!work.ctc)
             work.ctc = std::make_unique<Buffer>(context_, capacity[i][1], true, true);
-        active[i]->attach_buffers(rec_batch_arena_.get(), work.upload.get(), nullptr, work.ctc.get(), true);
+        active[i]->attach_buffers(rec_batch_arena_.get(), work.upload.get(), nullptr, work.ctc.get(), true,
+                                  images[i].gpu_buffer);
     }
     std::vector<std::vector<float>> pairs;
     for (auto* plan : active)

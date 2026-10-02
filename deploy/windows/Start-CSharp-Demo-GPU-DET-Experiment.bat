@@ -8,6 +8,7 @@ set LWVK_GPU_PROFILE=0
 set LWVK_HOST_PROFILE=0
 set LWVK_GPU_DET_PREPROCESS=1
 set LWVK_GPU_TEXT_PREPROCESS=0
+set LWVK_GPU_CROP_PREPROCESS=0
 echo lw.PPOCR.Vulkan - experimental GPU DET preprocessing
 echo Resize and normalization: FP64. Networks: FP32. DET limit: unchanged.
 echo The selected GPU must support shaderFloat64; no automatic fallback.

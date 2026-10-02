@@ -11,7 +11,11 @@ C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web �
 
 ## 当前阶段：0.5.0-dev.2
 
-最新 [Medium REC 宽 tile 优化](docs/REC-WIDE-OPTIMIZATION.md)：复用输入 tile，扩大 FP32 1×1 投影的输出通道块。相对 `det-vector-opt1`，RTX 4060 的 100 图 Medium 完整调用均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，完整字段一致。仅符合条件的 NVIDIA REC 自动采用，Tiny/Small 不宣称加速；Small 首遍换图和 AMD 完整调用有退化数据，详见报告。FP32、DET960、预算和接口不变，不新增开关；GPU 裁剪/DB 尚未实现。
+已将 [共享原图与 GPU 前处理/透视裁剪](docs/GPU-DEFAULT.md) 接入**原生默认路径**，C#、Python 与 HTTP 无需额外开启：支持 `shaderFloat64` 的所选 GPU 自动启用，三网络共享 device，原图一次上传，裁剪结果不回读再上传；不支持时保留 CPU 图像处理，网络仍在 GPU。网络 FP32、DET960、预算和公共接口不变。可用 `Start-CSharp-Demo-CPU-Preprocess.bat` 显式关闭作兼容/性能对照。性能依据见 [历史实验报告](docs/GPU-CROP-EXPERIMENT.md)，当前开关规则见默认策略文档。
+
+新增 [三模型 TensorRT 实际项目对比](docs/VULKAN-TENSORRT-100.md)：RTX 4060 上 100 图五轮，TensorRT 四 REC 实例为 15.97/23.12/34.08 ms，默认 Vulkan 为 23.09/35.75/75.67 ms，**当前 TensorRT 更快**；Vulkan 主对比资源开销较低。报告同时提供单实例 TensorRT、RAM/专用与共享显存、进程与整卡 GPU 利用率和 GT 指标，明确 FP16-enabled TensorRT 与 FP32 Vulkan 的流水线差异，不宣称纯后端全面胜负。
+
+此前 [Medium REC 宽 tile 优化](docs/REC-WIDE-OPTIMIZATION.md)：复用输入 tile，扩大 FP32 1×1 投影的输出通道块。相对 `det-vector-opt1`，RTX 4060 的 100 图 Medium 完整调用均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，完整字段一致。仅符合条件的 NVIDIA REC 自动采用，Tiny/Small 不宣称加速；Small 首遍换图和 AMD 完整调用有退化数据，详见历史报告。FP32、DET960、预算和接口不变，不新增开关。
 
 本轮新增 [DET FP32 向量访存优化](docs/DET-VECTOR-OPTIMIZATION.md)：延续 GPU 前后处理、缓冲区复用和减少搬运的思路，四个 NHWC 通道共用地址计算与向量加载/写回。相对 REC 合批版，RTX 4060 的 100 图 Medium 完整调用均值再降 **4.8%**，连续换图降 **3.9%/4.2%**，完整预测一致；Tiny/Small 基本持平。仅 DET 自动启用，实验中退化的 REC 分派未保留。FP32、DET960、预算和公共接口不变，不新增开关；见报告中的文章借鉴、测试口径与局限。
 
@@ -43,17 +47,17 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 这与使用统一预处理的 DML 对拍器报告不同；原项目批处理/REC 宽度策略有差异，不能只看后端名称作性能归因。
 最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
 
-新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。**默认关闭**，通过 `LWVK_GPU_DET_PREPROCESS=1` 或独立 Demo 实验启动脚本开启；额外要求 `shaderFloat64`，不支持时明确报错。
+新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。实验阶段默认关闭（现已接入自动默认），通过 `LWVK_GPU_DET_PREPROCESS=1` 或独立 Demo 实验启动脚本开启；额外要求 `shaderFloat64`，不支持时明确报错。
 
-继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；两项实验仍默认关闭、额外要求 `shaderFloat64`。完整 C# 包用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 同时开启，普通启动脚本保持 CPU 前处理。
+继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；这两项当时默认关闭（当前默认策略见上文）、额外要求 `shaderFloat64`。完整 C# 包用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 同时开启，当时普通启动脚本保持 CPU 前处理。
 
 此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
 
-最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
+最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。当时的默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
 
 继续[CLS 有界小批量提交优化](docs/CLS-BATCH-OPTIMIZATION.md)：开启文字行 GPU 前处理后，最多 8 行共享一次提交/等待，REC 仍逐行执行；裁剪暂存有界、合计工作区保持原预算，紧预算自动回退串行。相对上一版，RTX 4060 的 100 图均值再降 Tiny/Small/Medium **6.0%/6.3%/2.4%**，完整结果一致。使用现有 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 即可，不新增开关；普通 CPU 前处理启动路径不宣称相同提速。
 
-新增[REC 共享 arena 合并提交优化](docs/REC-BATCH-OPTIMIZATION.md)：最多 8 行共享一块中间张量区、一次提交/等待，保留独立输入和紧凑 CTC 输出，不分配未使用的完整概率回读。相对上一轮 CLS 合批，100 图逐图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**；不逐图预热的连续换图首遍下降 **6.2%/4.1%/1.9%**，预测字段一致。仍通过现有 GPU 前处理实验脚本开启，普通启动不宣称相同提速；REC 计算仍逐行、共享工作区受原预算约束。
+新增[REC 共享 arena 合并提交优化](docs/REC-BATCH-OPTIMIZATION.md)：最多 8 行共享一块中间张量区、一次提交/等待，保留独立输入和紧凑 CTC 输出，不分配未使用的完整概率回读。相对上一轮 CLS 合批，100 图逐图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**；不逐图预热的连续换图首遍下降 **6.2%/4.1%/1.9%**，预测字段一致。仍通过现有 GPU 前处理实验脚本开启，该历史 CPU 前处理基线不宣称相同提速；REC 计算仍逐行、共享工作区受原预算约束。
 
 ## 项目原理：C++ 如何使用 Vulkan 推理 OCR
 
@@ -63,16 +67,18 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 
 ```text
 图片 / 相机 BGR 像素
-  → CPU：DET 缩放、归一化
+  → GPU：原图一次上传，DET 缩放、归一化
   → GPU：DET 检测网络，输出文字概率图
-  → CPU：DB 后处理、检测框排序、透视裁剪
-  → GPU：可选 CLS 方向分类；CPU 按结果旋转文字行
-  → CPU：REC 缩放、归一化 → GPU：REC 网络与贪心标签选择
+  → CPU：DB 后处理、检测框排序、透视系数
+  → GPU：透视裁剪、竖长转横向，可选 CLS 前处理与方向分类
+  → CPU：方向判断；GPU：REC 旋转采样、缩放、归一化、网络与贪心标签
   → CPU：CTC 去重/去空白、字典映射、文字与坐标结果组装
   → C ABI → C# WinForms / Python / HTTP 与 Web
 ```
 
-上图是普通启动的默认 CPU 前处理路径。用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启两项实验后，DET/CLS/REC 缩放、归一化、输入布局与 REC 180° 反向采样转到 GPU；CPU 仍负责 DB、框排序、透视裁剪、方向判断和 CTC 字典映射。CLS/REC 可有界合并最多 8 行提交，但不是 8 行网络同时执行，也尚未实现三网络共用原图 GPU 缓冲区。
+上图为支持 `shaderFloat64` 的设备默认路径；能力不足或显式关闭时保留 CPU 图像处理，不改变 GPU 网络推理。三项 `LWVK_GPU_*_PREPROCESS` 默认 `auto`，`0` 关闭、`1` 强制要求；裁剪需要另外两项均启用。详见 [默认规则](docs/GPU-DEFAULT.md)。CLS/REC 可有界合并最多 8 行提交，但不是 8 行网络同时执行。
+
+原图只上传一次，三网络共享 device，CPU 只传框坐标和方向元数据。为保留原来的插值与 BGR8 舍入语义，仍分为“裁剪成 BGR8”和“网络缩放/归一化”两个 GPU 步骤，不直接合并成一次插值。DB 轮廓、框扩展、排序、方向判断和 CTC/UTF-8/JSON 仍在 CPU。独立仅识别接口不需要原图共享路径。
 
 - **模型加载**：原生 ONNX protobuf 解析器读取图和权重，规范化、转换受支持的算子，并进行经过验证的融合。它仅支持随项目固定的 PP-OCRv6 Tiny/Small/Medium，不是通用 ONNX 推理引擎。
 - **GPU 执行**：构建时把计算 shader 编译成 SPIR-V 并嵌入库；运行时创建计算管线、提交命令并通过 fence 等待结果。默认使用 FP32，执行卷积、矩阵运算、注意力等网络计算，不依赖 CUDA。
@@ -133,7 +139,7 @@ Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python
 
 <a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo：GPU 选择、检测框、识别文字与耗时" width="960"></a>
 
-本轮 `rec-wide-opt1` 完整体验包实测界面：RTX 4060 Laptop GPU / Tiny 模型，开启 DET/CLS/REC GPU 前处理实验，展示整图检测与鼠标框选。截图中的耗时仅为该次重复调用示例，不代表所有设备或图片的性能，也不是 Medium 的基准结果。点击图片查看原图。
+本轮 `gpu-default1` 完整体验包默认模式实测界面：RTX 4060 Laptop GPU / Tiny 模型，自动启用共享原图、GPU 裁剪和 DET/CLS/REC 前处理，展示整图检测与鼠标框选。截图中的耗时仅为该次重复调用示例，不代表所有设备或图片的性能，也不是 Medium 的基准结果。点击图片查看原图。
 
 ### Demo 中的耗时如何理解
 
@@ -148,6 +154,8 @@ Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python
 “其他”主要包括 CPU 缩放/归一化/张量排列、DB 与轮廓/框扩展/阅读排序、文字行透视裁剪与旋转、
 CLS/REC 输入预处理、回读标签后的 CTC 去重/去空白/字典映射、结果组装，以及执行计划准备、工作区分配和锁等待。
 因此不应要求流水线等于 `DET + CLS + REC`；上传、GPU 等待和回读已经算在网络耗时里，不会再次计入“其他”。
+
+GPU 裁剪实验中，“其他”还包含 GPU 裁剪的命令准备、提交与等待，以及 CPU 的框映射/方向判断；它不再等同于纯 CPU 时间。原图上传耗时计入 DET，CLS/REC 的网络缩放仍计入相应阶段，执行计划准备仍属于流水线开销。
 C# 图片转 BGR、JSON 复制/解析和界面更新也不属于这个“其他”。
 
 首轮或新尺寸可能建立计划、扩大工作区，不能当作预热后的稳态速度。耗时按一位小数显示，手工相加可能有舍入差异。

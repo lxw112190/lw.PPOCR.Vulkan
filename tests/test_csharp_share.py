@@ -25,7 +25,13 @@ def main():
     p.add_argument('--require-manifest',action='store_true')
     p.add_argument('--gpu-det-preprocess',action='store_true')
     p.add_argument('--gpu-text-preprocess',action='store_true')
+    p.add_argument('--gpu-crop-preprocess',action='store_true')
+    p.add_argument('--cpu-preprocess',action='store_true')
     a=p.parse_args()
+    if a.cpu_preprocess and (a.gpu_det_preprocess or a.gpu_text_preprocess or a.gpu_crop_preprocess):
+        p.error('CPU preprocessing cannot be combined with forced GPU preprocessing')
+    if a.gpu_crop_preprocess and not (a.gpu_det_preprocess and a.gpu_text_preprocess):
+        p.error('GPU crop requires both GPU DET and GPU text preprocessing')
     root=a.package.resolve()
     info=json.loads((root/'PACKAGE-INFO.json').read_text(encoding='utf-8'))
     assert sha(root/'lw.PPOCR.Vulkan.dll')==info['native_library_sha256']
@@ -67,6 +73,11 @@ def main():
         env['LWVK_GPU_DET_PREPROCESS']='1'
     if a.gpu_text_preprocess:
         env['LWVK_GPU_TEXT_PREPROCESS']='1'
+    if a.gpu_crop_preprocess:
+        env['LWVK_GPU_CROP_PREPROCESS']='1'
+    if a.cpu_preprocess:
+        for key in ('LWVK_GPU_DET_PREPROCESS','LWVK_GPU_TEXT_PREPROCESS','LWVK_GPU_CROP_PREPROCESS'):
+            env[key]='0'
     rows=[]
     with tempfile.TemporaryDirectory(prefix='lwvk-csharp-share-') as working:
         probe=subprocess.run([str(root/'lw-ppocr-vulkan-probe.exe')],cwd=working,env=env,
@@ -95,8 +106,8 @@ def main():
         loader_origin='package directory verified via GetModuleFileNameW',
         development_path_removed=True,working_directory='outside package',
         checked_manifest_files=count,models_and_devices=rows,
-        gpu_det_preprocess_experiment=a.gpu_det_preprocess,
-        gpu_text_preprocess_experiment=a.gpu_text_preprocess,
+        preprocessing_requested={key:env.get(key,'auto (unset)') for key in
+            ('LWVK_GPU_DET_PREPROCESS','LWVK_GPU_TEXT_PREPROCESS','LWVK_GPU_CROP_PREPROCESS')},
         limitations='Installed local GPU drivers and .NET Framework are still present; not a clean OS VM, universal compatibility or a leak proof.')
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

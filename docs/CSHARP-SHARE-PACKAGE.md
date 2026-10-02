@@ -1,8 +1,10 @@
 # lw.PPOCR.Vulkan C# 完整体验包
 
-最新 `rec-wide-opt1` 包复用 REC 1×1 投影输入 tile，只在符合条件的 NVIDIA 路径启用。相对 `det-vector-opt1`，RTX 4060 两项 GPU 前处理开启时，100 图 Medium 完整均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，预测一致；普通启动 Medium 样例也有约 3%～4% 改善。Tiny/Small 不宣称加速，AMD 虽保留旧 kernel，完整调用仍测到约 4% 退化，建议保留旧包对照。详细条件、负面数据与局限见 `docs/REC-WIDE-OPTIMIZATION.md`；不是所有显卡提速保证。
+最新 `gpu-default1`：共享原图、GPU 透视裁剪和 DET/CLS/REC 前处理已接入原生自动默认；直接双击 EXE 也生效。所选 GPU 支持 `shaderFloat64` 时自动开启，否则保留 CPU 图像处理，网络仍在 Vulkan GPU 推理。详见 `docs/GPU-DEFAULT.md`。历史性能报告 `docs/GPU-CROP-EXPERIMENT.md` 保留原测试条件，不代表所有设备提速。
 
-最新 `det-vector-opt1` 包保留前几轮优化，对符合形状条件的 DET 普通卷积自动使用 FP32 向量加载/写回，不新增开关。相对 `rec-batch-opt1`，RTX 4060 上启用两项 GPU 前处理实验时，100 图 Medium 完整调用均值再降 **4.8%**，Tiny/Small 基本持平；连续换图 Medium 降约 **3.9%/4.2%**。REC 保留原分派，模型/精度/DET960/工作区预算/公共接口不变。详情见包内 `docs/DET-VECTOR-OPTIMIZATION.md`；普通启动仍不启用 GPU 前处理。
+历史 `rec-wide-opt1` 包复用 REC 1×1 投影输入 tile，只在符合条件的 NVIDIA 路径启用。相对 `det-vector-opt1`，RTX 4060 两项 GPU 前处理开启时，100 图 Medium 完整均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，预测一致；普通启动 Medium 样例也有约 3%～4% 改善。Tiny/Small 不宣称加速，AMD 虽保留旧 kernel，完整调用仍测到约 4% 退化，建议保留旧包对照。详细条件、负面数据与局限见 `docs/REC-WIDE-OPTIMIZATION.md`；不是所有显卡提速保证。
+
+历史 `det-vector-opt1` 包保留前几轮优化，对符合形状条件的 DET 普通卷积自动使用 FP32 向量加载/写回，不新增开关。相对 `rec-batch-opt1`，RTX 4060 上启用两项 GPU 前处理实验时，100 图 Medium 完整调用均值再降 **4.8%**，Tiny/Small 基本持平；连续换图 Medium 降约 **3.9%/4.2%**。REC 保留原分派，模型/精度/DET960/工作区预算/公共接口不变。详情见包内 `docs/DET-VECTOR-OPTIMIZATION.md`；当时普通启动尚未启用 GPU 前处理。
 
 作者：天天代码码天天；QQ：819069052。
 群名称：天天代码码天天
@@ -18,23 +20,25 @@
 
 双显卡电脑建议手动选 NVIDIA/AMD 独显；**设备编号以目标电脑实际枚举为准**，不要照抄开发机编号 1。切换 GPU、模型或参数后需要重新初始化。默认 DET 长边上限 960、每张模型图工作区预算 512 MiB，按需分配；Medium 更占内存。
 
-新增 GPU DET 前处理实验：关闭已有 Demo，双击 `Start-CSharp-Demo-GPU-DET-Experiment.bat`，再选 GPU/模型初始化。普通 `Start-CSharp-Demo.bat` 保持默认 CPU 前处理；直接运行 EXE 会继承当前进程环境。实验额外要求 `shaderFloat64`，前处理用 FP64、网络仍用 FP32；不支持时明确报错。结果和计时口径见包内 `docs/GPU-DET-PREPROCESS-EXPERIMENT.md`。
+需要兼容/性能对照时，关闭 Demo 后使用 `Start-CSharp-Demo-CPU-Preprocess.bat`。网络仍为 FP32 GPU 推理。直接运行 EXE 会继承父进程环境；正常启动脚本设置三项为 `auto`。
 
-本轮继续增加 CLS/REC 前处理实验。关闭已有 Demo，使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 可同时开启 DET＋CLS＋REC GPU 前处理（含 REC 180° 采样）。相对上一版 DET-only 实验，RTX 4060 的 100 图均值再下降 Tiny/Small/Medium 约 14.6%/10.3%/4.8%，完整结果一致。报告见包内 `docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md`。
+原 DET-only 与 GPU-Preprocess 实验脚本保留作局部路径对照；它们明确关闭 GPU 裁剪。GPU-Crop 脚本强制三项为 `1`，缺少 `shaderFloat64` 时报错，而不是自动退回 CPU 前处理。
 
-| 启动脚本 | DET 前处理 | CLS/REC 前处理 |
-| --- | --- | --- |
-| `Start-CSharp-Demo.bat` | CPU | CPU |
-| `Start-CSharp-Demo-GPU-DET-Experiment.bat` | GPU | CPU |
-| `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` | GPU | GPU |
+| 启动脚本 | DET 前处理 | CLS/REC 前处理 | 透视裁剪 |
+| --- | --- | --- | --- |
+| `Start-CSharp-Demo.bat` | 自动 | 自动 | 自动，共享原图 |
+| `Start-CSharp-Demo-CPU-Preprocess.bat` | CPU | CPU | CPU，网络仍在 GPU |
+| `Start-CSharp-Demo-GPU-DET-Experiment.bat` | GPU | CPU | CPU |
+| `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` | GPU | GPU | CPU |
+| `Start-CSharp-Demo-GPU-Crop-Experiment.bat` | GPU | GPU | GPU，共享原图 |
 
-实验开关应在新进程加载 DLL 前设置；脚本使用局部环境，不修改系统配置。两种实验都需要 `shaderFloat64`，不支持时可关闭 Demo 后用普通启动脚本重新启动。默认算法流程示意见 README；开启实验后，缩放/归一化和 REC 180° 校正转到 GPU，裁剪/DB/字典映射仍在 CPU。
+三项开关默认 `auto`，`0` 关闭、`1` 强制要求；必须在新进程加载 DLL 前设置。裁剪自动模式依赖两项前处理；强制裁剪与显式关闭前处理冲突时拒绝。无可用 Vulkan 设备仍报错，推理错误不会触发 CPU 推理回退。DB/排序/方向判断/字典映射仍在 CPU；“其他耗时”也包括 GPU 裁剪等待。
 
-最新 `network-opt1` 包继续优化 FP32 1×1 卷积（向量写回、小空间 kernel 与安全的 SiLU 融合），按形状自动启用。普通启动和 GPU 前处理实验都受益，不需要新增开关。相对上一轮 GPU 前处理包，RTX 4060 的 100 图均值再下降约 2.1%/3.0%/3.3%；模型、FP32 和 DET960 不变，详情见包内 `docs/POINTWISE-OPTIMIZATION.md`。
+历史 `network-opt1` 包继续优化 FP32 1×1 卷积（向量写回、小空间 kernel 与安全的 SiLU 融合），按形状自动启用。普通启动和 GPU 前处理实验都受益，不需要新增开关。相对上一轮 GPU 前处理包，RTX 4060 的 100 图均值再下降约 2.1%/3.0%/3.3%；模型、FP32 和 DET960 不变，详情见包内 `docs/POINTWISE-OPTIMIZATION.md`。
 
-最新 `cls-batch-opt1` 包保留前述优化，并在文字行 GPU 前处理实验中自动合并最多 8 行 CLS 提交/等待。100 图均值相对 `network-opt1` 再降 Tiny/Small/Medium 约 **6.0%/6.3%/2.4%**，结果逐项一致；普通启动脚本仍逐行 CLS，不宣称同样提速。仍用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启，报告见 `docs/CLS-BATCH-OPTIMIZATION.md`。裁剪暂存最多 8 行/16 MiB（更大的单行单独处理），GPU 槽位合计受原预算约束，紧预算自动回退串行。
+历史 `cls-batch-opt1` 包保留前述优化，并在文字行 GPU 前处理实验中自动合并最多 8 行 CLS 提交/等待。100 图均值相对 `network-opt1` 再降 Tiny/Small/Medium 约 **6.0%/6.3%/2.4%**，结果逐项一致；当时普通启动脚本逐行 CLS，不宣称同样提速。仍用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启，报告见 `docs/CLS-BATCH-OPTIMIZATION.md`。裁剪暂存最多 8 行/16 MiB（更大的单行单独处理），GPU 槽位合计受原预算约束，紧预算自动回退串行。
 
-本轮 `rec-batch-opt1` 包在上述实验路径中继续合并 REC 提交：最多 8 行共享一个中间张量区，输入/CTC 输出独立，显式屏障保护复用；不分配未使用的完整概率回读。相对 `cls-batch-opt1`，100 图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**，连续换图首遍降 **6.2%/4.1%/1.9%**，结果一致。仍使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat`，普通启动不宣称相同提速。预算不足回退串行，关闭 CLS 时仍可 REC 合批；报告见 `docs/REC-BATCH-OPTIMIZATION.md`。
+历史 `rec-batch-opt1` 包在上述实验路径中继续合并 REC 提交：最多 8 行共享一个中间张量区，输入/CTC 输出独立，显式屏障保护复用；不分配未使用的完整概率回读。相对 `cls-batch-opt1`，100 图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**，连续换图首遍降 **6.2%/4.1%/1.9%**，结果一致。仍使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat`，该历史 CPU 前处理基线不宣称相同提速。预算不足回退串行，关闭 CLS 时仍可 REC 合批；报告见 `docs/REC-BATCH-OPTIMIZATION.md`。
 
 ## 对方电脑需要什么
 
@@ -111,10 +115,6 @@ English: OCR-call time includes managed pixel conversion, native inference and r
 
 ZIP 旁边 `.sha256` 用于校验压缩包；包内 `FILES.sha256` 是解压后文件清单，检测传输损坏，不是数字签名。LunarG loader/安装器保留官方数字签名；本项目 Demo/原生库未作代码签名，可能遇到下载来源提示。
 
-历史 `pipeline-opt2` 核心 DLL SHA-256 为 `91bf808abe1fdb26afb0ce692b54d2b64286d20a2f54d3aa97c6590ab251cfee`，其性能与局限见 `docs/PIPELINE-OPTIMIZATION.md`。上一版 `gpu-det-experiment1` DLL 为 `c509c8162f863b6b5aa45e02a9fe02f99cb75cec8f66c05877348ff0a631fdd4`。本轮 `gpu-text-experiment1` DLL 为 `b87cbb9559586053cd46e5a9bb1ef28b8d5f9df56cf8b5e219c3e20dd33482fa`，保留前述优化，新增默认关闭的 CLS/REC GPU 前处理和直接分段上传。`PACKAGE-INFO.json` 和 `validation/native-qualification.json` 标明实际包版本与 DLL 哈希；最终解压包的 C# GUI/整图/框选证据单独保留，不把旧包长测当作本包新长测结果。
+当前 `gpu-default1` 原生 DLL SHA-256：`4e95bc3c32aa449480761f615097912a8a223429f7115a42fa3b2867474b2c06`。本轮默认模式证据和性能口径见 `docs/reports/gpu-default/README.md`；`PACKAGE-INFO.json` 与校验清单标明实际 revision。ZIP 解压后另行验证，不把旧包长测作为本轮稳定性结论。
 
-English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. All application-native DLLs and three models are included. A compatible installed GPU vendor driver and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is required to run. This is a preview, not a universal compatibility/performance guarantee.
-
-历史 `network-opt1` 原生 DLL SHA-256：`39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929`；此前 `cls-batch-opt1` 为 `6f08b959a9a7fc78561faa003e1b1a37a834aaf434e5063834f0b51381d1fff3`，上一版 `rec-batch-opt1` 为 `a5e773d702492f909f7ec2dfd7dff2d99aeb3e4248c5c86936b0741f59c0b8c7`。本轮 `det-vector-opt1` DLL 为 `05201449ff0705ecd3c70e7dbfbeb7740e300e6be6bbc1597cb8ba3ae8d13c0d`。以本包 `PACKAGE-INFO.json` 和文件校验清单为准。新包有独立回归与 ZIP 验证，不沿用旧包长测作为本轮稳定性结论。
-
-本轮 `rec-wide-opt1` 原生 DLL SHA-256：`056b9b567a9b40b69407591a0ebc66b284ccd26835b4e289c0d05c4255393a6d`。以上其他 revision 为历史包；以当前 `PACKAGE-INFO.json` 的 `demo_revision` 与哈希为准。
+English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. GPU preprocessing/crops are automatic on shaderFloat64-capable devices; otherwise only image processing stays CPU-side. Networks remain FP32 Vulkan. Use `Start-CSharp-Demo-CPU-Preprocess.bat` to explicitly disable preprocessing optimizations. All application-native DLLs and three models are included. Installed compatible vendor drivers and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is needed to run. This is a preview, not a universal compatibility/performance guarantee.

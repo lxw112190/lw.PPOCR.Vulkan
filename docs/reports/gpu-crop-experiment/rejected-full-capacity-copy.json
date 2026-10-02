@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "device": 1,
+  "gpu_det_preprocess": true,
+  "rows": [
+    {
+      "model": "tiny",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "d4ead301d64fb79f511278f0d0484c5fa2c697053c12272d2160db7a5a3b7292",
+      "before_after_mean_wall_ms": [
+        19.514585500073736,
+        19.681781000144838
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": -0.8567719774036142
+    },
+    {
+      "model": "small",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "493100b6fddf528490825a5d134e22a3697b68610071246217ead1ce09c3aab7",
+      "before_after_mean_wall_ms": [
+        33.576536500077054,
+        33.48679899965646
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 0.26726252846356324
+    },
+    {
+      "model": "medium",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "28f4e01e0d4195a51a00ab2523216b03d92d28ab00e022ffc118ed555e43a6c0",
+      "before_after_mean_wall_ms": [
+        72.86791300022742,
+        72.55532000013773
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 0.42898580077175286
+    }
+  ],
+  "gpu_text_preprocess": true,
+  "gpu_crop_preprocess": true,
+  "before_sha256": "056b9b567a9b40b69407591a0ebc66b284ccd26835b4e289c0d05c4255393a6d",
+  "after_sha256": "2563db725324295287e93c7f94a4627f1eaef3d85063e1e8f9978b45a146e7da",
+  "lru_40_shapes": "passed",
+  "raw_upload_budget_and_recovery": "passed",
+  "method": "one shape warmup, alternating order, FP32 networks, DET cap 960, classifier enabled",
+  "limitations": "No Vulkan validation-layer claim, long soak/leak proof or cross-device equivalence claim."
+}

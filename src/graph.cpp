@@ -568,7 +568,12 @@ Plan::Plan(Context& c, const Model& model, Buffer& constants, uint32_t h, uint32
 void Plan::attach(SharedWorkspace& workspace) {
     attach_buffers(workspace.arena.get(), workspace.upload.get(), workspace.readback.get(), workspace.ctc.get());
 }
-void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffer* ctc, bool bgr_only) {
+void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffer* ctc, bool bgr_only,
+                          Buffer* gpu_source) {
+    if (gpu_source_ != gpu_source) {
+        close();
+        gpu_source_ = gpu_source;
+    }
     if (command_)
         return;
     arena_ = arena;
@@ -735,11 +740,18 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
     barrier(command_, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_HOST_WRITE_BIT,
             VK_ACCESS_SHADER_READ_BIT);
     auto linear = [](uint64_t count) { return static_cast<uint32_t>((count + 255) / 256); };
-    if (bgr)
+    if (bgr && gpu_source_ && model.task != "det")
+        // Crop pixels stay device-local; only a 32-byte orientation header is uploaded.
+        dispatch("bgr_shared_text_preprocess",
+                 {{gpu_source_->handle, 0, gpu_source_->size}, {upload_->handle, 0, 32}, binding(input_)},
+                 {height_, width_}, linear(uint64_t(height_) * width_ * 3));
+    else if (bgr)
         // 缩放、归一化直接写入图的 NHWC 输入，不回读中间张量。
-        dispatch(model.task == "det" ? "bgr_det_preprocess" : "bgr_text_preprocess",
-                 {{upload_->handle, 0, upload_->size}, binding(input_)}, {height_, width_},
-                 linear(uint64_t(height_) * width_ * 3));
+        dispatch(
+            model.task == "det" ? "bgr_det_preprocess" : "bgr_text_preprocess",
+            {{gpu_source_ ? gpu_source_->handle : upload_->handle, 0, gpu_source_ ? gpu_source_->size : upload_->size},
+             binding(input_)},
+            {height_, width_}, linear(uint64_t(height_) * width_ * 3));
     else
         dispatch("nchw2nhwc", {{upload_->handle, 0, input_bytes_}, binding(input_)}, {height_ * width_, 3, 3},
                  linear(uint64_t(height_) * width_ * 3));
@@ -965,7 +977,27 @@ void Plan::stage_bgr(const BgrView& image, bool rotate) {
     const uint64_t span = uint64_t(image.height - 1) * image.stride + uint64_t(image.width) * 3;
     // 动态头支持同一输出尺寸计划复用不同原图；尾部补齐避免 uint 字节提取越界。
     const std::array<uint32_t, 8> header{image.width, image.height, image.stride, rotate ? 1u : 0u, 0, 0, 0, 0};
-    upload_->write_parts(header.data(), sizeof(header), image.pixels, static_cast<size_t>(span), (4 - span % 4) % 4);
+    if (image.gpu_buffer) {
+        if (gpu_source_ != image.gpu_buffer)
+            throw std::runtime_error("GPU BGR source binding mismatch");
+        upload_->write(header.data(), sizeof(header));
+    } else
+        upload_->write_parts(header.data(), sizeof(header), image.pixels, static_cast<size_t>(span),
+                             (4 - span % 4) % 4);
+}
+void Plan::bind_gpu_source(Buffer* source) {
+    if (gpu_source_ == source)
+        return;
+    close();
+    attach_buffers(arena_, upload_, readback_, ctc_readback_, bgr_only_, source);
+}
+double Plan::run_gpu_bgr(const BgrView& image, float* output, bool rotate) {
+    if (poisoned_)
+        throw std::runtime_error("GPU plan is poisoned; recreate handle");
+    const auto start = std::chrono::steady_clock::now();
+    stage_bgr(image, rotate);
+    submit_readback(bgr_command_, output, model_.task == "rec");
+    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
 void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
     check(vkResetFences(context_.device, 1, &fence_), "reset graph fence");
@@ -988,7 +1020,18 @@ void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
 }
 GraphEngine::GraphEngine(const std::filesystem::path& path, uint32_t index, uint64_t max_bytes,
                          const std::string& required_task)
-    : model_(path), context_(index), max_bytes_(max_bytes ? max_bytes : UINT64_C(512) * 1024 * 1024) {
+    : model_(path), context_owner_(std::make_shared<Context>(index)), context_(*context_owner_),
+      max_bytes_(max_bytes ? max_bytes : UINT64_C(512) * 1024 * 1024), base_max_bytes_(max_bytes_) {
+    initialize(required_task);
+}
+GraphEngine::GraphEngine(const std::filesystem::path& path, std::shared_ptr<Context> context, uint64_t max_bytes,
+                         const std::string& required_task)
+    : model_(path), context_owner_(std::move(context)),
+      context_(context_owner_ ? *context_owner_ : throw std::invalid_argument("missing graph context")),
+      max_bytes_(max_bytes ? max_bytes : UINT64_C(512) * 1024 * 1024), base_max_bytes_(max_bytes_) {
+    initialize(required_task);
+}
+void GraphEngine::initialize(const std::string& required_task) {
     if (max_bytes_ > UINT64_C(1024) * 1024 * 1024 || max_bytes_ < 4096)
         throw std::invalid_argument("workspace limit must be 4 KiB..1 GiB");
     if (!required_task.empty() && model_.task != required_task)
@@ -1088,7 +1131,63 @@ void GraphEngine::ensure_workspace(Plan& plan, uint64_t min_upload) {
             if (capacity[i] && !*buffers[i])
                 *buffers[i] = std::make_unique<Buffer>(context_, capacity[i], i != 0, i >= 2);
     }
-    plan.attach(workspace_);
+    plan.attach_buffers(workspace_.arena.get(), workspace_.upload.get(), workspace_.readback.get(),
+                        workspace_.ctc.get(), false, plan.gpu_source_);
+}
+void GraphEngine::reserve_shared_source(uint64_t bytes, const std::vector<Buffer*>& replaced) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (batch_poisoned_)
+        throw std::runtime_error("GPU batch failed; recreate handle");
+    for (const auto& entry : plans_)
+        if (entry.plan->poisoned())
+            throw std::runtime_error("GPU plan failed; recreate handle");
+    // Even an unchanged reservation must reject a failed graph before the OCR
+    // owner uploads the next image. Timeout does not cancel pending GPU reads.
+    if (bytes == source_reservation_ && replaced.empty())
+        return;
+    if (bytes > base_max_bytes_ - 4096)
+        throw std::length_error("max_workspace_bytes exceeded by shared image/crop buffers");
+    // Called only by the serialized OCR owner, before replacing shared buffers.
+    // Most growth changes one crop slot, not the network's activation arena.
+    // Invalidate its recorded references, retaining metadata and all other slots.
+    auto retire = [&](Plan& plan) {
+        if (plan.gpu_source_ && std::find(replaced.begin(), replaced.end(), plan.gpu_source_) != replaced.end()) {
+            plan.invalidate();
+            plan.gpu_source_ = nullptr;
+        }
+    };
+    for (auto& entry : plans_)
+        retire(*entry.plan);
+    for (auto& entry : rec_batch_plans_)
+        retire(*entry.plan);
+    for (auto& slot : cls_batch_)
+        retire(*slot->plan);
+    source_reservation_ = bytes;
+    max_bytes_ = base_max_bytes_ - bytes;
+    uint64_t primary = 0;
+    for (auto* b : {workspace_.arena.get(), workspace_.upload.get(), workspace_.readback.get(), workspace_.ctc.get()})
+        primary += b ? b->size : 0;
+    // A tighter reservation must release capacity before the caller allocates.
+    // Normal sized images retain all arenas; only pressure invokes this fallback.
+    if (primary + batch_workspace_bytes() > max_bytes_) {
+        clear_batch_workspaces();
+        if (primary > max_bytes_) {
+            for (auto& entry : plans_)
+                entry.plan->invalidate();
+            workspace_ = {};
+        }
+    }
+}
+double GraphEngine::run_det_gpu_bgr(const BgrView& image, uint32_t oh, uint32_t ow, float* output, uint64_t capacity) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (model_.task != "det" || !context_.gpu_crop_preprocess || !image.gpu_buffer ||
+        !image.gpu_buffer->belongs_to(context_))
+        throw std::invalid_argument("invalid shared DET image");
+    prepare(oh, ow);
+    if (!output || capacity < elements(plan_->output_shape()))
+        throw std::length_error("output capacity too small");
+    plan_->bind_gpu_source(image.gpu_buffer);
+    return plan_->run_gpu_bgr(image, output);
 }
 void GraphEngine::prepare(uint32_t h, uint32_t w, uint64_t min_upload) {
     if (batch_poisoned_)
