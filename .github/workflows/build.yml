@@ -72,10 +72,12 @@ jobs:
       # lavapipe is CPU execution, not a hardware GPU. Full reference tests use
       # per-line graph submissions: an 8-line REC GPU batch can exceed a single
       # 30-second fence budget on a shared runner. Test GPU image shaders below
-      # in isolation instead of changing production timeouts or skipping them.
+      # in isolation instead of skipping their coverage. Medium single graphs
+      # also need a longer finite wait on this software device (GPU stays 30s).
       LWVK_GPU_DET_PREPROCESS: '0'
       LWVK_GPU_TEXT_PREPROCESS: '0'
       LWVK_GPU_CROP_PREPROCESS: '0'
+      LWVK_SOFTWARE_GRAPH_TIMEOUT_MS: '180000'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

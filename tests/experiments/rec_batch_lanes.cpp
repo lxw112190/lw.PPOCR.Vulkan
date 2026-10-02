@@ -264,7 +264,7 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
         status = vkQueueSubmit(context_.rec_queues[i], 1, &submit, fences[i]);
     }
     if (status == VK_SUCCESS)
-        status = vkWaitForFences(context_.device, lane_count, fences.data(), VK_TRUE, UINT64_C(30000000000));
+        status = vkWaitForFences(context_.device, lane_count, fences.data(), VK_TRUE, context_.graph_wait_timeout_ns);
     if (status != VK_SUCCESS) {
         batch_poisoned_ = true;
         for (auto& entry : rec_batch_plans_)

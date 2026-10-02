@@ -116,8 +116,10 @@ def main():
     info = DeviceInfo(struct_size=C.sizeof(DeviceInfo)); check(lib, lib.lwvk_device_get(a.device, C.byref(info)))
     preprocess_environment = {key:os.environ.get(key,'unset (native auto)') for key in
         ('LWVK_GPU_DET_PREPROCESS','LWVK_GPU_TEXT_PREPROCESS','LWVK_GPU_CROP_PREPROCESS')}
+    software_timeout = os.environ.get('LWVK_SOFTWARE_GRAPH_TIMEOUT_MS','unset (native 30000)')
     print(json.dumps(dict(phase='reference-start',device=bytes(info.name).decode('utf-8','replace'),
-        models=str(models),quick=a.quick,preprocessing_environment=preprocess_environment)),flush=True)
+        models=str(models),quick=a.quick,preprocessing_environment=preprocess_environment,
+        software_graph_timeout_ms=software_timeout)),flush=True)
     options = ort.SessionOptions(); options.intra_op_num_threads=2; options.inter_op_num_threads=1
     direct=(models/"rec.onnx").exists()
     source=models if direct else root/"models/ppocrv6-tiny"
@@ -199,6 +201,7 @@ def main():
         reference="ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
         comparisons=rows, iterations=a.iterations, rss=rss,
         preprocessing_environment=preprocess_environment,
+        software_graph_timeout_ms=software_timeout,
         rss_before_engine_mib=rss_before_engine, rss_after_engine_destroy_mib=rss_after_engine,
         limitations="Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
         input_recovery="passed", result_lifetime="passed", classifier_disabled="passed",

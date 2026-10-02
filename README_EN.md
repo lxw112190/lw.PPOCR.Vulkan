@@ -14,8 +14,9 @@ Latest: [DET FP32 vector memory optimization](docs/DET-VECTOR-OPTIMIZATION.md) s
 
 A C++17 PP-OCR Vulkan GPU inference project with a native C ABI, HTTP/Web service and C# WinForms examples.
 No OpenCV DNN, ONNX Runtime or CUDA **runtime** dependency.
-Author: 天天代码码天天; QQ: 819069052.
-QQ group name: 天天代码码天天
+Author: 天天代码码天天<br>
+QQ: 819069052<br>
+QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
 ## Status: 0.5.0-dev.2 / Tiny, Small and Medium full OCR preview
@@ -119,7 +120,14 @@ CPU image preprocessing while networks still execute through Vulkan. Independent
 shader probes cover GPU DET/CLS/REC preprocessing and perspective crops (exact
 bits, stride, padding and recovery), avoiding an eight-line software REC batch
 exceeding a single 30-second fence budget on shared runners. Hardware defaults
-and production timeouts are unchanged. SDK downloads are pinned and SHA-256
+are unchanged. Medium single graphs can also exceed 30 seconds on software
+Vulkan, so Linux CI explicitly sets `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`.
+This bounded engineering option applies only to CPU software devices (Vulkan
+device type 4), accepts 30000..300000 milliseconds, and defaults to 30000 when
+unset. Hardware/virtual GPUs always retain 30 seconds. Packaging does not persist
+the CI environment into customer configuration. This is a per-submission network
+fence wait, not an OCR request deadline or task cancellation; comparisons and
+poisoned-plan cleanup are unchanged. SDK downloads are pinned and SHA-256
 verified. Local checks do not establish remote CI success; confirm Actions after pushing.
 
 Compiled packages do not need Python or the Vulkan SDK. They need a matching

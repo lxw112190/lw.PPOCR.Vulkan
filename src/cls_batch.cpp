@@ -136,7 +136,7 @@ double GraphEngine::classify_batch(const std::vector<BgrView>& images, std::vect
     submit.pCommandBuffers = commands.data();
     auto status = vkQueueSubmit(context_.queue, 1, &submit, fence);
     if (status == VK_SUCCESS)
-        status = vkWaitForFences(context_.device, 1, &fence, VK_TRUE, UINT64_C(30000000000));
+        status = vkWaitForFences(context_.device, 1, &fence, VK_TRUE, context_.graph_wait_timeout_ns);
     if (status != VK_SUCCESS) {
         batch_poisoned_ = true;
         for (auto& slot : cls_batch_)

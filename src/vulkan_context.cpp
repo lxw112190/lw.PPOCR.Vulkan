@@ -2,6 +2,7 @@
 #include "embedded_spirv.hpp"
 #include "memory_policy.hpp"
 #include "preprocess_policy.hpp"
+#include "graph_wait_policy.hpp"
 #include <algorithm>
 #include <cstring>
 #include <stdexcept>
@@ -31,12 +32,12 @@ static uint32_t requested_rec_lanes() {
     throw std::invalid_argument("LWVK_REC_LANES must be 1, 2 or 4");
 }
 #endif
-static PreprocessOption preprocess_option(const char* name) {
+static std::string environment_value(const char* name) {
 #ifdef _MSC_VER
     size_t length{};
     getenv_s(&length, nullptr, 0, name);
     if (!length)
-        return PreprocessOption::Auto;
+        return {};
     std::vector<char> value(length);
     getenv_s(&length, value.data(), value.size(), name);
     const std::string option(value.data());
@@ -44,6 +45,10 @@ static PreprocessOption preprocess_option(const char* name) {
     const char* value = std::getenv(name);
     const std::string option = value ? value : "";
 #endif
+    return option;
+}
+static PreprocessOption preprocess_option(const char* name) {
+    const auto option = environment_value(name);
     if (option.empty() || option == "auto")
         return PreprocessOption::Auto;
     if (option == "0")
@@ -104,6 +109,9 @@ Context::Context(uint32_t index) {
             throw std::runtime_error("Vulkan device index out of range");
         physical = devices[index];
         vkGetPhysicalDeviceProperties(physical, &properties);
+        const bool software_device = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU;
+        graph_wait_timeout_ns = lwvk::graph_wait_timeout_ns(
+            software_device, software_device ? environment_value("LWVK_SOFTWARE_GRAPH_TIMEOUT_MS") : "");
         if (properties.apiVersion < VK_API_VERSION_1_1)
             throw std::runtime_error("selected device requires Vulkan 1.1");
         if (properties.limits.maxComputeWorkGroupInvocations < 256 ||

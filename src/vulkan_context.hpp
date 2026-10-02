@@ -72,6 +72,8 @@ class Context {
     bool gpu_text_preprocess{}; // capability-aware CLS/REC preprocessing
     bool gpu_crop_preprocess{}; // OCR shared device/source; auto needs both stages
     uint32_t timestamp_valid_bits{};
+    // Timeout is not cancellation: failed plans remain poisoned until teardown.
+    uint64_t graph_wait_timeout_ns{UINT64_C(30000000000)};
 
   private:
     void close() noexcept;

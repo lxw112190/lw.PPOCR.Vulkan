@@ -7,8 +7,9 @@ C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web �
 
 新增 [REC 1/2/4 路实验报告](docs/REC-LANES-EXPERIMENT.md)：同一批 100 张图、三模型、正反两轮共 12,000 次调用，预测字段完全一致，但 2/4 路在 RTX 4060 上未超过已验证单路，且增加专用 GPU 内存。**不接入默认、不替换部署包**；研究代码仅通过默认 OFF 的 `LWVK_EXPERIMENTAL_REC_LANES` 构建选项启用。
 
-作者：天天代码码天天；QQ：819069052。
-群名称：天天代码码天天
+作者：天天代码码天天<br>
+QQ：819069052<br>
+群名称：天天代码码天天<br>
 群号码：264292622
 
 ## 当前阶段：0.5.0-dev.2
@@ -279,6 +280,7 @@ Windows CI 固定并校验官方 Vulkan SDK 1.4.350.0 下载，缓存安装器�
 Linux CI 缓存校验后的 SDK，使用 lavapipe 软件 Vulkan 对拍，生成 tar.gz + SHA-256。
 软件 Vulkan 对拍包含 DET、CLS、REC、CTC、BGR stride/长度及同句柄并发检查。
 完整 OCR 软件对拍显式使用 CPU 图像前处理，网络仍由 Vulkan 执行；GPU DET/CLS/REC 前处理与透视裁剪另用独立着色器探针检查精确位值、stride、补边和恢复。这样避免共享 runner 上 8 行软件 REC 合批超过单次 30 秒 fence 等待；不是关闭网络对拍或修改硬件 GPU 默认行为。
+Medium 在软件 Vulkan 上连单个网络提交也可能超过 30 秒，因此 Linux CI 显式设置 `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`（单次网络 fence 等待 180 秒）。此工程选项只对 Vulkan `device_type=4` 的 CPU 软件设备生效，允许范围为 30000～300000 毫秒；未设置仍为 30 秒，独显、集显及虚拟 GPU 始终保持 30 秒。打包不会将 CI 环境变量写入客户配置。它不是整个 OCR 请求的截止时间，更不代表超时会取消已提交任务；模型、精度比较和失败后的 poisoned 处理均保持不变。
 并增加完整 OCR、DB/crop 单元测试、裁剪资源上限和独立结果生命周期测试。
 本地检查不等于远程 CI 成功；当前修改仍须推送后确认 Actions 结果。
 

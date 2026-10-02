@@ -1008,10 +1008,14 @@ void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
     si.pCommandBuffers = &cmd;
     VkResult result = vkQueueSubmit(context_.queue, 1, &si, fence_);
     if (result == VK_SUCCESS)
-        result = vkWaitForFences(context_.device, 1, &fence_, VK_TRUE, UINT64_C(30000000000));
+        result = vkWaitForFences(context_.device, 1, &fence_, VK_TRUE, context_.graph_wait_timeout_ns);
     if (result != VK_SUCCESS) {
         poisoned_ = true;
-        check(result, "submit/wait DET graph (timeout is not cancellation)");
+        const auto operation = "submit/wait " + model_.task + " graph [input=" + std::to_string(height_) + "x" +
+                               std::to_string(width_) +
+                               ", timeout_ms=" + std::to_string(context_.graph_wait_timeout_ns / 1000000) +
+                               "] (timeout is not cancellation)";
+        check(result, operation.c_str());
     }
     auto& buffer = ctc ? ctc_readback_ : readback_;
     buffer->read(output, static_cast<size_t>(ctc ? ctc_bytes_ : output_bytes_));
