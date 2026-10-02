@@ -278,8 +278,9 @@ Windows CI 固定并校验官方 Vulkan SDK 1.4.350.0 下载，缓存安装器�
 无实体 GPU 时明确跳过硬件测试，不把跳过算作通过。
 Linux CI 缓存校验后的 SDK，使用 lavapipe 软件 Vulkan 对拍，生成 tar.gz + SHA-256。
 软件 Vulkan 对拍包含 DET、CLS、REC、CTC、BGR stride/长度及同句柄并发检查。
+完整 OCR 软件对拍显式使用 CPU 图像前处理，网络仍由 Vulkan 执行；GPU DET/CLS/REC 前处理与透视裁剪另用独立着色器探针检查精确位值、stride、补边和恢复。这样避免共享 runner 上 8 行软件 REC 合批超过单次 30 秒 fence 等待；不是关闭网络对拍或修改硬件 GPU 默认行为。
 并增加完整 OCR、DB/crop 单元测试、裁剪资源上限和独立结果生命周期测试。
-两个工作流定义已准备；尚未推送新仓库运行，不宣称远程 CI 已通过。
+本地检查不等于远程 CI 成功；当前修改仍须推送后确认 Actions 结果。
 
 本地打包（确认测试通过后）：
 

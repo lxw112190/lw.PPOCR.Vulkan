@@ -114,8 +114,13 @@ a Windows test does not establish their compatibility.
 The checked-in CI definitions build/package Windows x64 and Linux x64.
 Windows checks host ABI only when hardware is unavailable (explicit SKIP).
 Linux runs an independent DET reference test using software Vulkan/lavapipe,
-not a hardware acceleration benchmark. SDK downloads are pinned and SHA-256
-verified. Workflows have not been run remotely for this new project yet.
+not a hardware acceleration benchmark. Full OCR reference tests explicitly use
+CPU image preprocessing while networks still execute through Vulkan. Independent
+shader probes cover GPU DET/CLS/REC preprocessing and perspective crops (exact
+bits, stride, padding and recovery), avoiding an eight-line software REC batch
+exceeding a single 30-second fence budget on shared runners. Hardware defaults
+and production timeouts are unchanged. SDK downloads are pinned and SHA-256
+verified. Local checks do not establish remote CI success; confirm Actions after pushing.
 
 Compiled packages do not need Python or the Vulkan SDK. They need a matching
 Vulkan >=1.1 driver/loader. Device IDs follow Vulkan enumeration order; no

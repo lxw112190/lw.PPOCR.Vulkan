@@ -4,6 +4,7 @@ This is NOT an independent DB/crop algorithm comparison: geometry has host golde
 import argparse
 import ctypes as C
 import json
+import os
 from pathlib import Path
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -113,6 +114,10 @@ def main():
     models = a.models or root/"models/ppocrv6-tiny"
     lib, geometry = load(a.library), C.CDLL(str(a.geometry.resolve()))
     info = DeviceInfo(struct_size=C.sizeof(DeviceInfo)); check(lib, lib.lwvk_device_get(a.device, C.byref(info)))
+    preprocess_environment = {key:os.environ.get(key,'unset (native auto)') for key in
+        ('LWVK_GPU_DET_PREPROCESS','LWVK_GPU_TEXT_PREPROCESS','LWVK_GPU_CROP_PREPROCESS')}
+    print(json.dumps(dict(phase='reference-start',device=bytes(info.name).decode('utf-8','replace'),
+        models=str(models),quick=a.quick,preprocessing_environment=preprocess_environment)),flush=True)
     options = ort.SessionOptions(); options.intra_op_num_threads=2; options.inter_op_num_threads=1
     direct=(models/"rec.onnx").exists()
     source=models if direct else root/"models/ppocrv6-tiny"
@@ -135,6 +140,8 @@ def main():
     rss_before_engine = process.memory_info().rss/1024**2
     with OCR(lib, models, a.device) as engine:
         for (name, _), value, wanted in zip(variants, inputs, expected):
+            print(json.dumps(dict(phase='ocr-start',variant=name,image_hw=list(value.shape[:2]),
+                expected_regions=len(wanted))),flush=True)
             actual = engine.run(value); compare(actual, wanted)
             rows.append(dict(variant=name, items=len(wanted), texts=[x["text"] for x in actual["items"]], timing=actual["timing"]))
             print(json.dumps(rows[-1], ensure_ascii=False), flush=True)
@@ -191,6 +198,7 @@ def main():
     report=dict(version=lib.lwvk_version().decode(), device=bytes(info.name).decode("utf-8", "replace"),
         reference="ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
         comparisons=rows, iterations=a.iterations, rss=rss,
+        preprocessing_environment=preprocess_environment,
         rss_before_engine_mib=rss_before_engine, rss_after_engine_destroy_mib=rss_after_engine,
         limitations="Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
         input_recovery="passed", result_lifetime="passed", classifier_disabled="passed",
