@@ -1,5 +1,7 @@
 # lw.PPOCR.Vulkan C# 完整体验包
 
+最新 `rec-wide-opt1` 包复用 REC 1×1 投影输入 tile，只在符合条件的 NVIDIA 路径启用。相对 `det-vector-opt1`，RTX 4060 两项 GPU 前处理开启时，100 图 Medium 完整均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，预测一致；普通启动 Medium 样例也有约 3%～4% 改善。Tiny/Small 不宣称加速，AMD 虽保留旧 kernel，完整调用仍测到约 4% 退化，建议保留旧包对照。详细条件、负面数据与局限见 `docs/REC-WIDE-OPTIMIZATION.md`；不是所有显卡提速保证。
+
 最新 `det-vector-opt1` 包保留前几轮优化，对符合形状条件的 DET 普通卷积自动使用 FP32 向量加载/写回，不新增开关。相对 `rec-batch-opt1`，RTX 4060 上启用两项 GPU 前处理实验时，100 图 Medium 完整调用均值再降 **4.8%**，Tiny/Small 基本持平；连续换图 Medium 降约 **3.9%/4.2%**。REC 保留原分派，模型/精度/DET960/工作区预算/公共接口不变。详情见包内 `docs/DET-VECTOR-OPTIMIZATION.md`；普通启动仍不启用 GPU 前处理。
 
 作者：天天代码码天天；QQ：819069052。
@@ -114,3 +116,5 @@ ZIP 旁边 `.sha256` 用于校验压缩包；包内 `FILES.sha256` 是解压后�
 English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. All application-native DLLs and three models are included. A compatible installed GPU vendor driver and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is required to run. This is a preview, not a universal compatibility/performance guarantee.
 
 历史 `network-opt1` 原生 DLL SHA-256：`39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929`；此前 `cls-batch-opt1` 为 `6f08b959a9a7fc78561faa003e1b1a37a834aaf434e5063834f0b51381d1fff3`，上一版 `rec-batch-opt1` 为 `a5e773d702492f909f7ec2dfd7dff2d99aeb3e4248c5c86936b0741f59c0b8c7`。本轮 `det-vector-opt1` DLL 为 `05201449ff0705ecd3c70e7dbfbeb7740e300e6be6bbc1597cb8ba3ae8d13c0d`。以本包 `PACKAGE-INFO.json` 和文件校验清单为准。新包有独立回归与 ZIP 验证，不沿用旧包长测作为本轮稳定性结论。
+
+本轮 `rec-wide-opt1` 原生 DLL SHA-256：`056b9b567a9b40b69407591a0ebc66b284ccd26835b4e289c0d05c4255393a6d`。以上其他 revision 为历史包；以当前 `PACKAGE-INFO.json` 的 `demo_revision` 与哈希为准。

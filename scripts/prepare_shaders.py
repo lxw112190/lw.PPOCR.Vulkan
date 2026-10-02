@@ -60,10 +60,10 @@ def prepare(source: Path, destination: Path) -> None:
 // Apache-2.0. Modified by lw.PPOCR.Vulkan in 2026: portable FP32 baseline,
 // FP32 activation parameters, improved Erf precision, FP32 MaxPool bound.
 // Original unmodified source and attribution are shipped with the project."""
-        if path.stem in ('conv_gemm', 'conv_gemm_tiled', 'conv_gemm_vector', 'conv_pointwise_tiled', 'conv_pointwise_tiled64', 'conv_pointwise_vector', 'conv_pointwise_smallm', 'conv_dw4', 'gelu', 'softmax_parallel', 'softmax_argmax'):
+        if path.stem in ('conv_gemm', 'conv_gemm_tiled', 'conv_gemm_vector', 'conv_pointwise_tiled', 'conv_pointwise_tiled64', 'conv_pointwise_vector', 'conv_pointwise_wide', 'conv_pointwise_smallm', 'conv_dw4', 'gelu', 'softmax_parallel', 'softmax_argmax'):
             attribution = "#version 450\n// Project-written portable FP32 kernel. Apache-2.0."
         text = text.replace("#version 450", attribution, 1)
-        if path.stem in ('gelu','conv_dense','conv_gemm','conv_gemm_tiled','conv_gemm_vector','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_smallm'):
+        if path.stem in ('gelu','conv_dense','conv_gemm','conv_gemm_tiled','conv_gemm_vector','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_wide','conv_pointwise_smallm'):
             text=text.replace("void main()",GELU+"\nvoid main()",1)
             text=text.replace("if((p.flags&16u)!=0)v=max(v,vec4(0));",
                               "if((p.flags&16u)!=0)v=max(v,vec4(0));if((p.flags&32u)!=0)v=lwvk_gelu(v);")
@@ -72,7 +72,7 @@ def prepare(source: Path, destination: Path) -> None:
             if path.stem=='conv_dense':
                 text=text.replace("o[gid] = actf(acc, (p.flags >> 4) & 7u, p.flags);",
                                   "o[gid] = (p.flags&32u)!=0 ? lwvk_gelu(acc) : actf(acc, (p.flags >> 4) & 7u, p.flags);")
-        if path.stem in ('conv_dense','conv_gemm','conv_gemm_tiled','conv_gemm_vector','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_smallm'):
+        if path.stem in ('conv_dense','conv_gemm','conv_gemm_tiled','conv_gemm_vector','conv_pointwise','conv_pointwise_tiled','conv_pointwise_tiled64','conv_pointwise_vector','conv_pointwise_wide','conv_pointwise_smallm'):
             text=text.replace('void main()', '''vec4 lwvk_silu(vec4 v) { return v * (vec4(1.0) / (vec4(1.0) + exp(-v))); }
 float lwvk_silu(float v) { return v * (1.0 / (1.0 + exp(-v))); }
 void main()''', 1)

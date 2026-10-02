@@ -11,6 +11,8 @@ C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web �
 
 ## 当前阶段：0.5.0-dev.2
 
+最新 [Medium REC 宽 tile 优化](docs/REC-WIDE-OPTIMIZATION.md)：复用输入 tile，扩大 FP32 1×1 投影的输出通道块。相对 `det-vector-opt1`，RTX 4060 的 100 图 Medium 完整调用均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，完整字段一致。仅符合条件的 NVIDIA REC 自动采用，Tiny/Small 不宣称加速；Small 首遍换图和 AMD 完整调用有退化数据，详见报告。FP32、DET960、预算和接口不变，不新增开关；GPU 裁剪/DB 尚未实现。
+
 本轮新增 [DET FP32 向量访存优化](docs/DET-VECTOR-OPTIMIZATION.md)：延续 GPU 前后处理、缓冲区复用和减少搬运的思路，四个 NHWC 通道共用地址计算与向量加载/写回。相对 REC 合批版，RTX 4060 的 100 图 Medium 完整调用均值再降 **4.8%**，连续换图降 **3.9%/4.2%**，完整预测一致；Tiny/Small 基本持平。仅 DET 自动启用，实验中退化的 REC 分派未保留。FP32、DET960、预算和公共接口不变，不新增开关；见报告中的文章借鉴、测试口径与局限。
 
 当前是 **Tiny/Small/Medium Vulkan 完整 OCR 技术验证版**，同时支持完整 OCR 和裁剪文字区域仅识别，尚不是正式生产版：
@@ -69,6 +71,8 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
   → CPU：CTC 去重/去空白、字典映射、文字与坐标结果组装
   → C ABI → C# WinForms / Python / HTTP 与 Web
 ```
+
+上图是普通启动的默认 CPU 前处理路径。用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启两项实验后，DET/CLS/REC 缩放、归一化、输入布局与 REC 180° 反向采样转到 GPU；CPU 仍负责 DB、框排序、透视裁剪、方向判断和 CTC 字典映射。CLS/REC 可有界合并最多 8 行提交，但不是 8 行网络同时执行，也尚未实现三网络共用原图 GPU 缓冲区。
 
 - **模型加载**：原生 ONNX protobuf 解析器读取图和权重，规范化、转换受支持的算子，并进行经过验证的融合。它仅支持随项目固定的 PP-OCRv6 Tiny/Small/Medium，不是通用 ONNX 推理引擎。
 - **GPU 执行**：构建时把计算 shader 编译成 SPIR-V 并嵌入库；运行时创建计算管线、提交命令并通过 fence 等待结果。默认使用 FP32，执行卷积、矩阵运算、注意力等网络计算，不依赖 CUDA。
@@ -129,7 +133,7 @@ Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python
 
 <a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo：GPU 选择、检测框、识别文字与耗时" width="960"></a>
 
-本机 RTX 4060 Laptop GPU / Tiny 模型实测界面；截图中的耗时仅为该次调用示例，不代表所有设备或图片的性能。点击图片查看原图。
+本轮 `rec-wide-opt1` 完整体验包实测界面：RTX 4060 Laptop GPU / Tiny 模型，开启 DET/CLS/REC GPU 前处理实验，展示整图检测与鼠标框选。截图中的耗时仅为该次重复调用示例，不代表所有设备或图片的性能，也不是 Medium 的基准结果。点击图片查看原图。
 
 ### Demo 中的耗时如何理解
 

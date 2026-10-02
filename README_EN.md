@@ -1,5 +1,7 @@
 # lw.PPOCR.Vulkan
 
+Latest: [Medium REC wide-tile optimization](docs/REC-WIDE-OPTIMIZATION.md) reuses an input tile across twice as many FP32 pointwise output channels. Against det-vector-opt1, paired RTX 4060 Medium 100-image full-call means improve **3.6%**, and sample REC stage medians improve about **6.8%**, with exact prediction equality. Automatic selection is restricted to eligible NVIDIA REC shapes; Tiny/Small have no acceleration claim. Small first-pass and AMD end-to-end regressions are disclosed in the report. FP32, DET960, budgets and ABI stay unchanged; no new flag. GPU perspective cropping and DB remain unimplemented.
+
 Latest: [DET FP32 vector memory optimization](docs/DET-VECTOR-OPTIMIZATION.md) shares spatial address arithmetic and NHWC loads/stores across four channels. Against rec-batch-opt1, paired RTX 4060 Medium 100-image full-call means improve **4.8%**, with **3.9%/4.2%** gains on a changing stream and exact prediction equality. Tiny/Small remain essentially unchanged. Enable automatically for eligible DET shapes only: an experimental REC dispatch regressed changing-width streams and was not retained. FP32, DET960, resource limits and the public ABI stay unchanged; no new flag is required. The report maps the GPU preprocessing/postprocessing article's lessons to implemented features and retained CPU work.
 
 [中文](README.md)
@@ -73,6 +75,8 @@ Image / camera BGR pixels
   → C ABI → C# WinForms / Python / HTTP and Web
 ```
 
+This diagram describes the normal CPU-preprocessing launcher. The GPU-preprocessing experimental launcher moves DET/CLS/REC resize, normalization, packing and REC 180-degree sampling to the GPU. DB, sorting, perspective cropping, orientation decisions and dictionary mapping remain on the CPU. Bounded CLS/REC command grouping is not parallel batch-N inference, and the three networks do not yet share one uploaded original-image buffer.
+
 - **Loading:** a bounded native ONNX protobuf reader normalizes/lowers supported operations and applies validated fusions. It supports the pinned PP-OCRv6 Tiny/Small/Medium assets, not arbitrary ONNX models.
 - **Execution:** compute shaders are compiled to SPIR-V and embedded at build time. Runtime pipelines execute convolution, matrix and attention operations in default FP32, with command submission and fence synchronization. No CUDA runtime is required.
 - **CPU/GPU split:** neural networks execute on the GPU; geometry and part of decoding remain on the CPU. GPU OCR is not an entirely GPU-resident pipeline.
@@ -134,7 +138,7 @@ Windows CI performs application-owned layout/ROI smoke tests, not GPU inference.
 
 <a href="docs/assets/winforms-demo.png"><img src="docs/assets/winforms-demo.png" alt="C# WinForms Demo with GPU selection, detection boxes, OCR text and timings" width="960"></a>
 
-Actual local RTX 4060 Laptop GPU / Tiny-model demo. Timings illustrate this invocation only, not performance on all devices or images. Click to view the full-size screenshot.
+Actual `rec-wide-opt1` sharing bundle on RTX 4060 Laptop GPU with the Tiny model and experimental GPU DET/CLS/REC preprocessing enabled, showing full-image detection and mouse-selected recognition. Timings illustrate this repeated invocation only, not all devices/images or the Medium benchmark. Click to view the full-size screenshot.
 
 ### Understanding Demo timings
 

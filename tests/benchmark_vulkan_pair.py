@@ -23,17 +23,22 @@ def main():
     p.add_argument('--device',type=int,default=1);p.add_argument('--iterations',type=int,default=30)
     p.add_argument('--sizes',type=int,nargs='+',default=[500,1000])
     p.add_argument('--models',nargs='+',choices=['tiny','small','medium'],default=['tiny','small','medium'])
+    p.add_argument('--reverse-initialization',action='store_true',
+        help='allocate the candidate libraries/engines first to check placement/order bias')
     p.add_argument('--report',type=Path,required=True)
     a=p.parse_args();assert 1<=a.iterations<=5000
     if any(os.environ.get(x)=='1' for x in ('LWVK_GPU_PROFILE','LWVK_HOST_PROFILE')):
         p.error('disable diagnostic profiling for latency comparisons')
-    libs=[load(a.before),load(a.after)];rows=[]
+    order=(1,0) if a.reverse_initialization else (0,1)
+    libs=[None,None];paths=[a.before,a.after];rows=[]
+    for which in order:libs[which]=load(paths[which])
     for model in a.models:
         for size in a.sizes:
             with Image.open(ROOT/'test-images/sample.jpg') as im:
                 if size!=500:im=im.resize((size,size),Image.Resampling.BILINEAR)
                 pixels=np.ascontiguousarray(np.asarray(im.convert('RGB'))[:,:,::-1])
-            engines=[OCR(lib,ROOT/'models/onnx'/('ppocrv6-'+model),a.device) for lib in libs]
+            engines=[None,None]
+            for which in order:engines[which]=OCR(libs[which],ROOT/'models/onnx'/('ppocrv6-'+model),a.device)
             try:
                 expected=None;samples=[[],[]]
                 for _ in range(3):
@@ -56,6 +61,7 @@ def main():
                 for engine in engines:engine.close()
     report=dict(passed=True,before_sha256=sha(a.before),after_sha256=sha(a.after),device=a.device,
         method=dict(warmup_calls=3,iterations=a.iterations,order='alternating and reversed on odd iterations',
+            initialization_order='candidate-first' if a.reverse_initialization else 'baseline-first',
             gpu_det_preprocess_environment=os.environ.get('LWVK_GPU_DET_PREPROCESS','0'),
             gpu_text_preprocess_environment=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','0'),
             scope='predecoded BGR -> native OCR -> JSON copy and Python parsing; no GUI/file decoding; one active GPU workload',

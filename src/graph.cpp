@@ -743,6 +743,11 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
     else
         dispatch("nchw2nhwc", {{upload_->handle, 0, input_bytes_}, binding(input_)}, {height_ * width_, 3, 3},
                  linear(uint64_t(height_) * width_ * 3));
+    // Decide device/task policy once per recording, not for every projection.
+    // Wider register tiles helped RTX 4060 but regressed our AMD iGPU: keep its
+    // qualified kernel. This is a tuning policy, not a precision requirement.
+    const bool wide_rec = model.task == "rec" && context_.properties.vendorID == 0x10de &&
+                          context_.properties.limits.maxComputeSharedMemorySize >= 20480;
     for (const auto& n : model.nodes) {
         uint32_t xi = n.inputs[0], yi = n.output;
         const auto& x = tensors_[xi].shape;
@@ -779,9 +784,13 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                     const bool tile64 = tiled && tile64_requested() && y[2] * y[3] >= 64 && y[1] % 4 == 0 &&
                                         context_.properties.limits.maxComputeSharedMemorySize >= 16384;
                     const bool vector = tiled && !tile64 && y[1] % 4 == 0;
+                    // Large REC channel projections amortize a wider output tile.
+                    // Keep small shapes and DET on their qualified kernels.
+                    const bool wide = wide_rec && y[1] >= 512 && x[1] >= 512 && y[2] * y[3] >= 32 && vector;
                     const bool small_m = y[2] * y[3] <= 4 && y[1] >= 64 && x[1] >= 64;
                     dispatch(tile64    ? "conv_pointwise_tiled64"
                              : small_m ? "conv_pointwise_smallm"
+                             : wide    ? "conv_pointwise_wide"
                              : vector  ? "conv_pointwise_vector"
                              : tiled   ? "conv_pointwise_tiled"
                                        : "conv_pointwise",
@@ -791,7 +800,9 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                              : tile64 ? (y[2] * y[3] + 63) / 64
                              : tiled  ? (y[2] * y[3] + 31) / 32
                                       : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
-                             tiled ? (y[1] + 63) / 64 : 1);
+                             wide    ? (y[1] + 127) / 128
+                             : tiled ? (y[1] + 63) / 64
+                                     : 1);
                 } else if (!reference && !tiled_gemm_disabled() && weight.packed_bytes && y[2] * y[3] >= 32 &&
                            y[1] >= 32)
                     // NHWC vec4 loads share address arithmetic across channels.
