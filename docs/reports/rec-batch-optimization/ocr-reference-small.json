@@ -1,0 +1,148 @@
+{
+  "version": "0.5.0-dev.2",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "reference": "ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
+  "comparisons": [
+    {
+      "variant": "sample",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】:代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】:YM-X-3011",
+        "ODM OEM",
+        "【净含量】:220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "(成品包材)",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 6.2288,
+        "det_ms": 5.3779,
+        "rec_ms": 27.7881,
+        "total_ms": 91.8607
+      }
+    },
+    {
+      "variant": "rotated-180",
+      "items": 16,
+      "texts": [
+        "发足够的滋养",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "(成品包材)",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "【适用人群】：适合所有肤质",
+        "ODM OEM",
+        "【净含量】:220ml",
+        "【产品编号】:YM-X-3011",
+        "【品名】：纯臻营养护发素",
+        "【品牌】:代加工方式/OEM ODM",
+        "每瓶22元，1000瓶起订)",
+        "(45元/每公斤，100公斤起订)",
+        "产品信息/参数",
+        "纯臻营养护发素"
+      ],
+      "timing": {
+        "cls_ms": 6.2125,
+        "det_ms": 5.3415,
+        "rec_ms": 27.6991,
+        "total_ms": 66.1073
+      }
+    },
+    {
+      "variant": "wide-resized",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】:代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】:YM-X-3011",
+        "ODM OEM",
+        "【净含量】:220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛酿",
+        "(成品包材)",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 6.2702,
+        "det_ms": 5.4633,
+        "rec_ms": 35.5263,
+        "total_ms": 97.1079
+      }
+    },
+    {
+      "variant": "small",
+      "items": 16,
+      "texts": [
+        "纯臻营养护发素",
+        "产品信息/参数",
+        "(45元/每公斤，100公斤起订)",
+        "每瓶22元，1000瓶起订)",
+        "【品牌】：代加工方式/OEM ODM",
+        "【品名】：纯臻营养护发素",
+        "【产品编号】：YM-X-3011",
+        "ODM OEM",
+        "【净含量】：220ml",
+        "【适用人群】：适合所有肤质",
+        "【主要成分】：鲸蜡硬脂醇、燕麦β-葡聚",
+        "糖、椰油酰胺丙基甜菜碱、泛醌",
+        "(成品包材)",
+        "【主要功能】：可紧致头发磷层，从而达到",
+        "即时持久改善头发光泽的效果，给干燥的头",
+        "发足够的滋养"
+      ],
+      "timing": {
+        "cls_ms": 6.1605,
+        "det_ms": 2.7905,
+        "rec_ms": 27.4839,
+        "total_ms": 61.7634
+      }
+    },
+    {
+      "variant": "blank",
+      "items": 0,
+      "texts": [],
+      "timing": {
+        "cls_ms": 0.0,
+        "det_ms": 1.6387,
+        "rec_ms": 0.0,
+        "total_ms": 4.2369
+      }
+    }
+  ],
+  "iterations": 5,
+  "rss": [
+    {
+      "iteration": 1,
+      "rss_mib": 426.27734375
+    },
+    {
+      "iteration": 5,
+      "rss_mib": 427.22265625
+    }
+  ],
+  "rss_before_engine_mib": 242.83203125,
+  "rss_after_engine_destroy_mib": 359.30078125,
+  "limitations": "Process RSS includes ORT/Python/driver, not VRAM or proof of no leaks.",
+  "input_recovery": "passed",
+  "result_lifetime": "passed",
+  "classifier_disabled": "passed",
+  "concurrency": "4 workers / 8 calls passed"
+}

@@ -1,0 +1,279 @@
+{
+  "passed": true,
+  "device": 0,
+  "cases": [
+    {
+      "model": "tiny",
+      "task": "det",
+      "shape": [
+        64,
+        64
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "4719e36fd5dfb637754e3732c3a2188042365fa9669c86033fc6a5b30e0e49da"
+    },
+    {
+      "model": "tiny",
+      "task": "det",
+      "shape": [
+        96,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "484bb8683e0a212e7f2668003da8a938abc19a7e41dba5f63652e24f2249f872"
+    },
+    {
+      "model": "tiny",
+      "task": "det",
+      "shape": [
+        320,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "95d773c3f2b2846aec375fedcb769cfd71378194559dc0529becf6e4f219bb6d"
+    },
+    {
+      "model": "tiny",
+      "task": "cls",
+      "shape": [
+        80,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "e4084a9e683ec14bf0a6878a2115a08e25965f732bfc50a3f25faf44080018a8"
+    },
+    {
+      "model": "tiny",
+      "task": "rec",
+      "shape": [
+        48,
+        32
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "6ae7a8807c8480df068e618b956bec663bbcf2a594100fbe1d366e01c6ee00ab"
+    },
+    {
+      "model": "tiny",
+      "task": "rec",
+      "shape": [
+        48,
+        40
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "d0338985fcc0e07345f9b6f947a58e20b492b15c84b6dd41958ef4100d79dbcc"
+    },
+    {
+      "model": "tiny",
+      "task": "rec",
+      "shape": [
+        48,
+        96
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "1be489daa3b8db9f5dee02444247f6ae1556c284a453954e596087534a364928"
+    },
+    {
+      "model": "tiny",
+      "task": "rec",
+      "shape": [
+        48,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "5caeb31a27b3735baaee33b12c4e562762597c9efcf984ea3462503739942b11"
+    },
+    {
+      "model": "tiny",
+      "task": "rec",
+      "shape": [
+        48,
+        960
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "f61b9a432b7aaec91b004b8c9762910a6a0e9b16b429c3d8ca3aeb3bb617af91"
+    },
+    {
+      "model": "small",
+      "task": "det",
+      "shape": [
+        64,
+        64
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "732064a4f226ae74b63476c465057e9f75a56b21d203307b01e3e2d5d1db292e"
+    },
+    {
+      "model": "small",
+      "task": "det",
+      "shape": [
+        96,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "d1f8a9ebeabfcc5bd0ea434203165086db7539aa78eaeff6bc130247f27eef1c"
+    },
+    {
+      "model": "small",
+      "task": "det",
+      "shape": [
+        320,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "594196d50dff4b27eb983bff8f8fae8094cedbdc3c2bfe70434c4ebc5778033e"
+    },
+    {
+      "model": "small",
+      "task": "cls",
+      "shape": [
+        80,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "e4084a9e683ec14bf0a6878a2115a08e25965f732bfc50a3f25faf44080018a8"
+    },
+    {
+      "model": "small",
+      "task": "rec",
+      "shape": [
+        48,
+        32
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "226e08af4a8ec4eb95e44b69f31827e671738b8d5c30e160eca419bdd9c7c0ab"
+    },
+    {
+      "model": "small",
+      "task": "rec",
+      "shape": [
+        48,
+        40
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "cfb2dd1edb7582207d5f903ef1f50abef4071492d2745e113ec11dc2c58a0886"
+    },
+    {
+      "model": "small",
+      "task": "rec",
+      "shape": [
+        48,
+        96
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "1c43f09f43a67e0dcb84a71c938085c952bd39e07e0ce01c68fdae3f770cb22b"
+    },
+    {
+      "model": "small",
+      "task": "rec",
+      "shape": [
+        48,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "328656b2dcc84fc42a35c3a33f1cbefa68bdb894decc2720d1e17573f3fc1aa8"
+    },
+    {
+      "model": "small",
+      "task": "rec",
+      "shape": [
+        48,
+        960
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "756f40c4c94cb8e2322b2e906000693f0f1eda16526f186197ce9f4b869ce40f"
+    },
+    {
+      "model": "medium",
+      "task": "det",
+      "shape": [
+        64,
+        64
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "987381615cb63351beeeddc7d5613431dc5fba1790473daa6537b70d393e0625"
+    },
+    {
+      "model": "medium",
+      "task": "det",
+      "shape": [
+        96,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "9a50363c4e70fca5352b409e82b5771f332d69b50fe3f22d0d0af45af1c2575a"
+    },
+    {
+      "model": "medium",
+      "task": "det",
+      "shape": [
+        320,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "9bd71128003dec48cb05b5c5e420a35c88a04a8895ee684848e9927ca4162b92"
+    },
+    {
+      "model": "medium",
+      "task": "cls",
+      "shape": [
+        80,
+        160
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "e4084a9e683ec14bf0a6878a2115a08e25965f732bfc50a3f25faf44080018a8"
+    },
+    {
+      "model": "medium",
+      "task": "rec",
+      "shape": [
+        48,
+        32
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "92b5fa5f90d44e51bcc22d035fbd686c31f067545c8bb6915945dc3d37e7de95"
+    },
+    {
+      "model": "medium",
+      "task": "rec",
+      "shape": [
+        48,
+        40
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "574ca6d38b95eb8aed9be85b63e583cab51689ab78237a02c7724aed73fae199"
+    },
+    {
+      "model": "medium",
+      "task": "rec",
+      "shape": [
+        48,
+        96
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "eeed9bd9a5f8d85a3b24735a6c2c3424c10c82fadb9cb118439e525721c93830"
+    },
+    {
+      "model": "medium",
+      "task": "rec",
+      "shape": [
+        48,
+        320
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "36ba8e43817c006b8fba35b47e4699cb210019ddf0dcbcc54178ff48f3c7c039"
+    },
+    {
+      "model": "medium",
+      "task": "rec",
+      "shape": [
+        48,
+        960
+      ],
+      "exact_fp32_bits": true,
+      "output_sha256": "a618ddac1bb0262e3d8a1e6dc6d75bc248b7a8dd32cae0b18a7ec04eb97a560a"
+    }
+  ],
+  "before_sha256": "6f08b959a9a7fc78561faa003e1b1a37a834aaf434e5063834f0b51381d1fff3",
+  "after_sha256": "a5e773d702492f909f7ec2dfd7dff2d99aeb3e4248c5c86936b0741f59c0b8c7",
+  "limitations": "Same-device regression, not independent accuracy, benchmark or leak proof."
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include "vulkan_context.hpp"
 #include "ctc_decode.hpp"
+#include "bgr_view.hpp"
 #include <nlohmann/json.hpp>
 #include <array>
 #include <filesystem>
@@ -60,6 +61,10 @@ class Plan {
     }
 
   private:
+    friend class GraphEngine;
+    void stage_bgr(const BgrView&, bool rotate = false);
+    void attach_buffers(Buffer*, Buffer*, Buffer*, Buffer*, bool bgr_only = false);
+    bool bgr_only_{};
     void close() noexcept;
     struct Profile {
         VkQueryPool pool{};
@@ -104,6 +109,8 @@ class GraphEngine {
         return context_.gpu_text_preprocess;
     }
     double classify_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, float* output);
+    double classify_batch(const std::vector<BgrView>&, std::vector<std::array<float, 2>>&);
+    double recognize_batch(const std::vector<BgrView>&, const std::vector<uint8_t>&, std::vector<TextResult>&);
     TextResult recognize_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
                              uint32_t target, bool rotate, double& ms);
     Shape output_shape(uint32_t height, uint32_t width);
@@ -116,6 +123,11 @@ class GraphEngine {
     }
 
   private:
+    friend struct ClsBatchProbe;
+    friend struct RecBatchProbe;
+    uint64_t batch_workspace_bytes() const;
+    uint64_t rec_batch_workspace_bytes() const;
+    void clear_batch_workspaces();
     uint64_t prepare_bgr(const uint8_t*, uint64_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
     TextResult decode_pairs(const std::vector<float>& pairs);
     void prepare(uint32_t height, uint32_t width, uint64_t min_upload = 0);
@@ -130,6 +142,22 @@ class GraphEngine {
         std::unique_ptr<Plan> plan;
     };
     std::vector<CachedPlan> plans_;
+    struct BatchSlot {
+        SharedWorkspace workspace; // plan dies first, before the buffers it references
+        std::unique_ptr<Plan> plan;
+    };
+    std::vector<std::unique_ptr<BatchSlot>> cls_batch_;
+    // REC runs serially inside one submission; one arena, independent upload/CTC
+    // IO, and at most 32 slot/width plans. Commands must die before buffers.
+    std::unique_ptr<Buffer> rec_batch_arena_;
+    std::vector<SharedWorkspace> rec_batch_io_;
+    struct RecBatchPlan {
+        uint32_t slot, width;
+        uint64_t stamp;
+        std::unique_ptr<Plan> plan;
+    };
+    std::vector<RecBatchPlan> rec_batch_plans_;
+    bool batch_poisoned_{};
     Plan* plan_{};
     uint64_t stamp_{};
     uint64_t max_bytes_;

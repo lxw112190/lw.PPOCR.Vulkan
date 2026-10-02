@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "device": 1,
+  "gpu_det_preprocess": true,
+  "rows": [
+    {
+      "model": "tiny",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "d4ead301d64fb79f511278f0d0484c5fa2c697053c12272d2160db7a5a3b7292",
+      "before_after_mean_wall_ms": [
+        21.79248749994258,
+        20.493563499967422
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 5.960420993604243
+    },
+    {
+      "model": "small",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "493100b6fddf528490825a5d134e22a3697b68610071246217ead1ce09c3aab7",
+      "before_after_mean_wall_ms": [
+        36.569103499996345,
+        34.25560699990456
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 6.326369198774639
+    },
+    {
+      "model": "medium",
+      "variant_pairs": 10,
+      "padded_stride": "exact items",
+      "invalid_input": "rejected with cleared result",
+      "corpus_images": 100,
+      "corpus_exact_items": true,
+      "corpus_items_sha256": "28f4e01e0d4195a51a00ab2523216b03d92d28ab00e022ffc118ed555e43a6c0",
+      "before_after_mean_wall_ms": [
+        83.67455399999926,
+        81.64843450002991
+      ],
+      "measured_samples_per_path": 200,
+      "reduction_percent": 2.4214285025879856
+    }
+  ],
+  "gpu_text_preprocess": true,
+  "before_sha256": "39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929",
+  "after_sha256": "6f08b959a9a7fc78561faa003e1b1a37a834aaf434e5063834f0b51381d1fff3",
+  "lru_40_shapes": "passed",
+  "raw_upload_budget_and_recovery": "passed",
+  "method": "one shape warmup, alternating order, FP32 networks, DET cap 960, classifier enabled",
+  "limitations": "No Vulkan validation-layer claim, long soak/leak proof or cross-device equivalence claim."
+}

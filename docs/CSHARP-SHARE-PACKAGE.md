@@ -1,5 +1,7 @@
 # lw.PPOCR.Vulkan C# 完整体验包
 
+最新 `det-vector-opt1` 包保留前几轮优化，对符合形状条件的 DET 普通卷积自动使用 FP32 向量加载/写回，不新增开关。相对 `rec-batch-opt1`，RTX 4060 上启用两项 GPU 前处理实验时，100 图 Medium 完整调用均值再降 **4.8%**，Tiny/Small 基本持平；连续换图 Medium 降约 **3.9%/4.2%**。REC 保留原分派，模型/精度/DET960/工作区预算/公共接口不变。详情见包内 `docs/DET-VECTOR-OPTIMIZATION.md`；普通启动仍不启用 GPU 前处理。
+
 作者：天天代码码天天；QQ：819069052。
 群名称：天天代码码天天
 群号码：264292622
@@ -27,6 +29,10 @@
 实验开关应在新进程加载 DLL 前设置；脚本使用局部环境，不修改系统配置。两种实验都需要 `shaderFloat64`，不支持时可关闭 Demo 后用普通启动脚本重新启动。默认算法流程示意见 README；开启实验后，缩放/归一化和 REC 180° 校正转到 GPU，裁剪/DB/字典映射仍在 CPU。
 
 最新 `network-opt1` 包继续优化 FP32 1×1 卷积（向量写回、小空间 kernel 与安全的 SiLU 融合），按形状自动启用。普通启动和 GPU 前处理实验都受益，不需要新增开关。相对上一轮 GPU 前处理包，RTX 4060 的 100 图均值再下降约 2.1%/3.0%/3.3%；模型、FP32 和 DET960 不变，详情见包内 `docs/POINTWISE-OPTIMIZATION.md`。
+
+最新 `cls-batch-opt1` 包保留前述优化，并在文字行 GPU 前处理实验中自动合并最多 8 行 CLS 提交/等待。100 图均值相对 `network-opt1` 再降 Tiny/Small/Medium 约 **6.0%/6.3%/2.4%**，结果逐项一致；普通启动脚本仍逐行 CLS，不宣称同样提速。仍用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启，报告见 `docs/CLS-BATCH-OPTIMIZATION.md`。裁剪暂存最多 8 行/16 MiB（更大的单行单独处理），GPU 槽位合计受原预算约束，紧预算自动回退串行。
+
+本轮 `rec-batch-opt1` 包在上述实验路径中继续合并 REC 提交：最多 8 行共享一个中间张量区，输入/CTC 输出独立，显式屏障保护复用；不分配未使用的完整概率回读。相对 `cls-batch-opt1`，100 图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**，连续换图首遍降 **6.2%/4.1%/1.9%**，结果一致。仍使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat`，普通启动不宣称相同提速。预算不足回退串行，关闭 CLS 时仍可 REC 合批；报告见 `docs/REC-BATCH-OPTIMIZATION.md`。
 
 ## 对方电脑需要什么
 
@@ -107,4 +113,4 @@ ZIP 旁边 `.sha256` 用于校验压缩包；包内 `FILES.sha256` 是解压后�
 
 English: Extract the entire ZIP, launch `Start-CSharp-Demo.bat`, select your actual GPU/model, initialize, then run OCR. All application-native DLLs and three models are included. A compatible installed GPU vendor driver and .NET Framework are still required. No CUDA, Python, Vulkan SDK or Visual Studio is required to run. This is a preview, not a universal compatibility/performance guarantee.
 
-`network-opt1` 原生 DLL SHA-256：`39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929`。上段 `gpu-text-experiment1` 哈希属于上一轮构建，不是本包；以本包 `PACKAGE-INFO.json` 和文件校验清单为准。新包有独立回归与 ZIP 验证，不沿用旧包长测作为本轮稳定性结论。
+历史 `network-opt1` 原生 DLL SHA-256：`39d4397307d8c1b19df22a6a312a1fd49e4ebd4d04cd1d445cf755f00d634929`；此前 `cls-batch-opt1` 为 `6f08b959a9a7fc78561faa003e1b1a37a834aaf434e5063834f0b51381d1fff3`，上一版 `rec-batch-opt1` 为 `a5e773d702492f909f7ec2dfd7dff2d99aeb3e4248c5c86936b0741f59c0b8c7`。本轮 `det-vector-opt1` DLL 为 `05201449ff0705ecd3c70e7dbfbeb7740e300e6be6bbc1597cb8ba3ae8d13c0d`。以本包 `PACKAGE-INFO.json` 和文件校验清单为准。新包有独立回归与 ZIP 验证，不沿用旧包长测作为本轮稳定性结论。

@@ -17,8 +17,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PREFIX = "LWVK_GPU_PROFILE "
+CONTROL_PREFIX = "LWVK_PROFILE_CONTROL "
 CASES = [("det",736,960), ("det",960,960), ("rec",48,320),
          ("rec",48,960), ("cls",80,160)]
+
+
+def parse_child_output(stdout, stderr):
+    # The validation layer may log to stdout (not only stderr). Parse our
+    # explicitly tagged control instead of assuming stdout is a JSON document.
+    diagnostics = stdout + '\n' + stderr
+    if any(marker in diagnostics for marker in ('Validation Error', 'VUID-', 'SYNC-HAZARD')):
+        raise AssertionError('Vulkan validation error:\n' + diagnostics[-8000:])
+    controls = [json.loads(line[len(CONTROL_PREFIX):]) for line in stdout.splitlines()
+                if line.startswith(CONTROL_PREFIX)]
+    if len(controls) != 1:
+        raise AssertionError('expected exactly one tagged profile control')
+    records = [json.loads(line[len(PREFIX):]) for line in diagnostics.splitlines() if line.startswith(PREFIX)]
+    return controls[0], records
 
 
 def child(a):
@@ -47,7 +62,7 @@ def child(a):
                 digest+=hashlib.sha256(text.encode()+np.float32(score).tobytes()).hexdigest()
             digests.append(digest)
     assert len(set(digests))==1,"repeated calls changed results"
-    print(json.dumps(dict(device=name,version=lib.lwvk_version().decode(),
+    print(CONTROL_PREFIX+json.dumps(dict(device=name,version=lib.lwvk_version().decode(),
         model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),result_digest=digests[0])))
 
 
@@ -93,10 +108,8 @@ def main():
                 result=subprocess.run(args,env=env,capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=180)
                 if result.returncode:
                     raise RuntimeError(f"profile child failed ({variant}/{task}/{width}):\n{result.stderr[-8000:]}")
-                if "Validation Error" in result.stderr or "VUID-" in result.stderr:
-                    raise AssertionError("Vulkan validation error:\n"+result.stderr[-8000:])
-                controls.append(json.loads(result.stdout))
-                current=[json.loads(line[len(PREFIX):]) for line in result.stderr.splitlines() if line.startswith(PREFIX)]
+                control, current = parse_child_output(result.stdout, result.stderr)
+                controls.append(control)
                 if not enabled:
                     assert not current,"profiling disabled but timestamps emitted"
                 else:

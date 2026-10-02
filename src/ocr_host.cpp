@@ -70,7 +70,7 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
                          const lwvk_ocr_config& config, lw_db_postprocess_workspace& db, const OcrGraphs& graphs,
                          Clock::time_point started) {
     // 原图 BGR -> DET -> DB/阅读排序 -> 单行透视裁剪 -> 可选 CLS/翻转 -> REC/CTC。
-    // 顺序处理文字行，不一次保存所有裁剪；累计像素预算限制极端图片的工作量。
+    // CLS 可按最多八行合并提交；裁剪暂存有界，不一次保存全部文字行。
     HostProfile profile;
     profile.begin();
     uint32_t rw = 0, rh = 0;
@@ -100,66 +100,135 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
     nlohmann::json items = nlohmann::json::array();
     double cls_ms = 0, rec_ms = 0;
     uint64_t total_pixels = 0;
-    for (uint32_t i = 0; i < count; ++i) {
-        profile.begin();
-        const auto& box = boxes[i];
-        uint32_t cw = 0, ch = 0;
-        uint64_t crop_bytes = 0;
-        host_check(lw_crop_quad_size(&box, &cw, &ch, &crop_bytes), "crop size");
-        const uint64_t pixels = crop_bytes / 3;
-        if (pixels > config.max_crop_pixels || pixels > config.max_total_crop_pixels - total_pixels)
-            throw std::invalid_argument("OCR crop pixel limit exceeded; no partial result returned");
-        total_pixels += pixels;
-        std::vector<uint8_t> crop(static_cast<size_t>(crop_bytes));
-        host_check(lwvk_crop_quad_bgr_u8(p, bytes, w, h, stride, &box, crop.data(), crop.size(), &cw, &ch, &crop_bytes),
-                   "perspective crop");
-        profile.end(3);
+    struct Crop {
+        uint32_t index, width, height;
+        uint64_t bytes;
+        std::vector<uint8_t> pixels;
         int label = -1;
         float cls_score = 0;
         bool rotate = false;
-        if (graphs.cls || graphs.cls_bgr) {
+    };
+    constexpr uint64_t chunk_limit = 16ull * 1024 * 1024;
+    uint32_t cursor = 0;
+    while (cursor < count) {
+        std::vector<Crop> chunk;
+        uint64_t chunk_bytes = 0;
+        const size_t chunk_size = (graphs.cls_batch || graphs.rec_batch) ? 8 : 1;
+        while (cursor < count && chunk.size() < chunk_size) {
             profile.begin();
-            std::vector<float> classifier;
-            if (!graphs.cls_bgr)
-                classifier = preprocess_cls_bgr(crop.data(), cw, ch);
-            float probabilities[2]{};
-            profile.end(4);
-            profile.begin();
-            cls_ms += graphs.cls_bgr ? graphs.cls_bgr(crop.data(), crop_bytes, cw, ch, probabilities)
-                                     : graphs.cls(classifier.data(), 80, 160, probabilities, 2);
-            profile.end(5);
-            if (!probability(probabilities[0]) || !probability(probabilities[1]))
-                throw std::runtime_error("invalid CLS probability");
-            label = probabilities[1] > probabilities[0] ? 1 : 0;
-            cls_score = probabilities[label];
-            rotate = label == 1 && cls_score > config.cls_threshold;
-            if (rotate && !graphs.rec_bgr)
-                lw_rotate_bgr_u8_180(crop.data(), cw, ch);
+            const auto& box = boxes[cursor];
+            uint32_t cw = 0, ch = 0;
+            uint64_t crop_bytes = 0;
+            host_check(lw_crop_quad_size(&box, &cw, &ch, &crop_bytes), "crop size");
+            if (!chunk.empty() && (chunk_bytes >= chunk_limit || crop_bytes > chunk_limit - chunk_bytes)) {
+                profile.end(3);
+                break;
+            }
+            const uint64_t pixels = crop_bytes / 3;
+            if (pixels > config.max_crop_pixels || pixels > config.max_total_crop_pixels - total_pixels)
+                throw std::invalid_argument("OCR crop pixel limit exceeded; no partial result returned");
+            total_pixels += pixels;
+            std::vector<uint8_t> crop(static_cast<size_t>(crop_bytes));
+            host_check(
+                lwvk_crop_quad_bgr_u8(p, bytes, w, h, stride, &box, crop.data(), crop.size(), &cw, &ch, &crop_bytes),
+                "perspective crop");
+            profile.end(3);
+            chunk_bytes += crop_bytes;
+            chunk.push_back({cursor++, cw, ch, crop_bytes, std::move(crop)});
         }
-        profile.begin();
-        RecInput recognizer;
-        if (!graphs.rec_bgr)
-            recognizer = preprocess_rec_bgr(crop.data(), crop_bytes, cw, ch, cw * 3, 0);
-        profile.end(4);
-        profile.begin();
-        double ms = 0;
-        auto decoded = graphs.rec_bgr ? graphs.rec_bgr(crop.data(), crop_bytes, cw, ch, rotate, ms)
-                                      : graphs.rec(recognizer.data.data(), recognizer.width, ms);
-        rec_ms += ms;
-        profile.end(6);
-        items.push_back({{"x1", box.x1},
-                         {"y1", box.y1},
-                         {"x2", box.x2},
-                         {"y2", box.y2},
-                         {"x3", box.x3},
-                         {"y3", box.y3},
-                         {"x4", box.x4},
-                         {"y4", box.y4},
-                         {"text", decoded.text},
-                         {"score", decoded.score},
-                         {"det_score", box.score},
-                         {"cls_label", label},
-                         {"cls_score", cls_score}});
+        std::vector<std::array<float, 2>> batch_probabilities;
+        if (graphs.cls_batch) {
+            std::vector<BgrView> views;
+            for (const auto& crop : chunk)
+                views.push_back({crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3});
+            profile.begin();
+            cls_ms += graphs.cls_batch(views, batch_probabilities);
+            profile.end(5);
+            if (batch_probabilities.size() != chunk.size())
+                throw std::runtime_error("CLS batch result count mismatch");
+        }
+        for (size_t crop_index = 0; crop_index < chunk.size(); ++crop_index) {
+            auto& entry = chunk[crop_index];
+            auto& crop = entry.pixels;
+            const auto cw = entry.width, ch = entry.height;
+            const auto crop_bytes = entry.bytes;
+            auto& label = entry.label;
+            auto& cls_score = entry.cls_score;
+            auto& rotate = entry.rotate;
+            if (graphs.cls || graphs.cls_bgr || graphs.cls_batch) {
+                float probabilities[2]{};
+                if (graphs.cls_batch) {
+                    probabilities[0] = batch_probabilities[crop_index][0];
+                    probabilities[1] = batch_probabilities[crop_index][1];
+                } else {
+                    profile.begin();
+                    std::vector<float> classifier;
+                    if (!graphs.cls_bgr)
+                        classifier = preprocess_cls_bgr(crop.data(), cw, ch);
+                    profile.end(4);
+                    profile.begin();
+                    cls_ms += graphs.cls_bgr ? graphs.cls_bgr(crop.data(), crop_bytes, cw, ch, probabilities)
+                                             : graphs.cls(classifier.data(), 80, 160, probabilities, 2);
+                    profile.end(5);
+                }
+                if (!probability(probabilities[0]) || !probability(probabilities[1]))
+                    throw std::runtime_error("invalid CLS probability");
+                label = probabilities[1] > probabilities[0] ? 1 : 0;
+                cls_score = probabilities[label];
+                rotate = label == 1 && cls_score > config.cls_threshold;
+                if (rotate && !graphs.rec_bgr && !graphs.rec_batch)
+                    lw_rotate_bgr_u8_180(crop.data(), cw, ch);
+            }
+        }
+        std::vector<TextResult> batch_text;
+        if (graphs.rec_batch) {
+            std::vector<BgrView> views;
+            std::vector<uint8_t> rotations;
+            for (const auto& crop : chunk) {
+                views.push_back({crop.pixels.data(), crop.bytes, crop.width, crop.height, crop.width * 3});
+                rotations.push_back(crop.rotate ? 1 : 0);
+            }
+            profile.begin();
+            rec_ms += graphs.rec_batch(views, rotations, batch_text);
+            profile.end(6);
+            if (batch_text.size() != chunk.size())
+                throw std::runtime_error("REC batch result count mismatch");
+        }
+        for (size_t crop_index = 0; crop_index < chunk.size(); ++crop_index) {
+            auto& entry = chunk[crop_index];
+            const auto& box = boxes[entry.index];
+            auto& crop = entry.pixels;
+            const auto cw = entry.width, ch = entry.height;
+            TextResult decoded;
+            if (graphs.rec_batch) {
+                decoded = std::move(batch_text[crop_index]);
+            } else {
+                profile.begin();
+                RecInput recognizer;
+                if (!graphs.rec_bgr)
+                    recognizer = preprocess_rec_bgr(crop.data(), entry.bytes, cw, ch, cw * 3, 0);
+                profile.end(4);
+                profile.begin();
+                double ms = 0;
+                decoded = graphs.rec_bgr ? graphs.rec_bgr(crop.data(), entry.bytes, cw, ch, entry.rotate, ms)
+                                         : graphs.rec(recognizer.data.data(), recognizer.width, ms);
+                rec_ms += ms;
+                profile.end(6);
+            }
+            items.push_back({{"x1", box.x1},
+                             {"y1", box.y1},
+                             {"x2", box.x2},
+                             {"y2", box.y2},
+                             {"x3", box.x3},
+                             {"y3", box.y3},
+                             {"x4", box.x4},
+                             {"y4", box.y4},
+                             {"text", decoded.text},
+                             {"score", decoded.score},
+                             {"det_score", box.score},
+                             {"cls_label", entry.label},
+                             {"cls_score", entry.cls_score}});
+        }
     }
     nlohmann::json result = {
         {"items", std::move(items)},
@@ -167,7 +236,7 @@ std::string run_ocr_host(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_t 
         {"image_height", h},
         {"det_width", rw},
         {"det_height", rh},
-        {"classifier_enabled", bool(graphs.cls || graphs.cls_bgr)},
+        {"classifier_enabled", bool(graphs.cls || graphs.cls_bgr || graphs.cls_batch)},
         {"timing", {{"det_ms", det_ms}, {"cls_ms", cls_ms}, {"rec_ms", rec_ms}, {"total_ms", milliseconds(started)}}}};
     // total_ms 包含 CPU 前后处理；DET/CLS/REC 只计图执行路径，二者不应强制相等。
     // 公共流水线计时在最终 JSON 序列化前结束，诊断输出默认关闭。

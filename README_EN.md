@@ -1,5 +1,7 @@
 # lw.PPOCR.Vulkan
 
+Latest: [DET FP32 vector memory optimization](docs/DET-VECTOR-OPTIMIZATION.md) shares spatial address arithmetic and NHWC loads/stores across four channels. Against rec-batch-opt1, paired RTX 4060 Medium 100-image full-call means improve **4.8%**, with **3.9%/4.2%** gains on a changing stream and exact prediction equality. Tiny/Small remain essentially unchanged. Enable automatically for eligible DET shapes only: an experimental REC dispatch regressed changing-width streams and was not retained. FP32, DET960, resource limits and the public ABI stay unchanged; no new flag is required. The report maps the GPU preprocessing/postprocessing article's lessons to implemented features and retained CPU work.
+
 [中文](README.md)
 
 A C++17 PP-OCR Vulkan GPU inference project with a native C ABI, HTTP/Web service and C# WinForms examples.
@@ -34,6 +36,10 @@ The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md
 The follow-up [GPU CLS/REC preprocessing and upload experiment](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md) reduces mean latency by another **14.6%/10.3%/4.8%** for Tiny/Small/Medium against that DET-only baseline on the same 100 images, with exact prediction-field equality. `LWVK_GPU_TEXT_PREPROCESS=1` fuses text-line resize, gray padding, normalization and REC 180-degree sampling, while segmented uploads eliminate a full-source temporary copy. Both experiments remain off by default and require `shaderFloat64`; networks stay FP32. The complete C# package includes `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` to enable both. The normal launcher retains CPU preprocessing.
 
 The latest [FP32 pointwise optimization](docs/POINTWISE-OPTIMIZATION.md) uses contiguous vector stores, a small-spatial kernel and guarded Conv→SiLU epilogues, selected automatically without a new flag. Against the previous GPU-preprocessing build, paired 100-image means improve by another **2.1%/3.0%/3.3%** for Tiny/Small/Medium. Both sides enable GPU preprocessing for that comparison. RTX/AMD tests retain exact FP32 output bits across 27 shapes per device; the default CPU-preprocessing path also passes. FP32 networks and DET960 remain unchanged.
+
+The follow-up [bounded CLS submission batching](docs/CLS-BATCH-OPTIMIZATION.md) groups at most eight independent text-line commands into one submission/fence when GPU text preprocessing is enabled; REC remains sequential. Cropped staging and combined workspace stay bounded, with sequential fallback under tight budgets. Against network-opt1, paired RTX 4060 100-image means improve another **6.0%/6.3%/2.4%** for Tiny/Small/Medium, with exact item equality. Use the existing GPU-preprocessing experimental launcher; no new flag is required. The normal CPU-preprocessing path has no claimed equivalent speedup.
+
+The latest [REC shared-arena submission optimization](docs/REC-BATCH-OPTIMIZATION.md) groups up to eight serial line commands with independent raw input/compact CTC IO and one shared tensor arena. It avoids unused full-logit readback and retains the workspace cap. Against cls-batch-opt1, warmed 100-image means improve **3.3%/2.6%/1.2%** for Tiny/Small/Medium; a changing stream without per-image warmup improves **6.2%/4.1%/1.9%** on its first pass, with exact prediction equality. Use the existing GPU-preprocessing experimental launcher. It is not batch-N or guaranteed parallel inference; the normal launcher has no equivalent speedup claim.
 
 Also implemented: Tiny CLS/REC GPU graphs, native greedy CTC decoding,
 length/stride-checked BGR recognition-only, adaptive width and C#/Python image examples.

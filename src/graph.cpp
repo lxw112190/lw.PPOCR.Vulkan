@@ -566,14 +566,20 @@ Plan::Plan(Context& c, const Model& model, Buffer& constants, uint32_t h, uint32
     }
 }
 void Plan::attach(SharedWorkspace& workspace) {
+    attach_buffers(workspace.arena.get(), workspace.upload.get(), workspace.readback.get(), workspace.ctc.get());
+}
+void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffer* ctc, bool bgr_only) {
     if (command_)
         return;
-    arena_ = workspace.arena.get();
-    upload_ = workspace.upload.get();
-    readback_ = workspace.readback.get();
-    ctc_readback_ = workspace.ctc.get();
-    if (!arena_ || !upload_ || !readback_ || (ctc_bytes_ && !ctc_readback_))
+    arena_ = arena;
+    upload_ = upload;
+    readback_ = readback;
+    ctc_readback_ = ctc;
+    bgr_only_ = bgr_only;
+    if (!arena_ || !upload_ || (!bgr_only && !readback_) || (ctc_bytes_ && !ctc_readback_))
         throw std::runtime_error("workspace not allocated");
+    if (bgr_only && (model_.task != "rec" || !context_.gpu_text_preprocess))
+        throw std::invalid_argument("BGR-only plan requires GPU REC preprocessing");
     auto& c = context_;
     const auto& model = model_;
     try {
@@ -590,7 +596,7 @@ void Plan::attach(SharedWorkspace& workspace) {
             dispatches += node.op == "Concat" ? uint32_t(node.inputs.size()) : 1;
         const bool bgr = (c.gpu_det_preprocess && model.task == "det") ||
                          (c.gpu_text_preprocess && (model.task == "cls" || model.task == "rec"));
-        const uint32_t sets = dispatches * ((ctc_bytes_ ? 2 : 1) + (bgr ? 1 : 0));
+        const uint32_t sets = dispatches * (bgr_only ? 1 : ((ctc_bytes_ ? 2 : 1) + (bgr ? 1 : 0)));
         VkDescriptorPoolSize ds{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, sets * 5}; // ConvTranspose has five bindings
         VkDescriptorPoolCreateInfo dp{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
         dp.maxSets = sets;
@@ -610,6 +616,11 @@ void Plan::attach(SharedWorkspace& workspace) {
             create(profile_);
             if (ctc_bytes_)
                 create(ctc_profile_);
+        }
+        if (bgr_only) {
+            bgr_command_ = command_;
+            record(model, true, true);
+            return;
         }
         record(model);
         if (bgr) {
@@ -710,6 +721,12 @@ void Plan::dispatch(const std::string& shader, const std::vector<VkDescriptorBuf
 void Plan::record(const Model& model, bool ctc, bool bgr) {
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     check(vkBeginCommandBuffer(command_, &bi), "begin graph recording");
+    if (bgr_only_)
+        // Cross-command RAW/WAR/WAW hazards: the preceding line finishes all
+        // arena reads before this line overwrites the shared tensor storage.
+        barrier(command_, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+                VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
     recording_profile_ = context_.gpu_profile ? (ctc ? &ctc_profile_ : &profile_) : nullptr;
     if (recording_profile_) {
         recording_profile_->dispatches.clear();
@@ -777,7 +794,12 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                              tiled ? (y[1] + 63) / 64 : 1);
                 } else if (!reference && !tiled_gemm_disabled() && weight.packed_bytes && y[2] * y[3] >= 32 &&
                            y[1] >= 32)
-                    dispatch("conv_gemm_tiled",
+                    // NHWC vec4 loads share address arithmetic across channels.
+                    // Enable for DET only: changing-width REC streams regressed
+                    // despite warmed kernel gains. Retain their established path,
+                    // and the scalar loader for RGB inputs/channel tails.
+                    dispatch(model.task == "det" && x[1] % 4 == 0 && y[1] % 4 == 0 ? "conv_gemm_vector"
+                                                                                   : "conv_gemm_tiled",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[3], y[2], y[1], x[1], k[0], k[1], s[0], s[1], p[0], p[1], x[3], x[2], flag},
                              (y[2] * y[3] + 31) / 32, (y[1] + 63) / 64);
@@ -924,11 +946,15 @@ double Plan::run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32
     if (poisoned_)
         throw std::runtime_error("GPU plan is poisoned; recreate detector after device failure");
     const auto start = std::chrono::steady_clock::now();
-    // 动态头支持同一输出尺寸计划复用不同原图；尾部补齐避免 uint 字节提取越界。
-    const std::array<uint32_t, 8> header{width, height, stride, rotate ? 1u : 0u, 0, 0, 0, 0};
-    upload_->write_parts(header.data(), sizeof(header), input, static_cast<size_t>(span), (4 - span % 4) % 4);
+    stage_bgr({input, span, width, height, stride}, rotate);
     submit_readback(bgr_command_, output, model_.task == "rec");
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+}
+void Plan::stage_bgr(const BgrView& image, bool rotate) {
+    const uint64_t span = uint64_t(image.height - 1) * image.stride + uint64_t(image.width) * 3;
+    // 动态头支持同一输出尺寸计划复用不同原图；尾部补齐避免 uint 字节提取越界。
+    const std::array<uint32_t, 8> header{image.width, image.height, image.stride, rotate ? 1u : 0u, 0, 0, 0, 0};
+    upload_->write_parts(header.data(), sizeof(header), image.pixels, static_cast<size_t>(span), (4 - span % 4) % 4);
 }
 void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
     check(vkResetFences(context_.device, 1, &fence_), "reset graph fence");
@@ -1019,6 +1045,12 @@ void GraphEngine::ensure_workspace(Plan& plan, uint64_t min_upload) {
         minimum += bytes;
     if (minimum > max_bytes_)
         throw std::length_error("max_workspace_bytes exceeded (including raw BGR upload)");
+    // Optional CLS slots share the same hard budget, not eight separate budgets.
+    auto batch_bytes = batch_workspace_bytes();
+    if (batch_bytes > max_bytes_ - minimum) {
+        clear_batch_workspaces(); // all previous work completed under the engine lock
+        batch_bytes = 0;
+    }
     auto capacity = required;
     std::unique_ptr<Buffer>* buffers[] = {&workspace_.arena, &workspace_.upload, &workspace_.readback, &workspace_.ctc};
     uint64_t total = 0;
@@ -1026,7 +1058,7 @@ void GraphEngine::ensure_workspace(Plan& plan, uint64_t min_upload) {
         capacity[i] = std::max(required[i], *buffers[i] ? (*buffers[i])->size : 0);
         total += capacity[i];
     }
-    if (total > max_bytes_)
+    if (total > max_bytes_ - batch_bytes)
         capacity = required; // shrink high-watermarks rather than exceed the hard budget
     bool changed = false;
     for (size_t i = 0; i < 4; ++i)
@@ -1048,6 +1080,8 @@ void GraphEngine::ensure_workspace(Plan& plan, uint64_t min_upload) {
     plan.attach(workspace_);
 }
 void GraphEngine::prepare(uint32_t h, uint32_t w, uint64_t min_upload) {
+    if (batch_poisoned_)
+        throw std::runtime_error("GPU CLS batch failed; recreate handle before reuse");
     // 尺寸计划按 LRU 有界缓存。GPU 故障必须先重建句柄，不能靠切换尺寸绕过。
     for (auto& entry : plans_)
         if (entry.plan->poisoned())

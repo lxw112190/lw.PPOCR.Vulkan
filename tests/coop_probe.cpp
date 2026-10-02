@@ -4,10 +4,16 @@
 #include <array>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 using namespace lwvk;
+#ifdef LWVK_VECTOR_GEMM_PROBE
+constexpr bool vector_gemm_probe = true;
+#else
+constexpr bool vector_gemm_probe = false;
+#endif
 #ifdef LWVK_DEPTHWISE_PROBE
 constexpr bool depthwise = true;
 #else
@@ -18,7 +24,8 @@ constexpr bool gelu_probe = true;
 #else
 constexpr bool gelu_probe = false;
 #endif
-static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::string& shader_override = {}) {
+static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::string& shader_override = {},
+                       std::vector<float>* actual = nullptr) {
     const uint32_t ow = p[0], oh = p[1], n = p[2], c = p[3], kh = p[4], kw = p[5], iw = p[10], ih = p[11];
     const uint32_t K = (depthwise ? 1 : c) * kh * kw, np = (n + 3) & ~3u;
     std::vector<float> x(iw * ih * c), w(K * np), b(n), reference(ow * oh * n), out(reference.size() + 16, -9876.0f);
@@ -141,7 +148,7 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
                 vkCmdDispatch(cmd, (ow * oh * n + 255) / 256, 1, 1);
             else if (shader == "conv_gemm")
                 vkCmdDispatch(cmd, ((ow * oh + 15) / 16) * ((n + 15) / 16), 1, 1);
-            else if (shader == "conv_gemm_tiled")
+            else if (shader == "conv_gemm_tiled" || shader == "conv_gemm_vector")
                 vkCmdDispatch(cmd, (ow * oh + 31) / 32, (n + 63) / 64, 1);
             else
                 vkCmdDispatch(cmd, (ow * oh + 63) / 64, (n + 127) / 128, 1);
@@ -180,14 +187,45 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
             throw std::runtime_error("cooperative output tail overwrite");
     if (error > 0.0001)
         throw std::runtime_error("cooperative result mismatch: " + std::to_string(error));
+    if (actual)
+        *actual = std::move(out);
     return error;
 }
 int main(int argc, char** argv) {
     try {
         uint32_t index = argc > 1 ? static_cast<uint32_t>(std::stoul(argv[1])) : 0;
         Context ctx(index);
-        if (!depthwise && !gelu_probe && !ctx.cooperative_matrix)
+        if (!depthwise && !gelu_probe && !vector_gemm_probe && !ctx.cooperative_matrix)
             throw std::runtime_error("set LWVK_EXPERIMENTAL_COOP=1 for the opt-in probe");
+        if (vector_gemm_probe) {
+            // Cover M/N/K tails, Cin < 32, padding, unequal stride/kernel,
+            // and fused activations without requiring OCR model lowering.
+            const std::array<std::array<uint32_t, 13>, 8> cases{{{1, 1, 4, 4, 3, 3, 1, 1, 1, 1, 1, 1, 0},
+                                                                 {7, 5, 32, 12, 3, 3, 1, 1, 1, 1, 7, 5, 0},
+                                                                 {5, 4, 36, 36, 3, 3, 2, 2, 1, 1, 9, 7, 0},
+                                                                 {17, 3, 68, 64, 3, 3, 1, 1, 1, 1, 17, 3, 0},
+                                                                 {9, 7, 128, 68, 5, 3, 1, 2, 2, 1, 17, 7, 0},
+                                                                 {8, 4, 64, 32, 1, 1, 1, 1, 0, 0, 8, 4, 0},
+                                                                 {41, 1, 100, 132, 1, 1, 1, 1, 0, 0, 41, 1, 0},
+                                                                 {13, 3, 80, 16, 3, 5, 2, 1, 1, 2, 13, 5, 0}}};
+            double error = 0;
+            unsigned count = 0;
+            for (auto p : cases)
+                for (uint32_t flags : {0u, 1u, 16u, 17u, 32u, 33u, 128u, 129u}) {
+                    p[12] = flags;
+                    std::vector<float> baseline, candidate;
+                    error = std::max(error, run_case(ctx, p, "conv_gemm_tiled", &baseline));
+                    error = std::max(error, run_case(ctx, p, "conv_gemm_vector", &candidate));
+                    if (baseline.size() != candidate.size() ||
+                        std::memcmp(baseline.data(), candidate.data(), baseline.size() * sizeof(float)) != 0)
+                        throw std::runtime_error("vector GEMM changed FP32 bits/guard: case " + std::to_string(count));
+                    ++count;
+                }
+            std::cout << "{\"device_index\":" << index << ",\"device\":\"" << ctx.properties.deviceName
+                      << "\",\"fp32_vector_gemm\":true,\"exact_baseline_bits\":true,\"cases\":" << count
+                      << ",\"max_absolute_error_vs_cpu\":" << std::setprecision(9) << error << "}\n";
+            return 0;
+        }
         if (gelu_probe) {
             const std::array<std::array<uint32_t, 13>, 4> cases{{{41, 1, 97, 32, 1, 1, 1, 1, 0, 0, 41, 1, 33},
                                                                  {1, 1, 7, 16, 1, 1, 1, 1, 0, 0, 1, 1, 32},

@@ -1,0 +1,25 @@
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x184eee36a90
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x184e673e5d0
+
+Validation Information: [ WARNING-CreateInstance-status-message ] | MessageID = 0x23dfd876
+vkCreateInstance(): Khronos Validation Layer Active:
+    Current Enables: VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT.
+    Current Disables: None.
+
+Objects: 1
+    [0] VkInstance 0x184f4982700
+
+PASS: device=1 model=models/onnx/ppocrv6-medium/rec.onnx exact text/score, counts 1..8, rotation/stride, invalid recovery, LRU40/32 cap, 20 concurrent batches, shared arena, tight budget=7360512

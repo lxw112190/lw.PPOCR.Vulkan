@@ -1,0 +1,4 @@
+khronos_validation.validate_sync = true
+khronos_validation.syncval_submit_time_validation = true
+khronos_validation.report_flags = error,warn,info
+khronos_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG

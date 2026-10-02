@@ -11,6 +11,8 @@ C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web �
 
 ## 当前阶段：0.5.0-dev.2
 
+本轮新增 [DET FP32 向量访存优化](docs/DET-VECTOR-OPTIMIZATION.md)：延续 GPU 前后处理、缓冲区复用和减少搬运的思路，四个 NHWC 通道共用地址计算与向量加载/写回。相对 REC 合批版，RTX 4060 的 100 图 Medium 完整调用均值再降 **4.8%**，连续换图降 **3.9%/4.2%**，完整预测一致；Tiny/Small 基本持平。仅 DET 自动启用，实验中退化的 REC 分派未保留。FP32、DET960、预算和公共接口不变，不新增开关；见报告中的文章借鉴、测试口径与局限。
+
 当前是 **Tiny/Small/Medium Vulkan 完整 OCR 技术验证版**，同时支持完整 OCR 和裁剪文字区域仅识别，尚不是正式生产版：
 
 - Vulkan 设备枚举、明确的设备编号与能力信息；
@@ -46,6 +48,10 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
 
 最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
+
+继续[CLS 有界小批量提交优化](docs/CLS-BATCH-OPTIMIZATION.md)：开启文字行 GPU 前处理后，最多 8 行共享一次提交/等待，REC 仍逐行执行；裁剪暂存有界、合计工作区保持原预算，紧预算自动回退串行。相对上一版，RTX 4060 的 100 图均值再降 Tiny/Small/Medium **6.0%/6.3%/2.4%**，完整结果一致。使用现有 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 即可，不新增开关；普通 CPU 前处理启动路径不宣称相同提速。
+
+新增[REC 共享 arena 合并提交优化](docs/REC-BATCH-OPTIMIZATION.md)：最多 8 行共享一块中间张量区、一次提交/等待，保留独立输入和紧凑 CTC 输出，不分配未使用的完整概率回读。相对上一轮 CLS 合批，100 图逐图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**；不逐图预热的连续换图首遍下降 **6.2%/4.1%/1.9%**，预测字段一致。仍通过现有 GPU 前处理实验脚本开启，普通启动不宣称相同提速；REC 计算仍逐行、共享工作区受原预算约束。
 
 ## 项目原理：C++ 如何使用 Vulkan 推理 OCR
 

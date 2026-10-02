@@ -42,6 +42,15 @@ std::string OcrEngine::run(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_
         graphs.rec_bgr = [&](const uint8_t* in, uint64_t n, uint32_t iw, uint32_t ih, bool flip, double& ms) {
             return rec_->recognize_bgr(in, n, iw, ih, iw * 3, 0, flip, ms);
         };
+    if (cls_ && cls_->gpu_text_preprocess_enabled())
+        graphs.cls_batch = [&](const std::vector<BgrView>& images, std::vector<std::array<float, 2>>& probabilities) {
+            return cls_->classify_batch(images, probabilities);
+        };
+    if (rec_->gpu_text_preprocess_enabled())
+        graphs.rec_batch = [&](const std::vector<BgrView>& images, const std::vector<uint8_t>& rotations,
+                               std::vector<TextResult>& results) {
+            return rec_->recognize_batch(images, rotations, results);
+        };
     return run_ocr_host(p, bytes, w, h, stride, config_, db_, graphs, started);
 }
 } // namespace lwvk
