@@ -10,7 +10,11 @@ QQ: 819069052<br>
 QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
-## v1.0.0 stable release
+## v1.0.1 maintenance release
+
+v1.0.1 improves REC execution-plan reuse when alternating large and small images. Bounded per-slot LRU caches reduce eviction and unnecessary rebuilds without changing models, FP32 precision, DET960 or public interfaces. Additional cached commands have a real memory cost; see the [mixed-size benchmark and limitations](docs/REC-CACHE-SIZE-SWITCH.md) and [v1.0.1 release notes](docs/releases/v1.0.1.md).
+
+GPU idle-power transitions are separate from cache rebuilds. This release does not promise identical latency for spaced manual requests and warmed continuous requests, and does not run inference in the background to keep GPU clocks high.
 
 v1.0.0 freezes C ABI v1, HTTP API v1, configuration Schema v1 and JSONL access-log Schema v1.
 Subsequent 1.x maintenance preserves existing exports, structure layouts, fields and semantics; breaking changes require new versioned interfaces. Stable does not mean unlimited platform support, perpetual LTS, or a guarantee of zero vulnerabilities/leaks.
@@ -25,8 +29,8 @@ Subsequent 1.x maintenance preserves existing exports, structure layouts, fields
 - Pinned assets, 19 C exports/layout checks, OpenAPI/Schemas, ASan/UBSan/LSan gates, SBOM, build metadata and archive SHA-256.
 
 Download deployment packages and checksums from [GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases):
-`lw.PPOCR.Vulkan-v1.0.0-windows-x64-full-ocr.zip` and
-`lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`, each with a matching `.sha256`.
+`lw.PPOCR.Vulkan-v1.0.1-windows-x64-full-ocr.zip` and
+`lw.PPOCR.Vulkan-v1.0.1-linux-x64-full-ocr.tar.gz`, each with a matching `.sha256`.
 CI artifacts support build/qualification; published Release attachments are the official downloads.
 
 Tag CI uploads the two deployment archives and matching `.sha256` files only after both

@@ -10,7 +10,11 @@ QQ：819069052<br>
 群名称：天天代码码天天<br>
 群号码：264292622
 
-## v1.0.0 正式版
+## v1.0.1 正式维护版
+
+v1.0.1 优化大小图交替识别时的 REC 执行计划缓存：默认路径采用有界的分槽 LRU，减少缓存互相淘汰和不必要的重建；不改变模型、FP32 精度、DET960 或公共接口。缓存增加有实际内存代价，本机对比和限制见 [混合尺寸优化报告](docs/REC-CACHE-SIZE-SWITCH.md)，更新内容见 [v1.0.1 Release notes](docs/releases/v1.0.1.md)。
+
+GPU 空闲降频后的单次延迟与缓存重建是不同问题，本版不保证手动间隔调用与连续预热调用耗时一致，也不默认后台持续推理来保持 GPU 高频。
 
 v1.0.0 正式冻结 C ABI v1、HTTP API v1、配置 Schema v1 与 JSONL 访问日志 Schema v1。
 后续 1.x 维护遵守向后兼容原则；现有导出、结构布局、字段与语义不作破坏性变更，破坏性调整使用新的版本化接口。正式版不等于无限平台支持、永久 LTS 或无漏洞/无泄漏保证。
@@ -24,7 +28,7 @@ v1.0.0 正式冻结 C ABI v1、HTTP API v1、配置 Schema v1 与 JSONL 访问�
 - 支持能力满足的设备自动启用 GPU DET/CLS/REC 前处理与透视裁剪，共享原图减少搬运；不支持 `shaderFloat64` 时图像处理留在 CPU，**网络仍在 Vulkan**。
 - 固定资产校验、19 个公共 C 导出与结构布局检查、OpenAPI/Schema、ASan/UBSan/LSan 门禁、SBOM、构建信息与附件 SHA-256。
 
-下载正式部署包及校验文件：[GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases)。Windows 包为 `lw.PPOCR.Vulkan-v1.0.0-windows-x64-full-ocr.zip`，Linux 包为 `lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`；各附同名 `.sha256`。CI 附件用于构建/验收，正式下载以维护者发布的 Release 附件为准。
+下载正式部署包及校验文件：[GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases)。Windows 包为 `lw.PPOCR.Vulkan-v1.0.1-windows-x64-full-ocr.zip`，Linux 包为 `lw.PPOCR.Vulkan-v1.0.1-linux-x64-full-ocr.tar.gz`；各附同名 `.sha256`。CI 附件用于构建/验收，正式下载以维护者发布的 Release 附件为准。
 
 版本标签 CI 在 Windows/Linux 构建、打包检查都成功后，自动将两份部署包及 `.sha256` 上传到对应 Release；若 Release 尚不存在则创建**草稿**，由维护者验收并填写说明后发布。普通分支 push / PR 不上传到 Release，诊断报告不混入部署附件；已有同名文件只在 SHA-256 一致时跳过，不自动覆盖。已发布版本可通过 Actions 手动填写 `release_tag` 补传，详见 [CI 发布操作](docs/CI.md#release-附件自动上传)。
 

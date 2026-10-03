@@ -2,14 +2,14 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:ed4f42b3-f260-532a-8d7c-5ea1bb48e3a7",
+  "serialNumber": "urn:uuid:44ff463a-08dd-5004-b64a-238024fef7f7",
   "version": 1,
   "metadata": {
     "component": {
       "type": "application",
       "bom-ref": "lwvk",
       "name": "lw.PPOCR.Vulkan",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "licenses": [
         {
           "license": {
