@@ -22,23 +22,20 @@
 
 需要兼容/性能对照时，关闭 Demo 后使用 `Start-CSharp-Demo-CPU-Preprocess.bat`。网络仍为 FP32 GPU 推理。直接运行 EXE 会继承父进程环境；正常启动脚本设置三项为 `auto`。
 
-原 DET-only 与 GPU-Preprocess 实验脚本保留作局部路径对照；它们明确关闭 GPU 裁剪。GPU-Crop 脚本强制三项为 `1`，缺少 `shaderFloat64` 时报错，而不是自动退回 CPU 前处理。
+三个旧 GPU 实验启动脚本已移除；体验包只保留默认入口与 CPU 图像前处理诊断入口。局部路径对照请按 `docs/GPU-DEFAULT.md` 设置环境变量后直接启动 EXE，普通启动脚本会把三项重置为 `auto`。强制 GPU 模式缺少 `shaderFloat64` 时报错，而不是自动退回 CPU 前处理。
 
 | 启动脚本 | DET 前处理 | CLS/REC 前处理 | 透视裁剪 |
 | --- | --- | --- | --- |
 | `Start-CSharp-Demo.bat` | 自动 | 自动 | 自动，共享原图 |
 | `Start-CSharp-Demo-CPU-Preprocess.bat` | CPU | CPU | CPU，网络仍在 GPU |
-| `Start-CSharp-Demo-GPU-DET-Experiment.bat` | GPU | CPU | CPU |
-| `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` | GPU | GPU | CPU |
-| `Start-CSharp-Demo-GPU-Crop-Experiment.bat` | GPU | GPU | GPU，共享原图 |
 
 三项开关默认 `auto`，`0` 关闭、`1` 强制要求；必须在新进程加载 DLL 前设置。裁剪自动模式依赖两项前处理；强制裁剪与显式关闭前处理冲突时拒绝。无可用 Vulkan 设备仍报错，推理错误不会触发 CPU 推理回退。DB/排序/方向判断/字典映射仍在 CPU；“其他耗时”也包括 GPU 裁剪等待。
 
 历史 `network-opt1` 包继续优化 FP32 1×1 卷积（向量写回、小空间 kernel 与安全的 SiLU 融合），按形状自动启用。普通启动和 GPU 前处理实验都受益，不需要新增开关。相对上一轮 GPU 前处理包，RTX 4060 的 100 图均值再下降约 2.1%/3.0%/3.3%；模型、FP32 和 DET960 不变，详情见包内 `docs/POINTWISE-OPTIMIZATION.md`。
 
-历史 `cls-batch-opt1` 包保留前述优化，并在文字行 GPU 前处理实验中自动合并最多 8 行 CLS 提交/等待。100 图均值相对 `network-opt1` 再降 Tiny/Small/Medium 约 **6.0%/6.3%/2.4%**，结果逐项一致；当时普通启动脚本逐行 CLS，不宣称同样提速。仍用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 开启，报告见 `docs/CLS-BATCH-OPTIMIZATION.md`。裁剪暂存最多 8 行/16 MiB（更大的单行单独处理），GPU 槽位合计受原预算约束，紧预算自动回退串行。
+历史 `cls-batch-opt1` 包保留前述优化，并在文字行 GPU 前处理实验中自动合并最多 8 行 CLS 提交/等待。100 图均值相对 `network-opt1` 再降 Tiny/Small/Medium 约 **6.0%/6.3%/2.4%**，结果逐项一致；当时普通启动脚本逐行 CLS，不宣称同样提速。历史实验通过环境变量开启；当前普通入口已自动选择该路径，报告见 `docs/CLS-BATCH-OPTIMIZATION.md`。裁剪暂存最多 8 行/16 MiB（更大的单行单独处理），GPU 槽位合计受原预算约束，紧预算自动回退串行。
 
-历史 `rec-batch-opt1` 包在上述实验路径中继续合并 REC 提交：最多 8 行共享一个中间张量区，输入/CTC 输出独立，显式屏障保护复用；不分配未使用的完整概率回读。相对 `cls-batch-opt1`，100 图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**，连续换图首遍降 **6.2%/4.1%/1.9%**，结果一致。仍使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat`，该历史 CPU 前处理基线不宣称相同提速。预算不足回退串行，关闭 CLS 时仍可 REC 合批；报告见 `docs/REC-BATCH-OPTIMIZATION.md`。
+历史 `rec-batch-opt1` 包在上述实验路径中继续合并 REC 提交：最多 8 行共享一个中间张量区，输入/CTC 输出独立，显式屏障保护复用；不分配未使用的完整概率回读。相对 `cls-batch-opt1`，100 图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**，连续换图首遍降 **6.2%/4.1%/1.9%**，结果一致。当前普通入口自动选择该路径；该历史 CPU 前处理基线不宣称相同提速。预算不足回退串行，关闭 CLS 时仍可 REC 合批；报告见 `docs/REC-BATCH-OPTIMIZATION.md`。
 
 ## 对方电脑需要什么
 

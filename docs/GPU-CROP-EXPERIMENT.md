@@ -24,7 +24,7 @@
 
 ## 开启与回退
 
-完整 C# 体验包：关闭已有 Demo，使用 `Start-CSharp-Demo-GPU-Crop-Experiment.bat`，选择实际 GPU 编号和模型后初始化。
+当前完整 C# 体验包：关闭已有 Demo，使用 `Start-CSharp-Demo.bat`，选择实际 GPU 编号和模型后初始化；支持的设备已自动使用 GPU 裁剪。旧实验启动脚本已移除，强制模式仍可用下方环境变量设置。
 
 HTTP / Python / 自己的宿主程序应在新进程加载 DLL 前设置：
 
@@ -36,7 +36,7 @@ $env:LWVK_GPU_CROP_PREPROCESS="1"
 
 缺少前两项时明确拒绝；额外要求 `shaderFloat64`。无此能力或 GPU 故障不静默回退 CPU。关闭 profiling 后再做性能测试。
 
-普通 `Start-CSharp-Demo.bat` 明确关闭三项实验；原有 DET-only / GPU-preprocess 脚本也明确关闭新的 crop 开关。直接双击 EXE 会继承环境。环境不是热切换配置，Windows 静态 CRT 也可能保留 DLL 加载时的环境快照；应重新启动进程，不只重新初始化句柄。
+本报告测量时普通入口关闭三项实验，局部前处理对照也关闭 crop；这是历史基线，不是当前默认。当前普通入口将三项设为 `auto`，CPU 前处理诊断入口将三项设为 `0`。直接双击 EXE 会继承环境。环境不是热切换配置，Windows 静态 CRT 也可能保留 DLL 加载时的环境快照；应重新启动进程，不只重新初始化句柄。
 
 ## 资源与同步边界
 

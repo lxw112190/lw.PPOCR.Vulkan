@@ -8,7 +8,7 @@
 
 这个内部 BGR-only 计划只录制所需路径，不分配 CPU 归一化输入上传或完整类别概率回读区；GPU 贪心标签/置信度回读后仍由 CPU 完成 CTC 去重、去空白和字典映射。单行 REC API 和默认 CPU 前处理路径保留原有执行方式。
 
-C# 完整包用现有 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 同时启用 DET/CLS/REC GPU 前处理及两种合批，不新增开关。普通启动脚本保持 CPU 前处理，不宣称本轮提速。GPU 前处理仍要求 `shaderFloat64`，网络保持 FP32。
+本报告测量时通过环境变量同时启用 DET/CLS/REC GPU 前处理及两种合批，不新增开关；当时普通入口保持 CPU 前处理，不宣称本轮提速。当前 `Start-CSharp-Demo.bat` 已自动选择 GPU 路径，旧实验脚本已移除；局部路径对照见 [默认策略](GPU-DEFAULT.md)。GPU 前处理仍要求 `shaderFloat64`，网络保持 FP32。
 
 资源边界：
 

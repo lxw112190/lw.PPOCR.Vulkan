@@ -48,23 +48,24 @@
 
 ## 开启与回退
 
-两个开关均默认为关闭，应在**启动新进程、加载 DLL 前**设置；不能依赖在已加载 DLL 的进程中修改环境变量后重新初始化来切换。
+本报告测量时两个开关均默认为关闭；当前默认策略已改为自动选择，见 [GPU 默认策略](GPU-DEFAULT.md)。复现本报告的局部模式应关闭 GPU 裁剪，并在**启动新进程、加载 DLL 前**设置；不能依赖在已加载 DLL 的进程中修改环境变量后重新初始化来切换。
 
 ```powershell
 $env:LWVK_GPU_DET_PREPROCESS = '1'
 $env:LWVK_GPU_TEXT_PREPROCESS = '1'
+$env:LWVK_GPU_CROP_PREPROCESS = '0'
 .\lw.PPOCR.Vulkan.WinFormsDemo.exe
 ```
 
-分享包提供三个互不影响系统环境的启动脚本：
+旧 GPU 实验启动脚本已移除。当前普通入口自动选择 GPU 路径，CPU 诊断入口关闭三项优化。复现历史局部模式时，可使用以下环境变量组合，并直接运行 EXE：
 
-| 脚本 | DET 前处理 | CLS/REC 前处理 |
+| DET / TEXT / CROP | DET 前处理 | CLS/REC 前处理 |
 | --- | --- | --- |
-| `Start-CSharp-Demo.bat` | CPU | CPU |
-| `Start-CSharp-Demo-GPU-DET-Experiment.bat` | GPU | CPU |
-| `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` | GPU | GPU |
+| `0 / 0 / 0` | CPU | CPU |
+| `1 / 0 / 0` | GPU | CPU |
+| `1 / 1 / 0` | GPU | GPU |
 
-先关闭已有 Demo，再通过相应脚本启动，选目标 GPU、模型并初始化。直接启动 EXE 会继承环境变量。HTTP 服务也可在启动前使用这两个环境变量，服务安装/配置 Schema 未新增字段。
+先关闭已有 Demo，再直接启动 EXE（不要调用会重置变量的默认启动脚本），选目标 GPU、模型并初始化。直接启动 EXE 会继承环境变量。HTTP 服务也可在启动前使用这两个环境变量，服务安装/配置 Schema 未新增字段。
 
 实验额外要求 GPU 的 `shaderFloat64`；初始化时显式开启此能力，不支持时明确报错，不静默回退。为保持 CPU 前处理参考的运算顺序，前处理插值使用 FP64，网络、存储和其他算子仍为 FP32。实验不能与 `LWVK_GPU_PROFILE=1` 同时启用；性能测试也应关闭 `LWVK_HOST_PROFILE`。包内仍需要已安装的 GPU 厂商驱动。
 

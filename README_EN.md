@@ -25,9 +25,10 @@ Added [supply-chain audit and SBOM](docs/SUPPLY-CHAIN.md): 181 pinned assets,
 16 components, deterministic CycloneDX 1.6 validated offline against official
 schemas, mandatory model/license completeness, and packaged `SBOM.cdx.json` /
 `BUILD-INFO.json`. Corrected fmt's MIT license metadata without changing models
-or inference dependencies. Added fault injection and a separate CodeQL workflow;
-no Dependabot. This is not vulnerability clearance or security certification;
-CodeQL results require the post-push GitHub run.
+or inference dependencies. Fault injection and a separate asset/SBOM audit CI
+are retained; CodeQL and Dependabot are not enabled. This is not vulnerability
+clearance or security certification; dependency security review remains a
+maintainer responsibility.
 
 See the [compatibility matrix](docs/COMPATIBILITY.md), [secure deployment and
 upgrade/rollback guide](docs/DEPLOYMENT-UPGRADE.md), and [local 0.7 validation](docs/LOCAL-VALIDATION-070.md).
@@ -76,9 +77,9 @@ records mean Tiny/Small/Medium latency of 41.04/50.53/98.98 ms on the same 100-i
 with identical prediction objects. Results apply to the measured local conditions, not every GPU/image.
 The earlier [host/readback report](docs/HOST-TRANSFER-OPTIMIZATION.md) remains a historical comparison.
 
-The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md) fuses resize, normalization and input packing directly into the DET arena. It was initially off by default (now automatic on capable GPUs), requires `shaderFloat64`, and keeps FP32 networks/DET cap 960. Enable `LWVK_GPU_DET_PREPROCESS=1` before launching a new process, or use the separate experimental Demo launcher. On RTX 4060, paired 100-image mean latency fell by 18.0%/12.1%/5.9% for Tiny/Small/Medium with every prediction field unchanged; this is not a universal speed or DML-superiority claim.
+The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md) fuses resize, normalization and input packing directly into the DET arena. It was initially off by default (now automatic on capable GPUs), requires `shaderFloat64`, and keeps FP32 networks/DET cap 960. Enable `LWVK_GPU_DET_PREPROCESS=1` before launching a new process, for explicit control. On RTX 4060, paired 100-image mean latency fell by 18.0%/12.1%/5.9% for Tiny/Small/Medium with every prediction field unchanged; this is not a universal speed or DML-superiority claim.
 
-The follow-up [GPU CLS/REC preprocessing and upload experiment](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md) reduces mean latency by another **14.6%/10.3%/4.8%** for Tiny/Small/Medium against that DET-only baseline on the same 100 images, with exact prediction-field equality. `LWVK_GPU_TEXT_PREPROCESS=1` fuses text-line resize, gray padding, normalization and REC 180-degree sampling, while segmented uploads eliminate a full-source temporary copy. Both experiments were initially off by default (now capability-aware defaults) and require `shaderFloat64`; networks stay FP32. The complete C# package includes `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` to enable both. That historical normal launcher retained CPU preprocessing.
+The follow-up [GPU CLS/REC preprocessing and upload experiment](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md) reduces mean latency by another **14.6%/10.3%/4.8%** for Tiny/Small/Medium against that DET-only baseline on the same 100 images, with exact prediction-field equality. `LWVK_GPU_TEXT_PREPROCESS=1` fuses text-line resize, gray padding, normalization and REC 180-degree sampling, while segmented uploads eliminate a full-source temporary copy. Both experiments were initially off by default (now capability-aware defaults) and require `shaderFloat64`; networks stay FP32. That historical experiment enabled both through environment variables and its normal launcher retained CPU preprocessing. The current normal launcher selects automatically; the old experimental launchers have been removed.
 
 The latest [FP32 pointwise optimization](docs/POINTWISE-OPTIMIZATION.md) uses contiguous vector stores, a small-spatial kernel and guarded Conv→SiLU epilogues, selected automatically without a new flag. Against the previous GPU-preprocessing build, paired 100-image means improve by another **2.1%/3.0%/3.3%** for Tiny/Small/Medium. Both sides enable GPU preprocessing for that comparison. RTX/AMD tests retain exact FP32 output bits across 27 shapes per device; the historical CPU-preprocessing baseline also passes. FP32 networks and DET960 remain unchanged.
 

@@ -50,11 +50,12 @@ python scripts/contracts.py --check
 
 `BUILD-INFO.json` 记录 CMake/编译器/Vulkan 头文件版本、源码 HEAD 与配置时 dirty 标志。未提交本地构建会明确标为 dirty；它不是签名的构建来源证明。CI 下载附件才是该 CI commit 的产物，不可拿本地改版冒充同一 commit 构建。
 
-CI 新增 `.github/workflows/security.yml`：离线供应链审核产物 + C/C++ CodeQL `security-extended` 实际默认原生构建分析；使用 [GitHub 官方 manual build 模式](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-for-compiled-languages)。只分析被构建的 C/C++，不替代 GLSL/GPU 内存验证、动态测试或依赖 CVE 审查。工作流生成/本地 YAML 检查不代表 CodeQL 已运行通过；如仓库已启用 CodeQL default setup，应由维护者在 GitHub 设置中选择单一 setup，避免与 advanced workflow 冲突。
+`.github/workflows/security.yml` 现在只运行离线供应链/资产完整性审核，并上传 SBOM 和审计报告；CodeQL 任务已按维护者选择移除，不再向 GitHub Code scanning 上传结果。保留固定哈希、许可证、Schema、故障注入和 ASan/UBSan 门禁。供应链完整性不等于源码静态安全扫描，也不替代 GLSL/GPU 内存验证、动态测试或依赖 CVE 审查。
 
-不启用 Dependabot，也不自动升级任何依赖。维护者已报告依赖安全审查完成，见 [维护者验收](MAINTAINER-ACCEPTANCE.md)；本机未收到审查明细，不将其伪装成自动扫描结果。发布记录应关联上游安全公告/CVE、适用版本、本地 patch 影响与处置结论，并保存审查时间、工具版本、结果和例外理由；不能只因锁定版本、审查完成或 CodeQL 绿色就写“无漏洞”。
+不启用 Dependabot，也不自动升级任何依赖。维护者已报告依赖安全审查完成，见 [维护者验收](MAINTAINER-ACCEPTANCE.md)；本机未收到审查明细，不将其伪装成自动扫描结果。发布记录应关联上游安全公告/CVE、适用版本、本地 patch 影响与处置结论，并保存审查时间、工具版本、结果和例外理由；不能只因锁定版本、审查完成或 CI 绿色就写“无漏洞”。
 
 English: this is an offline, deterministic source/model SBOM and completeness
 gate, not exhaustive binary provenance, CVE clearance, license legal advice or
-GPU validation. CodeQL runs after push. Keep reviewed upstream notices and
+GPU validation. CodeQL CI has been removed; asset/SBOM auditing and host
+sanitizers remain. Keep reviewed upstream notices and
 separate build-only SDKs from customer runtime prerequisites.

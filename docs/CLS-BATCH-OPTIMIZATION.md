@@ -6,7 +6,7 @@
 
 之前每个文字区域分别上传 CLS 输入、提交命令并等待 fence。现在在 `LWVK_GPU_TEXT_PREPROCESS=1` 时，把最多 8 行的独立 CLS 命令放入一次 `vkQueueSubmit`，一次等待完成后读取各行概率；模型权重只保留一份。每行的数学运算和执行计划仍然独立，**不是网络 batch-N，也不保证 GPU 同时执行八行**。REC 暂时仍逐行执行。
 
-C# 完整包关闭旧进程后使用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat`，即可同时开启 DET/CLS/REC GPU 前处理和本轮 CLS 小批量。无需新增开关。普通 `Start-CSharp-Demo.bat` 仍为 CPU 前处理、逐行 CLS；本轮不宣称普通启动路径获得相同提速。GPU 前处理仍要求 `shaderFloat64`，网络始终 FP32。
+本报告测量时通过环境变量同时开启 DET/CLS/REC GPU 前处理和 CLS 小批量；当时普通启动入口仍为 CPU 前处理、逐行 CLS，不宣称同样提速。当前 `Start-CSharp-Demo.bat` 已自动选择 GPU 前处理，旧实验脚本已移除；局部路径对照见 [默认策略](GPU-DEFAULT.md)。无需新增开关。GPU 前处理仍要求 `shaderFloat64`，网络始终 FP32。
 
 内存和异常边界：
 

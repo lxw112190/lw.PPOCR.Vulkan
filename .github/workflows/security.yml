@@ -1,4 +1,4 @@
-name: Source supply chain and CodeQL
+name: Source supply chain audit
 on:
   push:
     branches: [main, master]
@@ -23,6 +23,7 @@ jobs:
           python tests/test_supply_chain.py
           python scripts/contracts.py --check
           python scripts/repository_preflight.py
+          python tests/test_repository_preflight.py
       - uses: actions/upload-artifact@v4
         with:
           name: source-sbom-and-supply-chain-audit
@@ -30,48 +31,3 @@ jobs:
             SBOM.cdx.json
             build/reports/supply-chain.json
           if-no-files-found: error
-  codeql:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 40
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    env:
-      VULKAN_SDK: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64
-      LD_LIBRARY_PATH: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64/lib
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Build prerequisites (no GPU required)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build libvulkan-dev
-      - uses: actions/cache@v4
-        id: sdk
-        with:
-          path: .ci/vulkan-sdk
-          key: vulkan-sdk-linux-1.4.350.0-b65f068a-v1
-      - name: Extract pinned official SDK
-        if: steps.sdk.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .ci/vulkan-sdk
-          curl --fail --location --retry 5 https://sdk.lunarg.com/sdk/download/1.4.350.0/linux/vulkansdk-linux-x86_64-1.4.350.0.tar.xz -o .ci/sdk.tar.xz
-          echo 'b65f068ab36263559da49d7cacd7e7b9df23824ca8b68ccc522a2b06f5725df2  .ci/sdk.tar.xz' | sha256sum --check
-          tar -xJf .ci/sdk.tar.xz -C .ci/vulkan-sdk
-      - uses: github/codeql-action/init@v4
-        with:
-          languages: c-cpp
-          build-mode: manual
-          queries: security-extended
-      - name: Analyze the actual default native library and HTTP build
-        run: |
-          test -x "$VULKAN_SDK/bin/glslc"
-          cmake -S . -B build/security -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTING=OFF -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
-          cmake --build build/security --parallel 2
-      - uses: github/codeql-action/analyze@v4
-        with:
-          category: /language:cpp

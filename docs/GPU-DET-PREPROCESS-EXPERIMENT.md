@@ -52,21 +52,23 @@
 
 C# 完整体验包中：
 
-- `Start-CSharp-Demo.bat`：默认 CPU DET 前处理，显式关闭实验。
-- `Start-CSharp-Demo-GPU-DET-Experiment.bat`：开启实验，选择实际 GPU 和模型后初始化。
+- 当前 `Start-CSharp-Demo.bat`：自动选择 GPU 前处理；CPU 前处理对照使用 `Start-CSharp-Demo-CPU-Preprocess.bat`。
+- 旧 DET-only 实验入口已移除；复现本报告的局部模式时，在新进程前设置 DET=`1`、TEXT=`0`、CROP=`0`，然后直接运行 Demo EXE。参见 [当前默认策略](GPU-DEFAULT.md)。
 
-必须关闭之前的 Demo，再从对应脚本新启动。MSVC 静态 CRT 会在加载时持有环境快照，不要在同一个已加载 DLL 的进程中改环境变量当作 A/B 切换。
+必须关闭之前的 Demo，再按所选模式新启动。MSVC 静态 CRT 会在加载时持有环境快照，不要在同一个已加载 DLL 的进程中改环境变量当作 A/B 切换。
 
 对 HTTP/自己的程序，可以在 PowerShell 中先设环境变量，再启动新的进程：
 
 ```powershell
 $env:LWVK_GPU_DET_PREPROCESS = '1'
+$env:LWVK_GPU_TEXT_PREPROCESS = '0'
+$env:LWVK_GPU_CROP_PREPROCESS = '0'
 .\lw-ppocr-vulkan-http-service.exe --config http-service.json
 # 回到默认路径：关闭进程，删除环境变量后重新启动。
-Remove-Item Env:\LWVK_GPU_DET_PREPROCESS
+Remove-Item Env:\LWVK_GPU_DET_PREPROCESS, Env:\LWVK_GPU_TEXT_PREPROCESS, Env:\LWVK_GPU_CROP_PREPROCESS
 ```
 
-Linux 对应 `LWVK_GPU_DET_PREPROCESS=1 ./lw-ppocr-vulkan-http-service --config http-service.json`，仅为开关用法，本轮没有 Linux 实机测试。
+Linux 的局部模式对应 `LWVK_GPU_DET_PREPROCESS=1 LWVK_GPU_TEXT_PREPROCESS=0 LWVK_GPU_CROP_PREPROCESS=0 ./lw-ppocr-vulkan-http-service --config http-service.json`，仅为开关用法，本轮没有 Linux 实机测试。
 
 注意计时口径：开启实验后 `det_ms` 包含原图打包/上传、GPU 缩放归一化、DET 网络、等待和概率图回读；默认路径中 CPU DET 前处理计入 `total_ms` 的其他部分。因此 **DET 数字稍增，而总耗时下降是正常的**。比较完整 pipeline/client wall，不能把两种模式的 `det_ms` 当作纯网络 GPU 时间相减。
 
@@ -84,4 +86,4 @@ Remove-Item Env:\LWVK_GPU_DET_PREPROCESS
 
 原始结果在 [reports/gpu-det-preprocess](reports/gpu-det-preprocess)，分别记录 RTX 对照、100 图、默认关闭、AMD Tiny、工作区与独立 ORT 参考，哈希绑定当前二进制。性能表使用最终 DLL，不是编译前中间版本。
 
-English: This opt-in experiment fuses DET BGR resize, normalization and NHWC packing into one GPU dispatch, writing directly into the DET arena. FP64 preprocessing preserves the CPU reference's FP32 output bits; neural networks remain FP32 with DET cap 960. RTX 4060 paired tests show 2.5–14.3% lower sample latency and 5.9–18.0% lower mean latency on the 100-image corpus, with every prediction field unchanged. The experiment requires shaderFloat64, is off by default, and is not a claim of universal speedup, long-run leak freedom or DML superiority. Use the separate experimental WinForms launcher and compare full pipeline/client time rather than DET stage time alone.
+English: This opt-in experiment fuses DET BGR resize, normalization and NHWC packing into one GPU dispatch, writing directly into the DET arena. FP64 preprocessing preserves the CPU reference's FP32 output bits; neural networks remain FP32 with DET cap 960. RTX 4060 paired tests show 2.5–14.3% lower sample latency and 5.9–18.0% lower mean latency on the 100-image corpus, with every prediction field unchanged. At the time of this historical experiment it required shaderFloat64 and was off by default, and is not a claim of universal speedup, long-run leak freedom or DML superiority. Current launchers select automatically or explicitly disable preprocessing. Old experiment launchers have been removed; use environment variables for partial-path diagnostics. Compare full pipeline/client time rather than DET stage time alone.

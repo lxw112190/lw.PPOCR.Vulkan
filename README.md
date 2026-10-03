@@ -14,7 +14,7 @@ QQ：819069052<br>
 
 ## 当前阶段：0.7.0-dev.1 / v1.0 供应链与发布边界
 
-新增 [供应链审计与 SBOM](docs/SUPPLY-CHAIN.md)：181 个固定资产、16 个组件的确定性 CycloneDX 1.6 清单，官方 Schema 离线校验；部署包必须包含全部锁定许可证/模型，并带有 `SBOM.cdx.json`、`BUILD-INFO.json` 和逐文件校验清单。修正 fmt 的 MIT 许可证标注，未更新推理依赖或模型。新增供应链故障注入与独立 CodeQL CI，不启用 Dependabot。SBOM 不等于漏洞清零或安全认证，CodeQL 结果以推送后的 CI 为准。
+新增 [供应链审计与 SBOM](docs/SUPPLY-CHAIN.md)：181 个固定资产、16 个组件的确定性 CycloneDX 1.6 清单，官方 Schema 离线校验；部署包必须包含全部锁定许可证/模型，并带有 `SBOM.cdx.json`、`BUILD-INFO.json` 和逐文件校验清单。修正 fmt 的 MIT 许可证标注，未更新推理依赖或模型。保留供应链故障注入和独立资产/SBOM 校验 CI；不启用 CodeQL 或 Dependabot。SBOM 不等于漏洞清零或安全认证，依赖安全审查仍需维护者执行。
 
 支持范围见 [兼容矩阵](docs/COMPATIBILITY.md)，安全部署和升级/回滚见 [部署指南](docs/DEPLOYMENT-UPGRADE.md)。Windows/Linux CI、软件 Vulkan、物理 GPU 和 Windows Service 账户的验证分别记录；不继承其他 OCR 项目的 Win7/ARM/macOS 支持承诺。历史报告继续保留，本轮验证见 [0.7 本机验收](docs/LOCAL-VALIDATION-070.md)。
 
@@ -61,15 +61,15 @@ ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)
 这与使用统一预处理的 DML 对拍器报告不同；原项目批处理/REC 宽度策略有差异，不能只看后端名称作性能归因。
 最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
 
-新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。实验阶段默认关闭（现已接入自动默认），通过 `LWVK_GPU_DET_PREPROCESS=1` 或独立 Demo 实验启动脚本开启；额外要求 `shaderFloat64`，不支持时明确报错。
+新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。实验阶段默认关闭（现已接入自动默认），通过 `LWVK_GPU_DET_PREPROCESS=1` 开启强制模式；额外要求 `shaderFloat64`，不支持时明确报错。
 
-继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；这两项当时默认关闭（当前默认策略见上文）、额外要求 `shaderFloat64`。完整 C# 包用 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 同时开启，当时普通启动脚本保持 CPU 前处理。
+继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；这两项当时默认关闭（当前默认策略见上文）、额外要求 `shaderFloat64`。历史实验通过环境变量同时开启，当时普通启动脚本保持 CPU 前处理；当前默认入口自动选择 GPU 路径，旧实验启动脚本已移除。
 
 此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
 
 最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。当时的默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
 
-继续[CLS 有界小批量提交优化](docs/CLS-BATCH-OPTIMIZATION.md)：开启文字行 GPU 前处理后，最多 8 行共享一次提交/等待，REC 仍逐行执行；裁剪暂存有界、合计工作区保持原预算，紧预算自动回退串行。相对上一版，RTX 4060 的 100 图均值再降 Tiny/Small/Medium **6.0%/6.3%/2.4%**，完整结果一致。使用现有 `Start-CSharp-Demo-GPU-Preprocess-Experiment.bat` 即可，不新增开关；普通 CPU 前处理启动路径不宣称相同提速。
+继续[CLS 有界小批量提交优化](docs/CLS-BATCH-OPTIMIZATION.md)：开启文字行 GPU 前处理后，最多 8 行共享一次提交/等待，REC 仍逐行执行；裁剪暂存有界、合计工作区保持原预算，紧预算自动回退串行。相对上一版，RTX 4060 的 100 图均值再降 Tiny/Small/Medium **6.0%/6.3%/2.4%**，完整结果一致。当前使用 `Start-CSharp-Demo.bat` 自动选择 GPU 前处理，不新增开关；普通 CPU 前处理启动路径不宣称相同提速。
 
 新增[REC 共享 arena 合并提交优化](docs/REC-BATCH-OPTIMIZATION.md)：最多 8 行共享一块中间张量区、一次提交/等待，保留独立输入和紧凑 CTC 输出，不分配未使用的完整概率回读。相对上一轮 CLS 合批，100 图逐图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**；不逐图预热的连续换图首遍下降 **6.2%/4.1%/1.9%**，预测字段一致。仍通过现有 GPU 前处理实验脚本开启，该历史 CPU 前处理基线不宣称相同提速；REC 计算仍逐行、共享工作区受原预算约束。
 
