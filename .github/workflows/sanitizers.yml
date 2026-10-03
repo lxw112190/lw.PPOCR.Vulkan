@@ -51,6 +51,7 @@ jobs:
           test -x "$VULKAN_SDK/bin/glslc"
           pkg-config --exists vulkan
           python scripts/verify_assets.py
+          python scripts/supply_chain.py
           python scripts/contracts.py --check
           python scripts/repository_preflight.py
           cmake -S . -B build/sanitize -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \

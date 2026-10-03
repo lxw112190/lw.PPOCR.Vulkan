@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "hostile_requests": 209,
+  "seed": 6102,
+  "recovery": "actual REC after each fixed case and every 25 random cases",
+  "scope": "bounded deterministic corpus, not exhaustive fuzzing or leak proof"
+}

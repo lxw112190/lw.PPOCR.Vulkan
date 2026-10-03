@@ -1,6 +1,6 @@
 # Full OCR experimental API / 完整 OCR 实验接口
 
-Version: 0.6.0-dev.2. Machine-checked v1 candidate; not frozen or a production support promise.
+Version: 0.7.0-dev.1. Machine-checked v1 candidate; not frozen or a production support promise.
 See `schemas/c-abi-v1.json` and `schemas/http-response-v1.schema.json` (OcrResult).
 
 Native SDK entry: `sdk/include/lw_ppocr_vulkan.h` in deployment packages.

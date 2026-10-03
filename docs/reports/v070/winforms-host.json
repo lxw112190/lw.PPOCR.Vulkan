@@ -1,0 +1,1 @@
+{"ok":true,"version":"0.7.0-dev.1","mode":"host-only","devices":2,"roi":"{X=20,Y=28,Width=292,Height=46}","gpu_editable":"passed","mouse_mapping":"normal/reverse/resize passed","gpu_inference":"not run"}

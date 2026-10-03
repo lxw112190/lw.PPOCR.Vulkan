@@ -22,6 +22,11 @@
     "source": "https://vulkan.lunarg.com/sdk/home"
   },
   "files": [
+    {"path": "third_party/lw-ppocr-c/README.md", "sha256": "cbc734260b4a73e942bd35cf5731127053370d3611677055ab0ad01061928164", "normalize_lf": true},
+    {"path": "licenses/CycloneDX-APACHE-2.0.txt", "sha256": "6c29f22a4a7385285c6f579ec9f33c5e989f00739d6b257243a0b082ec9447ae", "normalize_lf": true},
+    {"path": "third_party/cyclonedx/bom-1.6.schema.json", "sha256": "3e92dddbc30cf7f6a02b80f0942b1a4cfd4fb1c26f1dfc4310afa9d613cafb93", "normalize_lf": true},
+    {"path": "third_party/cyclonedx/jsf-0.82.schema.json", "sha256": "8bae002c25e723db7ee1f26afde680ae1a2b1a8f6b4b4b0fd65dc3becb090aae", "normalize_lf": true},
+    {"path": "third_party/cyclonedx/spdx.schema.json", "sha256": "baa9d3bd1ed57b6751b0887edead6b5063ff53ff7429cf85d476c6c94af0166e", "normalize_lf": true},
     {
       "path": "LICENSE",
       "sha256": "fd0dac27919d14940193b3a7c5dc6ef1d28bd68a224003d28d9c288d5a5ca270",
@@ -29,7 +34,7 @@
     },
     {
       "path": "NOTICE",
-        "sha256": "152af78b697ed04a14ba94cd9e60e9f48a7ad39c81fe1177c3942080d3c5ad21",
+      "sha256": "c238f837d8ef249ee80a2f0a857f82dc711e984d09a0f5a8995c15e3eabd02ea",
       "normalize_lf": true
     },
     {
@@ -43,7 +48,7 @@
       "normalize_lf": true
     },
     {
-      "path": "licenses/fmt-BSD.txt",
+      "path": "licenses/fmt-MIT.txt",
       "sha256": "07580f2a3b35709ce703d523f447b242f6dfec7582a8c0df102c7fa2849375f8",
       "normalize_lf": true
     },
@@ -917,7 +922,7 @@
     },
     "fmt": {
       "version": "12.1.0",
-      "license": "BSD-2-Clause",
+      "license": "MIT",
       "repository": "https://github.com/fmtlib/fmt"
     },
     "stb_image": {

@@ -1,12 +1,16 @@
 """Explicit reviewed HTTP vendor lock regeneration (never called automatically)."""
 import hashlib
+import argparse
 import json
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--write',action='store_true',help='Update only AFTER reviewing source/version/license changes')
+args=parser.parse_args()
 path=root/'dependencies.lock.json'
 lock=json.loads(path.read_text(encoding='utf-8'))
 prefixes=('third_party/cpp-httplib/','third_party/spdlog/','third_party/stb/')
-licenses=('licenses/cpp-httplib-MIT.txt','licenses/spdlog-MIT.txt','licenses/fmt-BSD.txt','licenses/stb-MIT-or-Unlicense.txt')
+licenses=('licenses/cpp-httplib-MIT.txt','licenses/spdlog-MIT.txt','licenses/fmt-MIT.txt','licenses/stb-MIT-or-Unlicense.txt')
 entries=[v for v in lock['files'] if not v['path'].startswith(prefixes) and v['path'] not in licenses and v['path']!='NOTICE']
 paths=[root/'NOTICE']+[root/p for p in licenses]
 for prefix in prefixes:
@@ -18,7 +22,8 @@ lock['files']=sorted(entries,key=lambda v:v['path'])
 lock['http_dependencies']={
  'cpp_httplib':{'version':'0.49.0','license':'MIT','repository':'https://github.com/yhirose/cpp-httplib','local_patch':'best-effort 429 on transport queue overflow'},
  'spdlog':{'version':'1.17.0','license':'MIT','repository':'https://github.com/gabime/spdlog'},
- 'fmt':{'version':'12.1.0','license':'BSD-2-Clause','repository':'https://github.com/fmtlib/fmt'},
+ 'fmt':{'version':'12.1.0','license':'MIT','repository':'https://github.com/fmtlib/fmt'},
  'stb_image':{'version':'2.30','license':'MIT','repository':'https://github.com/nothings/stb','commit':'2c980bb59875b0d32144a71867fbdebb2f77cd20'}}
-path.write_text(json.dumps(lock,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-print('Updated reviewed HTTP dependency lock:',len(entries),'files')
+if args.write:
+    path.write_text(json.dumps(lock,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+print('WRITE' if args.write else 'DRY RUN (no files changed; --write requires review)',len(entries),'HTTP lock entries; regenerate SBOM explicitly after writing')

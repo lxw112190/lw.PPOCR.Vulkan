@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+from supply_chain import audit, validate_release_build
 
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument("--staging",type=Path,required=True)
@@ -15,6 +16,10 @@ for entry in root.rglob("*"):
     if (entry.is_dir() and entry.name in ("__pycache__", "bin", "obj", ".vs")) or entry.suffix in (".pyc", ".pyo", ".user", ".suo"):
         raise RuntimeError(f"development cache must not be packaged: {entry}")
 version=(root/"RELEASE_VERSION").read_text(encoding="utf-8").strip()
+# Do not silently omit licenses: absence is as serious as a checksum mismatch.
+audit(root, source=False)
+build_info=json.loads((root/'BUILD-INFO.json').read_text(encoding='utf-8'))
+validate_release_build(build_info,version,a.platform)
 for name in ('http-service-config-v1.schema.json','http-response-v1.schema.json','access-log-v1.schema.json',
              'http-api-v1.openapi.json','c-abi-v1.json','contracts-v1.lock.json'):
     if not (root/'schemas'/name).is_file():raise RuntimeError(f'missing candidate contract: {name}')

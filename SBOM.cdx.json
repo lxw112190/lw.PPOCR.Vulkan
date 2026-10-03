@@ -1,0 +1,615 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:34bcbb5f-04c2-51eb-903a-86609a967fd0",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "lwvk",
+      "name": "lw.PPOCR.Vulkan",
+      "version": "0.7.0-dev.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:dependency-lock-sha256",
+          "value": "3f9be2eee8d57c0770650414a59b7edea7135136e6df6feba082bb30930f5edc"
+        },
+        {
+          "name": "lwvk:coverage",
+          "value": "reviewed sources/models/build SDK archives; not an exhaustive binary/OS/driver SBOM"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "converted-tiny",
+      "name": "PP-OCRv6 Tiny offline converted graphs + weights",
+      "version": "format-0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_tiny_det_onnx"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"models/ppocrv6-tiny/cls/model.json\",\"sha256\":\"2b0a8495b79a0b3aa5b5b1fe7073fb75aa66facf3abfc14252701b84e60d9be2\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/cls/source.onnx\",\"sha256\":\"dd8b2b61983d76ab230a58da9e0e0e84956b71c3877f2ce6e438fe22d74d2cf2\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/cls/weights.bin\",\"sha256\":\"c8393b5690c0cf0709ee82b2c75965f1b19af3b9020659c56ca66fe9a4761ae8\"},{\"normalize_lf\":true,\"path\":\"models/ppocrv6-tiny/det.json\",\"sha256\":\"97dec98417f048c0b24f67f17b836f10f8a7092a7c7d405e022da7e08d920bbf\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/det.onnx\",\"sha256\":\"193bab7a04fca699a6c82e6abb5b81bdb28177f0abd4062552b04908dafb19f8\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/rec/dictionary.txt\",\"sha256\":\"46e1b34ef45684cb46d75ac76d355341fe7f0a2c38d6ee02e63ae6b3878019fc\"},{\"normalize_lf\":true,\"path\":\"models/ppocrv6-tiny/rec/model.json\",\"sha256\":\"2aa5e1b7645de21f8c000b42318a569a0f5df527181da363c89a19b10b7d7e74\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/rec/source.onnx\",\"sha256\":\"9ef676d6ed3c88256a2d92c640c44f25b0c40947e111b14b8be8f594091563e6\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/rec/weights.bin\",\"sha256\":\"f2ba6de14c71cc17756882ea99aefa28060c53c51fedcbb4ec3e9ed422c15a2f\"},{\"normalize_lf\":false,\"path\":\"models/ppocrv6-tiny/weights.bin\",\"sha256\":\"17543b8a97b2f5348c0e4bf17091068402355ac106a8c0a0b33ad063aa4e7d92\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "4a469efff398256271f0f562ba15543b3468de19d2f69ef9ee4957abdd8571aa"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/PaddleOCR-models-APACHE-2.0.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        },
+        {
+          "name": "lwvk:conversion-inputs-not-installed",
+          "value": "[\"models/ppocrv6-tiny/cls/source.onnx\",\"models/ppocrv6-tiny/det.onnx\",\"models/ppocrv6-tiny/rec/source.onnx\"]"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "cyclonedx",
+      "name": "CycloneDX offline validation schemas",
+      "version": "1.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/CycloneDX/specification/tree/1.6/schema"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/cyclonedx/bom-1.6.schema.json\",\"sha256\":\"3e92dddbc30cf7f6a02b80f0942b1a4cfd4fb1c26f1dfc4310afa9d613cafb93\"},{\"normalize_lf\":true,\"path\":\"third_party/cyclonedx/jsf-0.82.schema.json\",\"sha256\":\"8bae002c25e723db7ee1f26afde680ae1a2b1a8f6b4b4b0fd65dc3becb090aae\"},{\"normalize_lf\":true,\"path\":\"third_party/cyclonedx/spdx.schema.json\",\"sha256\":\"baa9d3bd1ed57b6751b0887edead6b5063ff53ff7429cf85d476c6c94af0166e\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "edbfce793bcbf21ad1e2b19e626029a7f8f45565e4d8db7d352fbab9657475a1"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/CycloneDX-APACHE-2.0.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "validation-tooling"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "fmt",
+      "name": "fmt (spdlog bundled snapshot)",
+      "version": "12.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/fmtlib/fmt"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/args.h\",\"sha256\":\"6e0bf8ffbd904e6ef525cdce8e6e00312ce5d14f616cea5d88132606ca0384c4\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/base.h\",\"sha256\":\"892fcc48f31a80382f0e304e427d68d2fd62a2d78aef142020199120db5269fb\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/chrono.h\",\"sha256\":\"f8e2a69bd97bc5b90c9af7fb87e010775b695d487a77e8d8cbe624e57bd2f9bf\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/color.h\",\"sha256\":\"f88bf0c4833caed3a7f01b6d633c7b259741a26119e84c651ac1e31cfc980b72\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/compile.h\",\"sha256\":\"636c13842acce0b42b378e65fe67a69e5635e8225c9701975e5b326a97be5cb8\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/core.h\",\"sha256\":\"b2b6692145b11c7c2774db106078c97575a47d18e80c7783c68566475325ebb4\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/fmt.license.rst\",\"sha256\":\"07580f2a3b35709ce703d523f447b242f6dfec7582a8c0df102c7fa2849375f8\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/format-inl.h\",\"sha256\":\"e7baf108b84e89b29915bb35733540f8f4262cd8f4b41c15754eed4d2f185f61\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/format.h\",\"sha256\":\"b4c65350362bf40e76a8e6b450587d912c7081b6eafeafaf3d7bcf53153e17fc\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/os.h\",\"sha256\":\"45d4e84be4e84a128442f04eda06e1305c8e02c61166854a3b8b348194d35da5\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/ostream.h\",\"sha256\":\"742416a6a88286609887fa512c4423820764aafbb723a42a825f3193cb52b4f0\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/printf.h\",\"sha256\":\"afddb422a86125e04a7260bb0f0ae3423ea8d591181ed5d4ef60b7a5d068993a\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/ranges.h\",\"sha256\":\"ccaf61c9b5937e0fa97737fb047121c5fca9db34de516b8edfc1d913583e3c8e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/std.h\",\"sha256\":\"3f06cdf32774b9e6915e9762411f5f4de8b8ba5660adccbdea514be7f0b23826\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bundled/xchar.h\",\"sha256\":\"f0903d522c64faaee2c374a0b2063ac3e43d0b5006dfd3411f0e5dccd8ff6062\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "ed2bc2af54ac147cd0c2eb248c175d28ff62b347ccefd95157a9d93f1955eb66"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/fmt-MIT.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "host-geometry",
+      "name": "lw.PPOCR.C host snapshot",
+      "version": "b7d2b42383adcee68b0e4f1a7c3de546be9c9552",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/lxw112190/lw.PPOCR.C"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/README.md\",\"sha256\":\"cbc734260b4a73e942bd35cf5731127053370d3611677055ab0ad01061928164\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/crop.c\",\"sha256\":\"047a5b6774c72a5fae73ee00df25d182c716d87f3092e6cac504530a9325b9d3\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/crop_internal.h\",\"sha256\":\"32917e0610a8fd137d8a9b2c757cdd3dd3f12bd1c58220a472d4445b766f104f\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/db_postprocess.c\",\"sha256\":\"ea29cccc2b42410ce9c24d7fcab020e78659cd8afc424716ee08f498441759a4\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/det_internal.h\",\"sha256\":\"c90edb92ff3be506d040f1df73f88f62656e58b03bebc9c8eaccc25376064510\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/det_preprocess.c\",\"sha256\":\"d1195bdb59585158b6164ba05d4a9f889e7d2dc1e583392da0727f90c1b9d3e9\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/lw_infer.h\",\"sha256\":\"3d8aa285a6d1fb6d5ce9b0347097abc9bb039ef2ff2644d50f88974f895deb60\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/profile_internal.h\",\"sha256\":\"dc403027287c3fe4be6c25854b64a57b39757e00eb54d4b8a6d08879153948fe\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/reading_order.c\",\"sha256\":\"d077b3b26ce807294dcdf71d166b9eb4df0e2d9355e5d92d0bace5c67cf40e67\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/ppocr/reading_order.h\",\"sha256\":\"af82ef3a01ddbfbb6b8a87210515166719b93b4a60b703a8134f45da6729079f\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/simd/scalar_bitmap.c\",\"sha256\":\"9e54a6b70a4b5622dfdf527eacfc10e306ada2821339d0252ca8b5532c000e85\"},{\"normalize_lf\":true,\"path\":\"third_party/lw-ppocr-c/simd/simd_kernels.h\",\"sha256\":\"34d77d140100c562558864bb46c2f30bc785ea2bb8c3ad2b697050a9d7af1f98\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "0d49847c955e0e8ad0aaac948dc045e748b9aa63ba34e11619db0763fcad94f6"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/lw-PPOCR-C-MIT.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "httplib",
+      "name": "cpp-httplib (local queue-overflow patch)",
+      "version": "0.49.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/yhirose/cpp-httplib"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/cpp-httplib/httplib.h\",\"sha256\":\"45fb47b32e360d061c75b8e94b251808513b0c2f15e948664742cedd2ec4f2a7\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "2f1d7df2ee198178da1f9f5ffa27772bf1cde13fbf9d8eb0ddde5cb19c40ceab"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/cpp-httplib-MIT.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "json",
+      "name": "nlohmann/json",
+      "version": "3.12.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/nlohmann/json"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/nlohmann/json.hpp\",\"sha256\":\"aaf127c04cb31c406e5b04a63f1ae89369fccde6d8fa7cdda1ed4f32dfc5de63\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "a913c7f5bff90617ea37a01f70e8d3668662c34d1f8a6ddf623a87f88bd63e16"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/nlohmann-json-MIT.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model-medium",
+      "name": "PP-OCRv6 medium ONNX + shared CLS + dictionary",
+      "version": "reviewed-content-snapshot",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_det_onnx"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-medium/cls.onnx\",\"sha256\":\"dd8b2b61983d76ab230a58da9e0e0e84956b71c3877f2ce6e438fe22d74d2cf2\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-medium/det.onnx\",\"sha256\":\"eb13b44b25bb36f89528b68720af8a61d9cf381176107f465db1757b65d086e1\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-medium/dictionary.txt\",\"sha256\":\"118d0f0714ad2a37668c23d6541f2c3feb65b8214041265b567f7fd5b3365d8e\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-medium/rec.onnx\",\"sha256\":\"9c09abf0957f7968c7586464b7397b84ad2387a0497a351af40e9acc71b673ba\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "07eeab0e84f2409bcef1c6c6472d18a723a0c570b2be4afeb69b4654ab5f83ef"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/PaddleOCR-models-APACHE-2.0.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model-small",
+      "name": "PP-OCRv6 small ONNX + shared CLS + dictionary",
+      "version": "reviewed-content-snapshot",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_small_det_onnx"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-small/cls.onnx\",\"sha256\":\"dd8b2b61983d76ab230a58da9e0e0e84956b71c3877f2ce6e438fe22d74d2cf2\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-small/det.onnx\",\"sha256\":\"d73e0058b7a8086bbd57f3d10b8bcd4ff95363f67e06e2762b5e814fe9c9410e\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-small/dictionary.txt\",\"sha256\":\"118d0f0714ad2a37668c23d6541f2c3feb65b8214041265b567f7fd5b3365d8e\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-small/rec.onnx\",\"sha256\":\"5435fd747c9e0efe15a96d0b378d5bd157e9492ed8fd80edf08f30d02fa24634\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "10bfe48a32a99bcc4d56e8f451af36795099f9419ea292059dd809e3af454484"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/PaddleOCR-models-APACHE-2.0.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model-tiny",
+      "name": "PP-OCRv6 tiny ONNX + shared CLS + dictionary",
+      "version": "reviewed-content-snapshot",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_tiny_det_onnx"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-tiny/cls.onnx\",\"sha256\":\"dd8b2b61983d76ab230a58da9e0e0e84956b71c3877f2ce6e438fe22d74d2cf2\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-tiny/det.onnx\",\"sha256\":\"193bab7a04fca699a6c82e6abb5b81bdb28177f0abd4062552b04908dafb19f8\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-tiny/dictionary.txt\",\"sha256\":\"46e1b34ef45684cb46d75ac76d355341fe7f0a2c38d6ee02e63ae6b3878019fc\"},{\"normalize_lf\":false,\"path\":\"models/onnx/ppocrv6-tiny/rec.onnx\",\"sha256\":\"9ef676d6ed3c88256a2d92c640c44f25b0c40947e111b14b8be8f594091563e6\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "0296bbe45f39af86b26d0688a5274b898b6a855c9c571a50b4f8002d79950978"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/PaddleOCR-models-APACHE-2.0.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "onnx-reader",
+      "name": "ONNX reader reference snapshot",
+      "version": "d94a79ec56ec0d9bec1cb7c45f91dc1081161080",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/lxw112190/SimdPaddleOCR"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/onnx-reference/OnnxProtoReader.cs\",\"sha256\":\"91586b710aab324742ca9fd53197db9dd669d7da5c0c4102b204122f820c27dc\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "d63868da6b951c6ef78ceb2d2c59e05c6c5c98ec991de8db02d4269f33349026"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "LICENSE"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "file",
+      "bom-ref": "sample-image",
+      "name": "test-images/sample.jpg",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:artifact-role",
+          "value": "user-provided evaluation sample; redistribution rights require maintainer confirmation"
+        }
+      ]
+    },
+    {
+      "type": "platform",
+      "bom-ref": "sdk-linux",
+      "name": "LunarG Vulkan SDK (linux)",
+      "version": "1.4.350.0",
+      "scope": "excluded",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b65f068ab36263559da49d7cacd7e7b9df23824ca8b68ccc522a2b06f5725df2"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://vulkan.lunarg.com/sdk/home"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:artifact-role",
+          "value": "build-only; not bundled; SDK has per-component licenses"
+        }
+      ]
+    },
+    {
+      "type": "platform",
+      "bom-ref": "sdk-windows",
+      "name": "LunarG Vulkan SDK (windows)",
+      "version": "1.4.350.0",
+      "scope": "excluded",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "855b27ba05d2d8119c5114c5d4ff870ca38f2c632b11e1bb9923b9b7e6ecfe7b"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://vulkan.lunarg.com/sdk/home"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:artifact-role",
+          "value": "build-only; not bundled; SDK has per-component licenses"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "shaders",
+      "name": "Vulkan shader reference snapshot",
+      "version": "6298596e28404f0e93af585a79e84086363eeb72",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/sdcb/SimdPaddleOCR"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/attn.comp\",\"sha256\":\"db8e1e662fb6603a05a1d7888637cde038c0d8cb6e8ef6e219e2e338368b0686\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/avgpool4.comp\",\"sha256\":\"04b245a284d5ce7640b01d6f77decf7ada3890bd20da1233100bf7346c9c978d\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/concat_c.comp\",\"sha256\":\"cd747b2d5f6501bcda674ce7a39013b953b2ed32fa98040dd259f8abff294630\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_coop_gemm.comp\",\"sha256\":\"ff940312b6f147409560ab3dcd0d5a83ed58f0fabbbeb2c107f151187f5596ba\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_dense.comp\",\"sha256\":\"4d62c2ecc66ff3c4cdebc8dd95b8b75ad79467e4e8cbbe2dc805d37bb4c4956f\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_dw.comp\",\"sha256\":\"63361c01f5211a13c3b75de52c853a4923163a5451d8c80c9429927ed47860e5\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_dw4.comp\",\"sha256\":\"22118658f8ec74b5f6861100ac9316438375ce53b2098caacd7340f9868f4a1e\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_gemm.comp\",\"sha256\":\"28f79874255bdfc806f14272675b427917c29f432a934a6c328cfd8d206837f1\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_gemm_tiled.comp\",\"sha256\":\"43a29b6e14d22db329e0964c0cadee64a492cdaabeda5d7f8294646b9fabdbc3\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_pointwise.comp\",\"sha256\":\"3bb52696c38b80c280c5bd7f8732f809d55b91a6e304d1e7fc93b3af81e017c1\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_pointwise_tiled.comp\",\"sha256\":\"3247ff808d23e1f16e1d3cb8ca891e53b6c47c2c1d4b4ff585e3224d6ac0a574\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/conv_pointwise_tiled64.comp\",\"sha256\":\"6e0dda0486cd5ef0bdb91508d3060f85fe4a48a5c900fe463a19b2c95a4cec99\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/convt2s2.comp\",\"sha256\":\"e4cee87a42c7265cbab81c63ff2584f0cb00a30bd6443c6e8dede0574b05f678\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/elem.comp\",\"sha256\":\"6a0ff2d8356474ebe013a730c809c3e91651f44e5b9702ac7a6352ce19e7b89f\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/gelu.comp\",\"sha256\":\"76c76ca59b5014e7d96fdfb9f000fd3a1484cb6f10eb2bf1a4cc88c99e0c40b1\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/layernorm.comp\",\"sha256\":\"d925b28de57394a0b16e258028cce53044cfdff7afd64e79086b606a760fb2a8\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/maxpool4.comp\",\"sha256\":\"38c69bc262ebcab7592855fe8ba7e846a4a9d80d0f5a830e1ec4d4c4f89818be\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/nchw2nhwc.comp\",\"sha256\":\"9e4d59e28a2b28ec7a26826c8ca31a313c131d97c1a6227dd870d9072a8f1b8c\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/reduce_hw.comp\",\"sha256\":\"3d523f61406f8023842ba24a9d2c41f6eaf3beb4ec2231a3914b2460da7c332d\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/resize4.comp\",\"sha256\":\"bf2927be4bca1a5ab06ab087f37ed4b824e5dbd18f9c264b904f77f3d70f37e2\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/softmax.comp\",\"sha256\":\"8e252f237971871eefc5474d409b591323ff028016afabf4cdb41a0f689b9eb6\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/softmax_argmax.comp\",\"sha256\":\"29321011b38d6f2a27987acb39dd1cfe8c6c4302f65bb493945138ec41802866\"},{\"normalize_lf\":true,\"path\":\"third_party/simd-paddleocr/shaders/softmax_parallel.comp\",\"sha256\":\"1b287ebc8936d590d11f2ac8c4f23b29b044444862d3ac547628e2fc4050e45d\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "90e6d4c4ea319b763af482e6f4b67e160e691c1afede28e6488d96bfd212fbb5"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "LICENSE"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "spdlog",
+      "name": "spdlog",
+      "version": "1.17.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/gabime/spdlog"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/async.h\",\"sha256\":\"3ddaaba57d2f757d6cb09568fe1823949e45426d73f6baeb4ca8d8a2fe78121b\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/async_logger-inl.h\",\"sha256\":\"c298acfd85cd1ad21c0ff0a3cc930746174d4945f0844dcd6ca8b842ee9a22ce\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/async_logger.h\",\"sha256\":\"5e3219c74c29dee0b04a8c72ae6568e6d44999071f4416453a01514eccd21b64\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/cfg/argv.h\",\"sha256\":\"6f9aa40647fda08e2ad776598a7b5de1d1596ec9a73512c90c69504f6e347a2d\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/cfg/env.h\",\"sha256\":\"d2afd153fe8a1b2826feb60ec62ea42811d1ca085471fda238d002fedf5bb1bc\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/cfg/helpers-inl.h\",\"sha256\":\"1d43f8134b35efd52f6e3387be03602d3c85ca6df2dceab0313b660c37d1df90\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/cfg/helpers.h\",\"sha256\":\"5134c03ca4795ed4e998a2249793b1917989bd2199ff66c689ef48fd9a827bfe\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/common-inl.h\",\"sha256\":\"e170ca1af147a885142c8afdf29722ae52a40416dfd6b666758b39b5b5588d62\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/common.h\",\"sha256\":\"ddf4fa8ee4687f364086c3f3bca3b9113df3622916c67776594d231418102143\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/backtracer-inl.h\",\"sha256\":\"9b2795b78571295776003345d7e2b9f264fa71fabb7a15cda7b049464a2d24c3\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/backtracer.h\",\"sha256\":\"d4d613badbe01d67bfaefaba0a7a934f0e5f5eb3f18096e5cba54ab2fd4da883\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/circular_q.h\",\"sha256\":\"0bc4025c81425023f4d58711d6aa6231a55ee606bb1fc88f4fb3e655e807e265\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/console_globals.h\",\"sha256\":\"3dced73dc2bc5eacc678eec34af6458f910740c8949fd1bc8449808d1345467a\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/file_helper-inl.h\",\"sha256\":\"cb74c68b416fd94ef738b12e93af4bb571b69f2bcc3b6987cc7ee0a1fbee0547\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/file_helper.h\",\"sha256\":\"e23822a24c9f913328ceed3a7176e832114ec65abccf802bac280852b288415b\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/fmt_helper.h\",\"sha256\":\"7a2e655f077c1f9ceb7d7a69214594c3721702b691b7a301bad96f0affd45d06\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/log_msg-inl.h\",\"sha256\":\"7ec7033b384263180c041a4ab627cc8081d7550af6a4533f49334af5fce2d4f7\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/log_msg.h\",\"sha256\":\"7e9a3b7b89646cc1ad36d21de8e7d584f81dfa642760c12f40385dc0db65e3b0\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/log_msg_buffer-inl.h\",\"sha256\":\"e41147aa63dfb99b1b2285a88740d9e7c238099ae3518b2e88798e7e5991932a\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/log_msg_buffer.h\",\"sha256\":\"5a79fdfa5429d23286c58926a53de3ee83b577db21a4cccbd104ceda8ded7c50\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/mpmc_blocking_q.h\",\"sha256\":\"66ed3083a98e5cc142aa8d9dc18ce8de5ff32f82382386546f6ff302a01fc6c6\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/null_mutex.h\",\"sha256\":\"1377fde4b54417dca1b3d162d0f18c35f9418e1db91a333949952f1c877127b1\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/os-inl.h\",\"sha256\":\"f32d377e7b58e53b1d601a7e0fef5e2c1d137592c25df3bb4adbf89e015018ef\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/os.h\",\"sha256\":\"dc6af3c0fae5b49d8a703f6ef5432f3f25cd061290e81dd0d80441ba5719cf07\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/periodic_worker-inl.h\",\"sha256\":\"72c338426a4cd5f1a387d222a867b575f01f8d1968326f5f30a82ff5071bd681\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/periodic_worker.h\",\"sha256\":\"2773bf8766655b9ba5b53c9a84b2abcd4a4f02ec5b55363740668534eaa217cc\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/registry-inl.h\",\"sha256\":\"52163509eb3f64e0b014646611a250a0ee01674fe85f4efdfd4afda0e003cb12\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/registry.h\",\"sha256\":\"a5ce3c5a8bc019e7d8508268b222136c01f1e81360df67f104f21bf4b49e4f4b\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/synchronous_factory.h\",\"sha256\":\"3fcfcc28aa4edc2998e9e00d218362600605b89e0c58ebf2c7267950412e1cdc\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/tcp_client-windows.h\",\"sha256\":\"3553c39bc4a1a28e43ee05ab79f11762ba829847358e1f564bf4f8a96c683d73\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/tcp_client.h\",\"sha256\":\"6977deb87db2535da5afb0013644386bcf32e49b64655c31344f5835f1324029\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/thread_pool-inl.h\",\"sha256\":\"b7042c70da4d1c0398ddc74fc12bb5eec746647c18857ace1c6f425b5cf9435e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/thread_pool.h\",\"sha256\":\"432bccde480274c911460d7ba30cda62afefd6fcc2cc57529b5f44d68324a62e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/udp_client-windows.h\",\"sha256\":\"475721551d61f3749fe008762cf0359f67d6bd90383208749e30360bfa190d1d\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/udp_client.h\",\"sha256\":\"53e10fa54ef911f254fa485ff9e6f8047c9c7659f5b345f87a4a590831832903\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/details/windows_include.h\",\"sha256\":\"ee78df4fa66a4e41ed97b47305953f9af2140718c5fab14d921ad8b195e9931b\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/bin_to_hex.h\",\"sha256\":\"5609bbf846807ba9a18330fdc0141d91a067c0e44b760b97693c2a88893a5635\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/chrono.h\",\"sha256\":\"f57be9fd2c4c39dc7ff73f736c481eaa418723ccc7adeb16b3905a0f4a7b534e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/compile.h\",\"sha256\":\"6ecd7b2ae593e3b7b00d577ad035c0598c29c2df3947c21102ec110b2a33b5e9\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/fmt.h\",\"sha256\":\"6fc4048665172d38d835203d757aa30d4136c622d26d26e881f72f96b86aa556\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/ostr.h\",\"sha256\":\"d0437444e2da75ee732e392ce96e8f72d1db5bf9a6a79f0a1d36dbdd93ce1f1e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/ranges.h\",\"sha256\":\"7ef5f93f56f8f39ecda80b070bf1b3a93530832b6f69415c99acb72bd33a80ac\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/std.h\",\"sha256\":\"4a72a66fa67040b429dd791b10e75b21d5c18017ababcab808ef09900c727484\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fmt/xchar.h\",\"sha256\":\"0f5db8046e2c81bca4d2dd0245702366d5d4c51131a25cb0b79e5001a5002177\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/formatter.h\",\"sha256\":\"213631628274dc6c26fcc9a3bed36a3a9a83edea5e6b9f027baea58ca9c5eff3\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/fwd.h\",\"sha256\":\"246d2754fb77dcdcb7ed4be2328944659fd154599ee09df865db5cdb33cbe349\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/logger-inl.h\",\"sha256\":\"1507122f5c8bc7428fd5a606c29bc0fff42b6f55c602311d1891e45d23afb7a7\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/logger.h\",\"sha256\":\"e6b8ba92b7c6b83b816871f9a663cab4c1c21da3c5b252904f3dae412dfad85d\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/mdc.h\",\"sha256\":\"c3516a85d687f806080d81d0b63cb0353665b26d78f6cdc2c51e526ae9c492d8\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/pattern_formatter-inl.h\",\"sha256\":\"7e05fab1303d952801143118e33525a50d77304b3b3fec117ccc8637c85135fb\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/pattern_formatter.h\",\"sha256\":\"87fffd034b0a2139a6373ba04d9f88ae57cfac3865138e0859f19a9e5858da43\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/android_sink.h\",\"sha256\":\"96f8c917be604bfc0cd4a84e6e9bebd790c9828170f921a50f0f013a653cda8d\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/ansicolor_sink-inl.h\",\"sha256\":\"62a5e7c2522606660d4faa683d206d748c94cdcd6c72540ce6ac46b28a153958\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/ansicolor_sink.h\",\"sha256\":\"c6078602b09b78f781e4a18b966e2a3ea2dbea5c9a84a77adbe1e27557e85de7\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/base_sink-inl.h\",\"sha256\":\"7fe3e5bb453018d03e2b850384b18f8c00a1b64be363bb22c4b9b92082d9bcc7\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/base_sink.h\",\"sha256\":\"86186e0d15535b94270c94ab5eeb798d47dfe7330f4e622bf7c66dc46c820f37\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/basic_file_sink-inl.h\",\"sha256\":\"613295eaac45babf5cd5e7bec262763a5214071eaeab58c5598ac60620285c6c\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/basic_file_sink.h\",\"sha256\":\"e4693c382833fc13d6adbdc68d602d479c72225a463892bc4fd6fde6475edd4c\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/callback_sink.h\",\"sha256\":\"568eed97d5c29f942d811afe8614ceae6c110b74ffa4535123a5bd9db31f263f\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/daily_file_sink.h\",\"sha256\":\"ee32cbdd80b9fe51abe04ae290d199c46cec2ecbf35e7a2e796daf712b8520d2\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/dist_sink.h\",\"sha256\":\"fa6b8b53368b3cc9490046f1a207c3852835f0a00f6f677005c9e52799e86247\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/dup_filter_sink.h\",\"sha256\":\"aded06d32de86861be0b07a7c1561cd1a9f1df80cdbc0eb15c4f9735c26cc309\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/hourly_file_sink.h\",\"sha256\":\"aa31439c3c3072e9b77acc2800005b586f6b6cdc2d790e0783050b8627a79411\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/kafka_sink.h\",\"sha256\":\"9bb10a5ea347f2400baadf0d794d5045169fae77388132bc0cf3dcf30ec00c08\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/mongo_sink.h\",\"sha256\":\"df9a5c34bef34a9a55f4bec51f98c3f0527fdc61bc8ee247a9b4f4149e8ff0f0\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/msvc_sink.h\",\"sha256\":\"2c9107975cc29f89880846dce6939f2e8670a0b4aacf36a83cf08c8190475402\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/null_sink.h\",\"sha256\":\"75d92f19d80ba59e15c8607e4c98a86a14e238e5ca9b5afd6150dcf9e86d10d6\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/ostream_sink.h\",\"sha256\":\"8a444e2537b82d6fe4a87c1162d4eb53f94ceb01acbc8d646828f2b24f869085\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/qt_sinks.h\",\"sha256\":\"e3bb4b606187dcfc06ef2abafb0bf285662ed1edc079f5525cd4039e081e5212\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/ringbuffer_sink.h\",\"sha256\":\"69dd445a2519bdc25261f2af884b479a09a54458468f9f351a8333ae6ab370a5\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/rotating_file_sink-inl.h\",\"sha256\":\"8dc1c0985be041ac2ec0f155b534b748cd44b3eb33e8836dc849f9314c21d13e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/rotating_file_sink.h\",\"sha256\":\"27fa443b8bd9158f4472e116a05fea37e82b6452b6eb70a4ea78ae0089039142\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/sink-inl.h\",\"sha256\":\"f8fabf0de532bef4788ad59f278afbd3c4187b598f5c856370cdfa3dd564f28a\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/sink.h\",\"sha256\":\"75e5c2b43c253cfe7c553077125e3b158e9d71caf2765ad97bb08443ee83b56a\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/stdout_color_sinks-inl.h\",\"sha256\":\"4267753c6a0f8f8380999fa1445438cde62a62874a6be4555d8bd23245f9e1f7\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/stdout_color_sinks.h\",\"sha256\":\"03700ff3259fc97d2adb52ef5c470cf847bb1d417bf5d74e851c7c1b6212fe0e\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/stdout_sinks-inl.h\",\"sha256\":\"cd9298408922fcf38b45eec7853cd0e96efac4ca65a8fc0326dcc17189853dfe\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/stdout_sinks.h\",\"sha256\":\"a7eb6c3e4aedbed13c57ae517cbee30ef62582b3e02e35530123cae58ce1f526\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/syslog_sink.h\",\"sha256\":\"92dddbd22c8e62597eaef1d886093df50dbab19763a4d758b394227c68d55596\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/systemd_sink.h\",\"sha256\":\"e312d6a5a52dc5acd6321833f18fb6c29a438a1f24ee5dfe3dd29a550f35887f\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/tcp_sink.h\",\"sha256\":\"92092dec86bdc1cfced58bd61a28c6c22cb5cb905050aa416437f9c9eb4a71a1\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/udp_sink.h\",\"sha256\":\"6eb0b04604fa84e63b1bab51539a281a0bf17c912b9b5a5f794efdb0ddab190b\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/win_eventlog_sink.h\",\"sha256\":\"4783a96f7b89b19d48c14eea3f82f3ffd659e8faf34a4446659cd0c2d822e39c\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/wincolor_sink-inl.h\",\"sha256\":\"ed4e3f9ed012bf495044e414e1f921311bba888bc905a515da41ddde35c8c557\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/sinks/wincolor_sink.h\",\"sha256\":\"75a20f219b48c8ff63d2e7a11db9ed748fbc9cef5198e9cf739b889062665aaf\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/spdlog-inl.h\",\"sha256\":\"eca55774acb8f0cbe05f18cfa95405fd5ff1ed041cd7372556b2eee39776a5ef\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/spdlog.h\",\"sha256\":\"54283b3e3bf96c3df22c40caea526ffe0bbf203b5f76a98aa130b91a50487195\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/stopwatch.h\",\"sha256\":\"60f3aaed933185261ae603cc589cd39ebf93ef78321548871d469fb566903c44\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/tweakme.h\",\"sha256\":\"8e641df000560090a11adb04eff3f1a18e814f6eb8f2a9a9a1f22c0dcc572f82\"},{\"normalize_lf\":true,\"path\":\"third_party/spdlog/include/spdlog/version.h\",\"sha256\":\"a0c15d9295eba580732dada20940a443c53ddb47d8565c730d7af1ee5f3bd712\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "400e53dca6cf62b112b2bffd0aa90f14b53d2d70679021ff6364fb562feb1c18"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/spdlog-MIT.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "stb",
+      "name": "stb_image",
+      "version": "2c980bb59875b0d32144a71867fbdebb2f77cd20",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/nothings/stb"
+        }
+      ],
+      "properties": [
+        {
+          "name": "lwvk:pinned-files",
+          "value": "[{\"normalize_lf\":true,\"path\":\"third_party/stb/stb_image.h\",\"sha256\":\"594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3\"}]"
+        },
+        {
+          "name": "lwvk:normalized-tree-sha256",
+          "value": "c52224b085ec7b8ace68e4563769901e399f6d1d61a62bef67fc3e516bddd298"
+        },
+        {
+          "name": "lwvk:license-file",
+          "value": "licenses/stb-MIT-or-Unlicense.txt"
+        },
+        {
+          "name": "lwvk:artifact-role",
+          "value": "source-or-model"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "lwvk",
+      "dependsOn": [
+        "converted-tiny",
+        "cyclonedx",
+        "fmt",
+        "host-geometry",
+        "httplib",
+        "json",
+        "model-medium",
+        "model-small",
+        "model-tiny",
+        "onnx-reader",
+        "sample-image",
+        "sdk-linux",
+        "sdk-windows",
+        "shaders",
+        "spdlog",
+        "stb"
+      ]
+    },
+    {
+      "ref": "spdlog",
+      "dependsOn": [
+        "fmt"
+      ]
+    }
+  ]
+}

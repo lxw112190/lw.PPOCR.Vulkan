@@ -251,6 +251,8 @@ if(BUILD_TESTING)
   add_test(NAME contract-schema-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_contracts.py")
   add_test(NAME package-integrity-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_package_integrity.py")
   add_test(NAME correctness-cases-host-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_correctness_cases.py")
+  add_test(NAME supply-chain-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/supply_chain.py")
+  add_test(NAME supply-chain-host-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_supply_chain.py")
   add_test(NAME abi-export-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_abi_exports.py"
     --library "$<TARGET_FILE:lw_ppocr_vulkan>")
   add_test(NAME config-schema-native-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_config_contract.py"
@@ -402,6 +404,24 @@ endif()
 install(FILES include/lw_ppocr_vulkan.h DESTINATION sdk/include)
 install(FILES README.md README_EN.md LICENSE NOTICE RELEASE_VERSION DESTINATION .)
 install(FILES dependencies.lock.json DESTINATION .)
+install(FILES SBOM.cdx.json DESTINATION .)
+install(DIRECTORY third_party/cyclonedx/ DESTINATION metadata/cyclonedx)
+# Public build provenance contains no machine-specific paths, user names or keys.
+execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  OUTPUT_VARIABLE LWVK_SOURCE_REVISION OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+if(NOT LWVK_SOURCE_REVISION MATCHES "^[0-9a-f]+$")
+  set(LWVK_SOURCE_REVISION "unavailable")
+endif()
+execute_process(COMMAND git status --porcelain WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  OUTPUT_VARIABLE LWVK_SOURCE_CHANGES OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+set(LWVK_SOURCE_DIRTY "false")
+if(LWVK_SOURCE_CHANGES)
+  set(LWVK_SOURCE_DIRTY "true")
+endif()
+configure_file(scripts/build-info.json.in "${CMAKE_CURRENT_BINARY_DIR}/build-info.json.in" @ONLY)
+file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/metadata/$<CONFIG>/BUILD-INFO.json"
+  INPUT "${CMAKE_CURRENT_BINARY_DIR}/build-info.json.in")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/metadata/$<CONFIG>/BUILD-INFO.json" DESTINATION .)
 install(DIRECTORY licenses docs examples DESTINATION .
   PATTERN "__pycache__" EXCLUDE PATTERN "*.pyc" EXCLUDE PATTERN "*.pyo" EXCLUDE
   PATTERN "bin" EXCLUDE PATTERN "obj" EXCLUDE PATTERN ".vs" EXCLUDE

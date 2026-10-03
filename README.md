@@ -12,7 +12,11 @@ QQ：819069052<br>
 群名称：天天代码码天天<br>
 群号码：264292622
 
-## 当前阶段：0.6.0-dev.2 / v1.0 测试加固
+## 当前阶段：0.7.0-dev.1 / v1.0 供应链与发布边界
+
+新增 [供应链审计与 SBOM](docs/SUPPLY-CHAIN.md)：181 个固定资产、16 个组件的确定性 CycloneDX 1.6 清单，官方 Schema 离线校验；部署包必须包含全部锁定许可证/模型，并带有 `SBOM.cdx.json`、`BUILD-INFO.json` 和逐文件校验清单。修正 fmt 的 MIT 许可证标注，未更新推理依赖或模型。新增供应链故障注入与独立 CodeQL CI，不启用 Dependabot。SBOM 不等于漏洞清零或安全认证，CodeQL 结果以推送后的 CI 为准。
+
+支持范围见 [兼容矩阵](docs/COMPATIBILITY.md)，安全部署和升级/回滚见 [部署指南](docs/DEPLOYMENT-UPGRADE.md)。Windows/Linux CI、软件 Vulkan、物理 GPU 和 Windows Service 账户的验证分别记录；不继承其他 OCR 项目的 Win7/ARM/macOS 支持承诺。历史报告继续保留，本轮验证见 [0.7 本机验收](docs/LOCAL-VALIDATION-070.md)。
 
 新增 [ASan/UBSan 与异常恢复门禁](docs/SANITIZERS.md)：统一插桩全部原生目标，独立 Linux CI 校验 ASan/UBSan/LeakSanitizer 确实启用，测试安装后的 C ABI 与 HTTP 服务；增加 2000 次图像异常输入与恢复、200 次 HTTP 异常输入，以及 11 个旋转/宽高比/灰度/低对比度正确性场景。后者仍是同一张公开样图的派生集，不是多来源真实图片测试集。Linux sanitizer 结果须以推送后的 CI 为准；本机 Windows 普通构建不能证明无泄漏。
 

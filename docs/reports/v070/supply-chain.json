@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "version": "0.7.0-dev.1",
+  "pinned_files": 181,
+  "components": 16,
+  "scope": "source/model inventory; not vulnerability clearance or complete binary provenance"
+}

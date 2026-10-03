@@ -19,7 +19,20 @@ QQ: 819069052<br>
 QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
-## Status: 0.6.0-dev.2 / v1.0 test hardening
+## Status: 0.7.0-dev.1 / v1.0 supply chain and release boundaries
+
+Added [supply-chain audit and SBOM](docs/SUPPLY-CHAIN.md): 181 pinned assets,
+16 components, deterministic CycloneDX 1.6 validated offline against official
+schemas, mandatory model/license completeness, and packaged `SBOM.cdx.json` /
+`BUILD-INFO.json`. Corrected fmt's MIT license metadata without changing models
+or inference dependencies. Added fault injection and a separate CodeQL workflow;
+no Dependabot. This is not vulnerability clearance or security certification;
+CodeQL results require the post-push GitHub run.
+
+See the [compatibility matrix](docs/COMPATIBILITY.md), [secure deployment and
+upgrade/rollback guide](docs/DEPLOYMENT-UPGRADE.md), and [local 0.7 validation](docs/LOCAL-VALIDATION-070.md).
+CI, software Vulkan, physical GPUs and service-account access are separate
+evidence levels; Win7/ARM/macOS qualifications from other projects do not transfer.
 
 Added [ASan/UBSan and recovery gates](docs/SANITIZERS.md): all native targets are
 instrumented in dedicated Linux CI, intentional fault probes verify ASan/UBSan/

@@ -1,0 +1,17 @@
+{
+  "metadata_version": 1,
+  "version": "0.7.0-dev.1",
+  "source_revision": "970cd7b96653eaae38e77a86722367328d1588d4",
+  "source_dirty": true,
+  "system": "Windows",
+  "processor": "AMD64",
+  "pointer_bytes": 8,
+  "configuration": "Release",
+  "compiler": "MSVC",
+  "compiler_version": "19.40.33813.0",
+  "cmake_version": "3.31.0-rc2",
+  "vulkan_headers_version": "1.4.350",
+  "sanitizers": "OFF",
+  "experimental_coop": "OFF",
+  "experimental_rec_lanes": "OFF"
+}

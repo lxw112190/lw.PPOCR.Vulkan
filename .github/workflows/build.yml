@@ -31,6 +31,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/verify_assets.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/supply_chain.py --report build/reports/supply-chain.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/repository_preflight.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/test_repository_preflight.py
@@ -70,6 +72,7 @@ jobs:
             dist/*.zip
             dist/*.sha256
             build/reports/winforms/*
+            build/reports/supply-chain.json
           if-no-files-found: error
   linux-software-vulkan:
     runs-on: ubuntu-22.04
@@ -122,6 +125,7 @@ jobs:
           test -r "$vulkan_libdir/libvulkan.so"
           printf 'System Vulkan loader link library: %s/libvulkan.so\n' "$vulkan_libdir"
           python scripts/verify_assets.py
+          python scripts/supply_chain.py --report build/reports/supply-chain.json
           python scripts/repository_preflight.py
           python tests/test_repository_preflight.py
           python scripts/contracts.py --check
