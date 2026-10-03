@@ -19,7 +19,39 @@ UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 本节保留开发阶段报错的诊断方法，不作为 v1.0 当前 CI 状态声明。正式发布确认见 MAINTAINER-ACCEPTANCE.md；后续发布仍须审核原始探针与实际 Linux CI 结果，不因版本转正移除检测。
 
-DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进程退出的 LSan 报错仍是门禁失败。当前报告只有 `realloc` 与未知模块，不能据此认定为项目泄漏、驱动泄漏或误报。已检查正常路径的 buffer/mapping、fence、command/descriptor pool、pipeline、device 和 instance 释放，暂未找到遗漏；Linux 根因仍待有符号调用栈验证。
+DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进程退出的 LSan 报错仍是门禁失败。最初报告只有 `realloc` 与未知模块，无法直接归因。最新完整附件及同版本调试符号已定位到 Mesa CPU 拓扑表，见下一节；不将第三方单点归因宣传为整个项目所有路径无泄漏。
+
+### 已定位：Mesa 的 AMD L3 亲和性表未在 ICD 卸载时释放
+
+维护者提供的新附件 `host-sanitizer-diagnostics-not-a-release-package (1).zip` 确认：
+
+- 三个 shader 探针功能检查通过，各自数秒内结束，但退出时仍报 128 字节泄漏，没有超时。
+- `NODEVICE_SELECT=1` 且移除显式 layer 后，日志只加载/卸载 lavapipe，纯设备枚举仍报两份 128 字节泄漏。
+- 模块快照中的唯一候选是 `libvulkan_lvp.so`，分配调用地址为 ELF `0x9e428`；上一层为 `0x9e9a2`。
+
+从 [Ubuntu 官方包目录](https://archive.ubuntu.com/ubuntu/pool/main/m/mesa/)取得与记录版本一致的 `mesa-vulkan-drivers_23.2.1-1ubuntu3.1~22.04.4_amd64.deb`，并取得 Ubuntu 对应 dbgsym。下载驱动的 Build ID 为 `91cf55a2dbfca7f412536acf5a2c5c202e6545da`，同 Build ID 的符号表将上述地址分别解析为 `get_cpu_topology` 与 `_util_cpu_detect_once`；后续栈依次包含 `llvmpipe_create_screen`、`lvp_physical_device_init`、`lvp_enumerate_physical_devices`。该 Build ID 是下载包的静态分析结果，不是旧附件曾记录过的字段。
+
+同版本 `src/util/u_cpu_detect.c` 第 596 行以 `realloc` 分配 `L3_affinity_masks`，随后保存在静态 `util_cpu_caps.L3_affinity_mask` 中。`util_affinity_mask` 是 1024 CPU 位图，即 128 字节。源码没有对这个持久表的卸载释放；loader `dlclose` 后全局根消失，LSan 检出真正未释放的分配。设备枚举 API 在两次调用中分别创建/销毁 instance，所以诊断对照累计两份，而单个 shader context 是一份。
+
+修复限于独立 sanitizer CI 使用的**私有软件驱动**，不修改模型、项目原生推理、19 个 ABI 导出或客户包：
+
+1. `scripts/build_ci_lavapipe.sh` 固定官方 Mesa 23.2.1 源及 Ubuntu `23.2.1-1ubuntu3.1~22.04.4` 差异包，分别校验 SHA-256；应用完整 Ubuntu patch series，保留其中的安全修复。
+2. 再应用 `scripts/ci/mesa-l3-cleanup.patch`：在 Linux DSO destructor 中 `free` CPU L3 表并清空指针。这是补全第三方对象所有权，不是 suppression、忽略返回码、禁用卸载或关闭 LSan。
+3. 只构建 lavapipe，不构建窗口系统、OpenGL、视频或其他硬件 ICD。缓存已安装 prefix，key 包含源/脚本/补丁、工作流和编译/LLVM 依赖指纹；命中后检查 recipe、文件 hash、ICD 路径、动态依赖以及最终库中的 cleanup 符号，失败即停止，不回退到系统 ICD。
+4. `tests/test_ci_lavapipe.py` 在专用 Linux sanitizer job 通过 `LWVK_REQUIRE_DRIVER_UNLOAD_TEST=1` 强制编译真实 `dlopen`/`dlclose` 小型回归：原始全局分配必须被 LSan 报出；应用**同一补丁函数体**后必须正常退出；再故意泄漏项目侧 128 字节，仍必须报错。缺少 Clang 14 时明确失败；普通 Windows/Linux 构建只做 recipe 检查并跳过该 Linux 专用子用例。它验证释放机制，不代替真实驱动验收。
+5. 真实两次枚举须正常卸载并通过 LSan，然后原来的三个 shader 探针、故障 tripwire、staging 原生/HTTP/异常恢复门禁全部保留；任何非零退出依然失败。
+
+冷缓存会增加一次软件驱动编译；后续通过校验的缓存直接复用。它不进入 `scripts/package.py`，不会成为客户机安装依赖。常规 Linux 部署构建基线也未变更。诊断附件增加所选 ICD、recipe、文件 hash 和 Build ID，方便确认没有误用系统库。旧系统 ICD 仍留在 runner 上，但不被该 sanitizer job 选择。
+
+本机 Windows 已能核对官方源哈希、补丁精确应用和 host-only 回归；**实际 lavapipe 编译、Linux dlclose/LSan 回归与最终 CI 通过仍须下一次运行确认**。不把代码修复方案写成已经全部通过。
+
+诊断下载文件 SHA-256（不随客户包分发）：驱动 deb `f863c419ffafef9a83bfb8c67363f0798ea39e11da7c12766613e493dd643ca8`；dbgsym ddeb `0fc8e251570244fa25c2dd6a58da416f755d4d042a18ecd191954b0730749bba`。
+
+English: the unloaded allocation was mapped to Mesa's AMD CPU L3 affinity table,
+not an OCR shader allocation. Sanitizer CI builds and caches a private, source-
+pinned Jammy lavapipe with an unload destructor that actually frees the table,
+while retaining Ubuntu security patches. All leak and failure gates remain active;
+the private ICD is never distributed. Linux build/runtime acceptance is pending CI.
 
 CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 使用正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。正式探针使用 `fast_unwind_on_malloc=1`、30 层分配栈，仍启用 ASan/UBSan 和退出泄漏检查。项目原生代码保留 frame pointer；第三方库栈不足时再收集诊断对照。
 

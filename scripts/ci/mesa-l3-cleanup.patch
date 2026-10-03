@@ -1,0 +1,29 @@
+Subject: [CI-only Mesa 23.2.1] release CPU L3 affinity storage on DSO unload
+
+The Jammy lavapipe build loses this global allocation when the Vulkan loader
+dlcloses the ICD. This fixes ownership; it does not suppress LeakSanitizer.
+Only the private CI software driver receives this patch, not customer packages.
+
+--- a/src/util/u_cpu_detect.c
++++ b/src/util/u_cpu_detect.c
+@@ -99,6 +99,20 @@
+ static
+ struct util_cpu_caps_t util_cpu_caps;
+ 
++#if DETECT_OS_LINUX
++/* CPU caps belong to this DSO. The Vulkan loader can dlclose the ICD before
++ * process exit, so a process-global-looking allocation needs unload cleanup.
++ * Mesa has no public CPU-caps cleanup API; no consumer remains at dlclose.
++ */
++__attribute__((destructor))
++static void
++util_cpu_caps_cleanup_on_unload(void)
++{
++   free(util_cpu_caps.L3_affinity_mask);
++   util_cpu_caps.L3_affinity_mask = NULL;
++}
++#endif
++
+ /* Do not try to access _util_cpu_caps_state directly, call to util_get_cpu_caps instead */
+ struct _util_cpu_caps_state_t _util_cpu_caps_state = {
+    .once_flag = ONCE_FLAG_INIT,
