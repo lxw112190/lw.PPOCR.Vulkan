@@ -256,6 +256,7 @@ if(BUILD_TESTING)
   add_test(NAME contract-snapshots COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/contracts.py" --check)
   add_test(NAME contract-schema-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_contracts.py")
   add_test(NAME package-integrity-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_package_integrity.py")
+  add_test(NAME release-assets-host-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_release_assets.py")
   add_test(NAME sanitizer-gpu-diagnostics-host-unit COMMAND "${Python3_EXECUTABLE}"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_sanitizer_gpu_probes.py")
   add_test(NAME ci-lavapipe-recipe-host-unit COMMAND "${Python3_EXECUTABLE}"

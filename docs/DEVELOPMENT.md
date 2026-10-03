@@ -62,7 +62,7 @@ dev.2 增加 [原生 ASan/UBSan 与恢复门禁](SANITIZERS.md)。统一在所�
 
 配置 Schema 是标准 JSON Schema 2020-12。原生程序另外检查 UTF-8 字节数（API Key <=1024 bytes）、JSON 整数 token（拒绝 `1.0`）和默认值填充后的 crop 交叉关系；这些无法完整用标准 Schema 表达的限制写在 `$comment`，并通过实际进程测试覆盖。`--check-config` 不初始化 GPU，因此该矩阵可在 GPU-less CI 运行。
 
-19 个实际导出由 PE 导出表或 Linux `nm -D` 检查；native static_assert 与 Python ctypes 分别验证 x64 布局。`RELEASE_VERSION` 是版本源，CMake 项目版本自动提取其三段数字，DLL/服务沿用完整版本字符串；它已纳入 CMAKE_CONFIGURE_DEPENDS，版本变化自动重配置。构建与打包不自动创建远程 Release；参考 [RELEASE-GATES.md](RELEASE-GATES.md)。
+19 个实际导出由 PE 导出表或 Linux `nm -D` 检查；native static_assert 与 Python ctypes 分别验证 x64 布局。`RELEASE_VERSION` 是版本源，CMake 项目版本自动提取其三段数字，DLL/服务沿用完整版本字符串；它已纳入 CMAKE_CONFIGURE_DEPENDS，版本变化自动重配置。本地构建/打包不操作远程 Release；标签 CI 可自动上传附件及创建草稿，但不自动发布，见 [CI.md](CI.md)。发布验收仍遵循 [RELEASE-GATES.md](RELEASE-GATES.md)。
 
 ## FP32 kernel 回归
 

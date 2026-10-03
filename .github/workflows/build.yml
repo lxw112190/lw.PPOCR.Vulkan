@@ -5,6 +5,12 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional existing tag to rebuild/upload, e.g. v1.0.0; empty = build only'
+        required: false
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -12,11 +18,25 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.release_tag && format('refs/tags/{0}', inputs.release_tag) || github.ref }}
+          persist-credentials: false
+      - name: Check release tag matches the checked-out version
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release_tag != ''
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+        shell: python
+        run: |
+          import os, re
+          from pathlib import Path
+          tag = os.environ['RELEASE_TAG']
+          assert re.fullmatch(r'v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?', tag), 'Expected vMAJOR.MINOR.PATCH[-prerelease]'
+          assert Path('RELEASE_VERSION').read_text().strip() == tag[1:], 'Tag/RELEASE_VERSION mismatch'
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: .ci/downloads
           key: vulkan-sdk-windows-1.4.350.0-855b27ba-v1
@@ -67,14 +87,17 @@ jobs:
             python scripts/verify_archive.py --archive $_.FullName
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: windows-x64-full-ocr
           path: |
             dist/*.zip
             dist/*.sha256
-            build/reports/winforms/*
-            build/reports/supply-chain.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v6
+        with:
+          name: windows-host-diagnostics-not-a-release-package
+          path: build/reports/**
           if-no-files-found: error
   linux:
     name: Linux x64 build / host checks
@@ -84,8 +107,22 @@ jobs:
       VULKAN_SDK: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64
       LD_LIBRARY_PATH: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64/lib
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.release_tag && format('refs/tags/{0}', inputs.release_tag) || github.ref }}
+          persist-credentials: false
+      - name: Check release tag matches the checked-out version
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release_tag != ''
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+        shell: python
+        run: |
+          import os, re
+          from pathlib import Path
+          tag = os.environ['RELEASE_TAG']
+          assert re.fullmatch(r'v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?', tag), 'Expected vMAJOR.MINOR.PATCH[-prerelease]'
+          assert Path('RELEASE_VERSION').read_text().strip() == tag[1:], 'Tag/RELEASE_VERSION mismatch'
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Build and host-test prerequisites (no inference)
@@ -93,7 +130,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ninja-build pkg-config binutils libvulkan-dev
           python -m pip install numpy==2.2.6 Pillow==11.3.0 psutil==7.0.0 -r requirements-contracts.txt
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: sdk
         with:
           path: .ci/vulkan-sdk
@@ -141,11 +178,55 @@ jobs:
           for archive in dist/*.tar.gz; do
             python scripts/verify_archive.py --archive "$archive"
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: linux-x64-full-ocr
           path: |
             dist/*.tar.gz
             dist/*.sha256
-            build/reports/supply-chain.json
           if-no-files-found: error
+      - uses: actions/upload-artifact@v6
+        with:
+          name: linux-host-diagnostics-not-a-release-package
+          path: build/reports/**
+          if-no-files-found: error
+  release_assets:
+    name: Upload verified deployment packages to Release
+    needs: [windows, linux]
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    concurrency:
+      group: release-assets-${{ inputs.release_tag || github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      # Use upload tooling from this workflow revision. A historical tag may
+      # predate these scripts; build jobs above still build that exact tag.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v7
+        with:
+          name: windows-x64-full-ocr
+          path: release-assets
+      - uses: actions/download-artifact@v7
+        with:
+          name: linux-x64-full-ocr
+          path: release-assets
+      - name: Verify assets, preserve existing files, upload missing attachments
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+          RELEASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          python tests/test_release_assets.py
+          python scripts/upload_release_assets.py --directory release-assets \
+            --tag "$RELEASE_TAG" --repo "$RELEASE_REPOSITORY"

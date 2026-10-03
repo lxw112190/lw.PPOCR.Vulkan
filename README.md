@@ -26,6 +26,8 @@ v1.0.0 正式冻结 C ABI v1、HTTP API v1、配置 Schema v1 与 JSONL 访问�
 
 下载正式部署包及校验文件：[GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases)。Windows 包为 `lw.PPOCR.Vulkan-v1.0.0-windows-x64-full-ocr.zip`，Linux 包为 `lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`；各附同名 `.sha256`。CI 附件用于构建/验收，正式下载以维护者发布的 Release 附件为准。
 
+版本标签 CI 在 Windows/Linux 构建、打包检查都成功后，自动将两份部署包及 `.sha256` 上传到对应 Release；若 Release 尚不存在则创建**草稿**，由维护者验收并填写说明后发布。普通分支 push / PR 不上传到 Release，诊断报告不混入部署附件；已有同名文件只在 SHA-256 一致时跳过，不自动覆盖。已发布版本可通过 Actions 手动填写 `release_tag` 补传，详见 [CI 发布操作](docs/CI.md#release-附件自动上传)。
+
 ### 支持范围与运行前提
 
 提供 **Windows x64 / Linux x64** 构建与部署包。Windows 原生服务面向 Windows 10/11；已记录的物理 GPU 测试为 Windows 10 上的 AMD 集显与 NVIDIA RTX 4060 Laptop GPU。Linux CI 基线为 Ubuntu 22.04，软件 Vulkan 对拍不等于 Linux 实体 GPU 验收。具体状态见 [兼容矩阵](docs/COMPATIBILITY.md)。

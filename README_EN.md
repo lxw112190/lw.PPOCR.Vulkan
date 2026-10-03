@@ -29,6 +29,12 @@ Download deployment packages and checksums from [GitHub Releases](https://github
 `lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`, each with a matching `.sha256`.
 CI artifacts support build/qualification; published Release attachments are the official downloads.
 
+Tag CI uploads the two deployment archives and matching `.sha256` files only after both
+Windows/Linux build/package jobs succeed. Missing Releases are created as **drafts** for
+maintainer qualification and publication. Branch pushes/PRs and diagnostic artifacts are
+not published. Matching existing assets are skipped; conflicting assets are never replaced.
+Use the manual `release_tag` input to backfill an existing version; see [CI release operations](docs/CI.md#release-附件自动上传).
+
 ### Supported scope and prerequisites
 
 Build/package targets are **Windows x64 / Linux x64**. Windows native services target Windows 10/11; recorded physical GPU tests cover Windows 10 with AMD integrated graphics and NVIDIA RTX 4060 Laptop GPU. Linux CI uses Ubuntu 22.04; software Vulkan references do not qualify Linux hardware GPUs. See the [compatibility matrix](docs/COMPATIBILITY.md).
