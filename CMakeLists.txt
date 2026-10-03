@@ -222,7 +222,9 @@ if(BUILD_TESTING)
 endif()
 add_dependencies(lw_ppocr_vulkan lwvk_embedded_shaders)
 set_target_properties(lw_ppocr_vulkan PROPERTIES OUTPUT_NAME "lw.PPOCR.Vulkan"
-  CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
+  # Visibility is language-specific: C++ hidden does NOT cover crop_optimized.c.
+  # Only declarations marked LWVK_API belong to the public C ABI.
+  C_VISIBILITY_PRESET hidden CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
 target_include_directories(lw_ppocr_vulkan PUBLIC include PRIVATE src third_party "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_compile_definitions(lw_ppocr_vulkan PRIVATE LWVK_BUILD LWVK_VERSION="${LWVK_VERSION}")
 target_link_libraries(lw_ppocr_vulkan PRIVATE Vulkan::Vulkan Threads::Threads lwvk_geometry)
@@ -255,6 +257,7 @@ if(BUILD_TESTING)
   add_test(NAME supply-chain-host-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_supply_chain.py")
   add_test(NAME abi-export-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_abi_exports.py"
     --library "$<TARGET_FILE:lw_ppocr_vulkan>")
+  add_test(NAME abi-export-parser-host-unit COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_abi_exports_unit.py")
   add_test(NAME config-schema-native-contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_config_contract.py"
     --service "$<TARGET_FILE:lw-ppocr-vulkan-http-service>")
   add_executable(lwvk_graph_wait_policy_unit tests/graph_wait_policy_unit.cpp)

@@ -52,7 +52,7 @@ python scripts/contracts.py --check
 
 CI 新增 `.github/workflows/security.yml`：离线供应链审核产物 + C/C++ CodeQL `security-extended` 实际默认原生构建分析；使用 [GitHub 官方 manual build 模式](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-for-compiled-languages)。只分析被构建的 C/C++，不替代 GLSL/GPU 内存验证、动态测试或依赖 CVE 审查。工作流生成/本地 YAML 检查不代表 CodeQL 已运行通过；如仓库已启用 CodeQL default setup，应由维护者在 GitHub 设置中选择单一 setup，避免与 advanced workflow 冲突。
 
-不启用 Dependabot，也不自动升级任何依赖。正式 RC 前需要逐项记录上游安全公告/CVE、适用版本、本地 patch 影响与处置结论；目前该人工漏洞审查尚未完成。保存扫描时间、工具版本、结果和例外理由；不能只因锁定版本或 CodeQL 绿色就写“无漏洞”。
+不启用 Dependabot，也不自动升级任何依赖。维护者已报告依赖安全审查完成，见 [维护者验收](MAINTAINER-ACCEPTANCE.md)；本机未收到审查明细，不将其伪装成自动扫描结果。发布记录应关联上游安全公告/CVE、适用版本、本地 patch 影响与处置结论，并保存审查时间、工具版本、结果和例外理由；不能只因锁定版本、审查完成或 CodeQL 绿色就写“无漏洞”。
 
 English: this is an offline, deterministic source/model SBOM and completeness
 gate, not exhaustive binary provenance, CVE clearance, license legal advice or

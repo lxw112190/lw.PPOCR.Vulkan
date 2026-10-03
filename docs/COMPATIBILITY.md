@@ -3,6 +3,10 @@
 当前为 0.7.0-dev.1 开发预览；正式承诺以最终 RC 附件的实测记录为准。
 其他项目的 Win7、Linux ARM、统信、openEuler 或 macOS 成功不能移用于本项目。
 
+维护者现已报告干净目标机与服务账户 GPU 验收完成，见
+[维护者验收](MAINTAINER-ACCEPTANCE.md)。未提供具体 OS/GPU/服务账户环境，
+不据此将下表所有“未测试”平台改成支持。下表细项保留有明确环境的验证边界。
+
 | 目标 | 构建/CI 范围 | 运行证据与状态 |
 | --- | --- | --- |
 | Windows x64 | MSVC / Windows-2022 CI，默认 FP32，WinForms .NET Framework 4 | 本机 Windows 10 AMD/NVIDIA 有历史及新版回归；干净机器、Windows 11、服务账户 GPU 仍需最终 RC 验证 |

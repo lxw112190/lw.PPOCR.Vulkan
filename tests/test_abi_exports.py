@@ -32,6 +32,17 @@ def pe_exports(path):
         result.append(data[start:end].decode('ascii'))
     return sorted(result)
 
+def parse_elf_exports(output):
+    # Ignore compiler C++ weak symbols, but catch BOTH native project prefixes.
+    # Host geometry extraction uses lw_; accidentally exporting it is also ABI
+    # pollution, even though it is absent from the public lwvk_ header.
+    symbols=[]
+    for line in output.splitlines():
+        fields=line.split()
+        if fields and fields[-1].startswith(('lwvk_', 'lw_')):
+            symbols.append(fields[-1].split('@')[0])
+    return sorted(symbols)
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--library',type=Path,required=True);a=p.parse_args()
     baseline=json.loads((ROOT/'schemas/c-abi-v1.json').read_text())
@@ -39,9 +50,7 @@ def main():
     if library.suffix.lower()=='.dll':actual=pe_exports(library)
     else:
         output=subprocess.check_output(['nm','-D','--defined-only',str(library)],text=True)
-        # Toolchain weak C++ symbols are not part of this public C ABI.
-        actual=sorted(line.split()[-1].split('@')[0] for line in output.splitlines()
-                      if line.split()[-1].startswith('lwvk_'))
+        actual=parse_elf_exports(output)
     assert actual==baseline['symbols'],dict(expected=baseline['symbols'],actual=actual)
     for name,typ in [('lwvk_device_info',DeviceInfo),('lwvk_ocr_config',OcrConfig)]:
         wanted=baseline['structures'][name]

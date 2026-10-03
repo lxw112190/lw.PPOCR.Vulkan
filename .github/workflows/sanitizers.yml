@@ -73,6 +73,7 @@ jobs:
       - name: Install to isolated staging and inspect actual dependencies
         run: |
           cmake --install build/sanitize --prefix build/sanitize/staging
+          python tests/test_abi_exports.py --library build/sanitize/staging/liblw.PPOCR.Vulkan.so
           # Test helper is not installed in customer release packages.
           cp build/sanitize/lwvk_api_native build/sanitize/staging/lwvk-api-native
           ldd build/sanitize/staging/lw-ppocr-vulkan-http-service

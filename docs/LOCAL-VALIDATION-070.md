@@ -34,6 +34,10 @@ Vulkan SDK 1.4.350.0，默认 FP32，两个实验选项 OFF，sanitizer OFF。
 
 ## 未验证与正式发布前的工作
 
+后续补充：维护者已自行完成依赖安全审查、最终包长测、干净目标机及服务账户 GPU 验收，
+见 [维护者验收](MAINTAINER-ACCEPTANCE.md)。下面描述的是本机这一轮未执行的项目，
+不是否定维护者后来完成的验收；修复后的新附件需关联其实际哈希。
+
 本轮没有 Linux 执行环境，也没有执行远程 CodeQL/ASan/UBSan。新工作流须推送后检查真实结果；SBOM 不是 CVE 清零。本轮没有 1000～5000 次长测、GPU validation probes 重跑、无泄漏认证、Intel GPU、Linux 实体 GPU、干净目标机、Windows Service/systemd GPU 权限或升级回滚验收。
 
 下一步按 RELEASE-GATES：新 CI、依赖安全公告/适用 CVE 审查、素材再分发权确认；之后对最终默认二进制做三模型长测、RSS/VRAM趋势和服务/目标机验收，再进入不可覆盖的 RC，而不是直接改版本号成 v1.0。

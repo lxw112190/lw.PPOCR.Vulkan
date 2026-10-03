@@ -53,6 +53,8 @@ jobs:
         run: |
           cmake --install build/ci --config Release --prefix dist/staging
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/test_abi_exports.py --library dist/staging/lw.PPOCR.Vulkan.dll
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/test_api.py --library dist/staging/lw.PPOCR.Vulkan.dll
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/test_winforms.py --package dist/staging --output build/reports/winforms --host-only
@@ -155,6 +157,7 @@ jobs:
       - name: Stage / test / package
         run: |
           cmake --install build/ci --prefix dist/staging
+          python tests/test_abi_exports.py --library dist/staging/liblw.PPOCR.Vulkan.so
           python tests/test_api.py --library dist/staging/liblw.PPOCR.Vulkan.so
           python tests/test_det_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model dist/staging/models/ppocrv6-tiny/det.json --quick --iterations 2
           python tests/test_text_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model-root dist/staging/models/ppocrv6-tiny --quick --iterations 2
