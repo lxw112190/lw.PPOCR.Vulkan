@@ -26,10 +26,15 @@ class ProbeGateTests(unittest.TestCase):
         self.assertNotIn('fast_unwind_on_malloc=0', primary['ASAN_OPTIONS'])
         self.assertEqual(primary['VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING'], '0')
         self.assertEqual(primary['VK_INSTANCE_LAYERS'], 'validation')
-        control = probes.diagnostic_env(source, keep_modules=True, no_layers=True,
+        mesa_control = probes.diagnostic_env(source, no_mesa_select=True)
+        self.assertEqual(mesa_control['NODEVICE_SELECT'], '1')
+        self.assertEqual(mesa_control['VK_INSTANCE_LAYERS'], 'validation')
+        self.assertNotIn('NODEVICE_SELECT', source)
+        control = probes.diagnostic_env(source, no_layers=True,
                                         slow_stacks=True)
         self.assertIn('fast_unwind_on_malloc=0:malloc_context_size=40', control['ASAN_OPTIONS'])
-        self.assertEqual(control['VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING'], '1')
+        self.assertEqual(control['VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING'], '0')
+        self.assertEqual(control['NODEVICE_SELECT'], '1')
         self.assertEqual(control['VK_LOADER_LAYERS_DISABLE'], '*')
         for key in ('VK_INSTANCE_LAYERS', 'VK_LOADER_LAYERS_ENABLE', 'VK_LOADER_LAYERS_ALLOW'):
             self.assertNotIn(key, control)
@@ -60,6 +65,11 @@ class ProbeGateTests(unittest.TestCase):
         self.assertTrue(report['completed'])
         self.assertTrue(all('fast_unwind_on_malloc=1' in env['ASAN_OPTIONS']
                             for _, env in calls[:3]))
+        self.assertTrue(all('NODEVICE_SELECT' not in env for _, env in calls[:3]))
+        self.assertEqual(calls[4][0], 'control-enumeration-without-mesa-select')
+        self.assertEqual(calls[4][1]['NODEVICE_SELECT'], '1')
+        self.assertTrue(all(env['LWVK_DIAG_MODULE_MAPS'] == '1'
+                            for _, env in calls[3:]))
 
     def test_clean_primary_does_not_run_controls(self):
         code, report, calls = self.suite(False)
@@ -86,7 +96,29 @@ class ProbeGateTests(unittest.TestCase):
             self.assertLessEqual(sum(limit for _, limit in calls), 26 * 60)
             report = json.loads((folder / 'logs/summary.json').read_text(encoding='utf-8'))
             self.assertFalse(report['passed'])
+
             self.assertEqual(report['max_child_seconds'], 1530)
+
+    def test_unloaded_pc_uses_recorded_elf_load_bias(self):
+        log = ('LWVK_MODULE 0x10000 0x10100 0x10000 /driver.so\n'
+               'LWVK_MODULE 0x11000 0x12000 0x10000 /driver.so\n'
+               '    #1 0x11042  (<unknown module>)\n'
+               '    #2 0x99999  (<unknown module>)\n')
+        frames = probes.unloaded_frame_mappings(log)
+        self.assertEqual(frames[0]['candidates'],
+                         [dict(path='/driver.so', elf_address='0x1042')])
+        self.assertEqual(frames[1]['candidates'], [])
+
+    def test_reused_module_ranges_are_reported_as_ambiguous(self):
+        log = ('LWVK_MODULE 0x1000 0x2000 0x1000 /driver.so\n'
+               'LWVK_MODULE 0x1000 0x2000 0x1000 /layer with space.so\n'
+               '    #1 0x1428  (<unknown module>)\n')
+        frames = probes.unloaded_frame_mappings(log)
+        self.assertEqual(len(frames[0]['candidates']), 2)
+
+    def test_missing_snapshot_does_not_guess_a_module(self):
+        frames = probes.unloaded_frame_mappings('    #1 0x1234  (<unknown module>)\n')
+        self.assertEqual(frames, [dict(pc='0x1234', candidates=[])])
 
     def test_partial_summary_survives_interruption_before_controls(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -120,6 +152,17 @@ class ProbeGateTests(unittest.TestCase):
             self.assertGreaterEqual(result['elapsed_seconds'], 0)
             self.assertEqual(result['timeout_seconds'], 420)
             self.assertIn('fixture', (Path(temp) / 'fixture.log').read_text(encoding='utf-8'))
+
+    def test_actual_child_snapshot_is_saved_without_changing_failure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            child = ('print("LWVK_MODULE 0x1000 0x2000 0x1000 /driver.so"); '
+                     'print("    #1 0x1428  (<unknown module>)"); raise SystemExit(7)')
+            result = probes.run_case([sys.executable, '-c', child], Path(temp),
+                                     'mapping', os.environ.copy())
+            self.assertEqual(result['exit_code'], 7)
+            frames = json.loads((Path(temp) / 'mapping-unloaded-frames.json').read_text(encoding='utf-8'))
+            self.assertEqual(frames[0]['candidates'],
+                             [dict(path='/driver.so', elf_address='0x428')])
 
     def test_launch_failure_is_logged(self):
         with tempfile.TemporaryDirectory() as temp:

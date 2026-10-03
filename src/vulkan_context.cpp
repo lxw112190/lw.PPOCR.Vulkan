@@ -3,6 +3,7 @@
 #include "memory_policy.hpp"
 #include "preprocess_policy.hpp"
 #include "graph_wait_policy.hpp"
+#include "vulkan_module_diagnostics.hpp"
 #include <algorithm>
 #include <cstring>
 #include <stdexcept>
@@ -94,9 +95,11 @@ std::vector<DeviceInfo> enumerate_devices() {
             info.subgroup_size = sg.subgroupSize;
             result.push_back(info);
         }
+        snapshot_vulkan_modules();
         vkDestroyInstance(instance, nullptr);
         return result;
     } catch (...) {
+        snapshot_vulkan_modules();
         vkDestroyInstance(instance, nullptr);
         throw;
     }

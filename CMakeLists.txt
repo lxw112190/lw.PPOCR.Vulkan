@@ -21,6 +21,8 @@ if(LWVK_SANITIZERS)
   # An instrumented static library also needs sanitizer runtimes at final link.
   add_compile_options(-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer)
   add_link_options(-fsanitize=address,undefined -fno-sanitize-recover=all)
+  # Optional module snapshots are diagnostic-only; absent from Release packages.
+  add_compile_definitions(LWVK_SANITIZER_DIAGNOSTICS=1)
 endif()
 if(MSVC)
   # All native targets, including helpers/tests, read UTF-8 source consistently.

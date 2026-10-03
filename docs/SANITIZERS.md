@@ -1,6 +1,6 @@
-# v0.6.0-dev.2：sanitizer、异常恢复与正确性门禁
+# Sanitizer、异常恢复与正确性门禁
 
-本轮不改 C ABI、HTTP/config/log 候选契约，不改模型、FP32 网络或 GPU 默认策略。新增质量门禁，仍不等于 v1.0 已验收。
+本页记录质量门禁及开发以来的诊断过程。不因版本转正移除检测；本轮诊断调整不改冻结的 C ABI、HTTP/config/log 契约、模型、FP32 网络或客户包的 GPU 默认策略。
 
 ## 统一原生插桩
 
@@ -23,11 +23,27 @@ DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进�
 
 CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 使用正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。正式探针使用 `fast_unwind_on_malloc=1`、30 层分配栈，仍启用 ASan/UBSan 和退出泄漏检查。项目原生代码保留 frame pointer；第三方库栈不足时再收集诊断对照。
 
-原始探针失败后只收集三次**设备枚举**对照（不创建网络/着色器）：正常卸载、保留动态库、移除显式 layer 并请求禁用其他 layer。它们使用慢速分配栈展开、40 层调用栈和 `LD_DEBUG=libs`，记录实际 loader、driver、layer 路径；不再反复重编译失败或超时的 shader。Khronos loader 从 1.3.259 起支持 `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`，用于避免 `vkDestroyInstance` 时卸载库导致泄漏栈失去符号；旧 loader 可能忽略保留库或 layer 过滤变量，须结合依赖和 loader 日志核对，SDK 头文件版本不能证明实际 loader 版本。
+原始探针失败后只收集三次**设备枚举**对照（不创建网络/着色器）：原始环境；设置 `NODEVICE_SELECT=1` 移除 Mesa 隐式选卡层但保留 Khronos validation；再移除显式 validation 的无 layer 对照。`NODEVICE_SELECT` 是 Mesa manifest 定义的禁用开关，[LunarG 说明](https://www.lunarg.com/wp-content/uploads/2022/03/1.3-Vulkan-Loader-Improvements-MAR2022.pdf)也介绍了它，适用于本次 Jammy 旧 loader；单独设置新版本才支持的 `VK_LOADER_LAYERS_DISABLE=*` 不足以隔离隐式层。对照使用慢速分配栈展开、40 层调用栈、`LD_DEBUG=libs` 和 `VK_LOADER_DEBUG=layer`；不再反复重编译失败或超时的 shader。原始三个门禁探针不设置 `NODEVICE_SELECT`，保留原有环境。
 
-保留动态库可能改变 LSan 对全局可达对象的判断，所以它**只用于诊断，不替代正常卸载测试**。关闭验证层的对照也不替代原始 validation 测试。任何原始探针非零退出（含超时、启动失败）仍令步骤失败；不会因为对照通过而变绿，不设置泄漏 suppression。
+所有运行继续正常卸载动态库，不使用保留 DSO 来改变 LSan 全局可达对象判断。关闭 layer 的对照不替代原始 validation 测试。任何原始探针非零退出（含超时、启动失败）仍令步骤失败；不会因为对照通过而变绿，不设置泄漏 suppression。
 
-下载 `host-sanitizer-diagnostics-not-a-release-package` 附件，查看 `shader-probes/summary.json` 和三个原始 `.log`，以及 `control-enumeration.log`、`control-enumeration-retained-modules.log` / `control-enumeration-without-layers.log`。若同样的泄漏在纯枚举程序中出现，说明不执行 OCR/shader 也能复现；若仅移除 layer 后消失，则进一步调查 layer 路径，但二者均不足以直接宣称所有项目路径无泄漏。
+下载 `host-sanitizer-diagnostics-not-a-release-package` 附件，查看 `shader-probes/summary.json` 和三个原始 `.log`，以及 `control-enumeration.log`、`control-enumeration-without-mesa-select.log` / `control-enumeration-without-layers.log`。若同样的泄漏在纯枚举程序中出现，说明不执行 OCR/shader 也能复现；若仅移除 layer 后消失，则进一步调查 layer 路径，但二者均不足以直接宣称所有项目路径无泄漏。
+
+### 完整诊断附件确认的旧 loader 限制
+
+维护者提供的完整 ZIP 记录：loader `1.3.204.1-2`、Mesa `23.2.1-1ubuntu3.1~22.04.4`、Clang/LLVM 14，实际链接系统 `/lib/x86_64-linux-gnu/libvulkan.so.1`。SDK 1.4.350 的头文件/工具版本不等于 loader 版本。三个原始 shader 探针分别用时 2.977、0.418、0.570 秒，功能/canary 全部通过，但各自退出时报 128 字节泄漏；纯枚举每次创建两个 instance，共报告两份 128 字节泄漏。枚举源码的正常/异常路径都调用 `vkDestroyInstance`，不能把栈中存在项目调用方直接解释为项目遗漏释放。
+
+旧 loader 忽略此前 `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1` 的对照，日志仍实际卸载驱动；所谓“无 layer”对照也仍加载 `libVkLayer_MESA_device_select.so`。因此旧对照不能判断泄漏来自 Khronos layer、Mesa layer 或 driver 本身。本轮修正的是诊断失效，不宣称 128 字节泄漏已修复。
+
+仅 `LWVK_SANITIZERS=ON` 的原生构建包含模块快照代码；在枚举对照中再显式设置 `LWVK_DIAG_MODULE_MAPS=1`，于 `vkDestroyInstance` 前记录已加载 ELF 的 PT_LOAD 地址范围及 load bias。代码不持有 DSO 引用，不阻止卸载，不添加 suppression。脚本将退出栈中未知 PC 与快照匹配，保存 `*-unloaded-frames.json`；若地址在不同快照中被不同模块复用则保留多个候选，不猜测归因。正式 Release 包没有此诊断实现。
+
+单一候选包含 `path` 与 `elf_address`，可在同一 CI 环境进一步查询：
+
+```bash
+llvm-symbolizer-14 --obj=/actual/path/to/library.so 0xELF_ADDRESS
+```
+
+发行版 `.so` 如果已剥离符号，可能仍输出 `??`，但模块与 ELF 偏移已定位；后续应取**同版本**调试符号或审查对应源码，而不是按字节数或未知模块设置宽泛抑制。CI 还保留实际 Mesa layer manifest，便于核对 `NODEVICE_SELECT` 的定义。
 
 ### 诊断本身造成的 60 分钟超时
 

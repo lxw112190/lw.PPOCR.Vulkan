@@ -96,6 +96,10 @@ jobs:
           # The loader may dlopen a driver/layer and unload it before LSan runs.
           # Fast allocation stacks in gates; bounded enumeration-only controls on failure.
           ldd build/sanitize/lwvk_det_gpu_preprocess_probe | tee build/reports/sanitizer/probe-dependencies.txt
+          # Preserve the installed implicit layer manifest; Jammy's old loader
+          # uses its NODEVICE_SELECT switch, not newer generic layer filters.
+          cp /usr/share/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json \
+            build/reports/sanitizer/mesa-device-select-manifest.json
           python scripts/sanitizer_gpu_probes.py --build build/sanitize \
             --output build/reports/sanitizer/shader-probes --device 0
       - name: Install to isolated staging and inspect actual dependencies
