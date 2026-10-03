@@ -19,7 +19,20 @@ QQ: 819069052<br>
 QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
-## Status: 0.6.0-dev.1 / v1.0 contract preparation
+## Status: 0.6.0-dev.2 / v1.0 test hardening
+
+Added [ASan/UBSan and recovery gates](docs/SANITIZERS.md): all native targets are
+instrumented in dedicated Linux CI, intentional fault probes verify ASan/UBSan/
+LeakSanitizer activation, and installed C ABI/HTTP binaries are tested. Added 2000
+malformed-image cases, 200 hostile HTTP cases and 11 transformed correctness
+scenarios. These are derivatives of one reviewed sample, not diverse real-world
+ground truth. Linux sanitizer results require the next CI run; a normal Windows
+build or flat RSS does not prove the absence of leaks.
+
+The [dev.2 local validation](docs/LOCAL-VALIDATION-062.md) records 23 host tests,
+66 model/device/scenario combinations across AMD and NVIDIA, exact image shader
+probes, native ABI/HTTP smoke and recovery after 209 hostile HTTP requests.
+Previous-version soak reports do not qualify this binary as leak-free.
 
 Added machine-checked v1 **candidate** contracts: 19 C exports and native/ctypes
 layout baselines, OpenAPI, config/response/access-log JSON Schemas and reviewed

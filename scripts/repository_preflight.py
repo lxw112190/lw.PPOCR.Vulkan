@@ -38,7 +38,10 @@ def main():
         if not (ROOT/name).is_file():raise RuntimeError('missing repository file: '+name)
     workflow = (ROOT/'.github/workflows/build.yml').read_text(encoding='utf-8')
     assert 'branches: [main, master]' in workflow and 'contents: read' in workflow
-    scripts = sorted(set(re.findall(r'\b(?:scripts|tests)/[\w./-]+\.(?:py|ps1|sh)',workflow)))
+    # Auxiliary quality workflows must not silently reference absent scripts.
+    workflows = list((ROOT/'.github/workflows').glob('*.yml'))
+    scripts = sorted(set(name for path in workflows
+        for name in re.findall(r'\b(?:scripts|tests)/[\w./-]+\.(?:py|ps1|sh)',path.read_text(encoding='utf-8'))))
     for name in scripts:
         if not (ROOT/name).is_file():raise RuntimeError('workflow references missing script: '+name)
     for name in ('README.md','README_EN.md','docs/CSHARP-SHARE-PACKAGE.md'):

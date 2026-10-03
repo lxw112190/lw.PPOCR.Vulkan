@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "version": "0.6.0-dev.2",
+  "device": 1,
+  "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "checks": [
+    "strict configuration / invalid GPU",
+    "binary JPEG/PNG/BMP / JSON Base64 / full OCR / REC-only / sequential batch",
+    "invalid/oversized inputs, API Key, static assets and recovery",
+    "JSONL timestamps / request IDs / secret and OCR-text privacy / graceful shutdown",
+    "engine wait timeout 503 / recovery",
+    "transport queue overflow 429 / bounded sockets / recovery",
+    "file logs can be disabled"
+  ],
+  "full_items": 16,
+  "title": "纯臻营养护发素"
+}

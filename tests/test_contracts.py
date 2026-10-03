@@ -30,6 +30,10 @@ class Contracts(unittest.TestCase):
                     classifier_enabled=True,timing=dict(det_ms=1,cls_ms=2,rec_ms=3,total_ms=10))
         value=dict(ok=True,api_version=1,request_id='test-2',operation='ocr',server_total_ms=11,result=result)
         HTTP.validate(value)
+        # Re-fitted rotated rectangles may extend outside the image. The Schema
+        # deliberately promises numeric source coordinates, not clipped corners.
+        item['x1']=-4.394726753234863;item['x2']=324.0
+        HTTP.validate(value)
         item['cls_label']=-1;item['cls_score']=0;result['classifier_enabled']=False
         HTTP.validate(value)
         duplicate=copy.deepcopy(value);duplicate['result']['items'][0]['box']=[]

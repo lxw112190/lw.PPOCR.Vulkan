@@ -1,6 +1,6 @@
 # Full OCR experimental API / 完整 OCR 实验接口
 
-Version: 0.6.0-dev.1. Machine-checked v1 candidate; not frozen or a production support promise.
+Version: 0.6.0-dev.2. Machine-checked v1 candidate; not frozen or a production support promise.
 See `schemas/c-abi-v1.json` and `schemas/http-response-v1.schema.json` (OcrResult).
 
 Native SDK entry: `sdk/include/lw_ppocr_vulkan.h` in deployment packages.
@@ -74,6 +74,13 @@ Root: `items`, `image_width`, `image_height`, `det_width`, `det_height`,
 `classifier_enabled`, `timing`. Max serialized JSON 4 MiB.
 Each item: `x1,y1,x2,y2,x3,y3,x4,y4,text,score,det_score,cls_label,cls_score`.
 Four-point source coordinates TL/TR/BR/BL, no duplicate `box`.
+The DB/PaddleX-compatible crop rectangle is re-fitted after mapping/clipping
+boundary points; rotated corners can extend outside the image (negative or
+greater than its dimensions). These remain valid source-space coordinates.
+Crop sampling uses border handling; draw overlays clipped to the image, but do
+not silently clamp each returned corner before perspective cropping.
+检测框的旋转矩形角点可能在原图之外；这是重新拟合后的几何，不是无效 buffer
+或 GPU 越界。网页绘制可以由画布裁切，客户透视裁剪不要擅自截断角点。
 `score`: mean emitted CTC label probability (not calibrated accuracy).
 `cls_label=-1`, `cls_score=0` when disabled. Empty CTC strings remain visible;
 there is no undocumented recognition-score filter. No text is guaranteed correct.

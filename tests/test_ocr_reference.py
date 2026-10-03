@@ -4,6 +4,7 @@ This is NOT an independent DB/crop algorithm comparison: geometry has host golde
 import argparse
 import ctypes as C
 import json
+import hashlib
 import os
 from pathlib import Path
 import sys
@@ -15,6 +16,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "examples/python"))
 from lwvk import load, check, OCR, DeviceInfo
 from test_text_reference import decode, native_preprocess_reference
+from correctness_cases import cases, CORPUS_VERSION
 for stream in (sys.stdout, sys.stderr):
     if hasattr(stream, "reconfigure"):
         stream.reconfigure(encoding="utf-8", errors="backslashreplace")
@@ -96,7 +98,10 @@ def compare(actual, expected):
             assert abs(left[key]-right[key]) < .003, (key, left[key], right[key])
         for key in ("x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4"):
             assert abs(left[key]-right[key]) <= 1.1, (key, left[key], right[key])
-            assert np.isfinite(left[key]) and 0 <= left[key] <= actual["image_width" if key[0] == "x" else "image_height"]
+            # Post-clipping minAreaRect can re-fit a corner outside the image.
+            # Preserve the reviewed geometry, not a false "every corner inside"
+            # assertion. Independent graph comparison/tolerance remains strict.
+            assert np.isfinite(left[key]) and np.isfinite(right[key]), (key,left[key],right[key])
     assert all(np.isfinite(v) and v >= 0 for v in actual["timing"].values())
 
 
@@ -108,6 +113,7 @@ def main():
     p.add_argument("--device", type=int, default=0)
     p.add_argument("--iterations", type=int, default=20)
     p.add_argument("--quick", action="store_true")
+    p.add_argument("--extended", action="store_true", help="11 quick derivative cases, still one reviewed source")
     p.add_argument("--report", type=Path)
     a = p.parse_args()
     if not 1 <= a.iterations <= 5000:
@@ -129,13 +135,7 @@ def main():
     sessions = {task: ort.InferenceSession(str(source/file), options,
         providers=["CPUExecutionProvider"]) for task,file in files}
     dictionary = (models/("dictionary.txt" if direct else "rec/dictionary.txt")).read_bytes().decode("utf-8").split("\n")[:-1]
-    image = Image.open(root/"test-images/sample.jpg").convert("RGB")
-    if a.quick:
-        image = image.resize((320, 320))
-    variants = [("sample", image), ("rotated-180", image.rotate(180))]
-    if not a.quick:
-        variants += [("wide-resized", image.resize((640, 400))), ("small", image.resize((320, 320)))]
-    variants += [("blank", Image.new("RGB", (96, 64), "white"))]
+    variants = cases(root/"test-images/sample.jpg", quick=a.quick, extended=a.extended)
     inputs = [np.ascontiguousarray(np.asarray(i)[:, :, ::-1]) for _, i in variants]
     expected = [reference(i, geometry, sessions, dictionary) for i in inputs]
     assert any(i["text"] == "纯臻营养护发素" for i in expected[0]) and not expected[-1]
@@ -202,6 +202,10 @@ def main():
     report=dict(version=lib.lwvk_version().decode(), device=bytes(info.name).decode("utf-8", "replace"),
         reference="ORT CPU graphs + independent NumPy preprocess/CTC; shared C geometry with host golden tests",
         comparisons=rows, iterations=a.iterations, rss=rss,
+        corpus_version=CORPUS_VERSION, extended=a.extended,
+        inputs=[dict(name=name, width=value.shape[1], height=value.shape[0],
+                     bgr_sha256=hashlib.sha256(value.tobytes()).hexdigest())
+                for (name,_),value in zip(variants,inputs)],
         preprocessing_environment=preprocess_environment,
         software_graph_timeout_ms=software_timeout,
         rss_before_engine_mib=rss_before_engine, rss_after_engine_destroy_mib=rss_after_engine,

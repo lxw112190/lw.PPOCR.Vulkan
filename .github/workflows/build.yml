@@ -147,7 +147,7 @@ jobs:
           python tests/test_text_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --quick --iterations 10 --report build/reports/linux-software-text.json
       - name: Full OCR / DB / crops / resource limits (software Vulkan, CPU image preprocessing)
         run: |
-          python tests/test_ocr_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --quick --iterations 2 --report build/reports/linux-software-full.json
+          python tests/test_ocr_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --quick --extended --iterations 2 --report build/reports/linux-software-full.json
       - name: Stage / test / package
         run: |
           cmake --install build/ci --prefix dist/staging

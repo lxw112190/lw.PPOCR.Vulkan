@@ -62,7 +62,8 @@ class Service:
                 self.process.kill(); self.process.wait(); raise RuntimeError('Service graceful shutdown timed out')
         self.stdout.close()
         if self.process and self.process.returncode:
-            raise RuntimeError(f'Service exit {self.process.returncode}; inspect {self.output}/service-output.txt')
+            output=(self.output/'service-output.txt').read_text(encoding='utf-8',errors='replace')
+            raise RuntimeError(f'Service exit {self.process.returncode}; {self.output}/service-output.txt:\n{output[-24000:]}')
 
 def json_request(service,path,body=None,kind='application/octet-stream',key=None,expected=200):
     status,headers,data=request(service.url+path,body,kind,key)

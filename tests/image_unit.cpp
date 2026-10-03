@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <random>
 using namespace lwvk::http;
 static void require(bool condition, const char* message) {
     if (!condition)
@@ -37,6 +38,29 @@ int main(int argc, char** argv) {
         c.decode_work = 256 * 1024 * 1024;
         auto good = decode_image(bytes, c);
         require(good.pixels != nullptr, "decode recovery");
+        // Small deterministic fuzz corpus; decoder allocations remain bounded.
+        // Decoder errors are expected; access violations/sanitizer faults are not.
+        std::mt19937 random(6102);
+        c.decode_work = 1024 * 1024;
+        unsigned rejected = 0;
+        for (unsigned i = 0; i < 2000; ++i) {
+            std::string hostile(random() % 512, '\0');
+            for (auto& byte : hostile)
+                byte = static_cast<char>(random());
+            if (i % 4 == 0)
+                hostile = bytes.substr(0, 1 + random() % 256);
+            try {
+                auto decoded = decode_image(hostile, c);
+                require(decoded.width > 0 && decoded.height > 0 && decoded.pixels, "fuzz decode result");
+            } catch (const Error& e) {
+                require(e.status == 413 || e.status == 422, "fuzz rejection status");
+                ++rejected;
+            }
+        }
+        require(rejected > 1900, "malformed corpus unexpectedly decoded");
+        c.decode_work = 256 * 1024 * 1024;
+        auto after_fuzz = decode_image(bytes, c);
+        require(after_fuzz.width == 500 && after_fuzz.height == 500, "fuzz decoder recovery");
         require(decode_base64("aGVsbG8=", 100) == "hello", "base64 normal");
         for (const char* input : {"a", "@@@@", "aGVsbG9=", "a===", "===="}) {
             try {
@@ -46,7 +70,7 @@ int main(int argc, char** argv) {
                 require(e.status == 400, "base64 rejection");
             }
         }
-        std::cout << "PASS: bounded JPEG decode, pixel/allocation limits, recovery, Base64\n";
+        std::cout << "PASS: bounded decode, 2000 malformed inputs/recovery, pixel/allocation limits, Base64\n";
         return 0;
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';

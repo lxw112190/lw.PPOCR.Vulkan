@@ -1,0 +1,95 @@
+name: Host ASan + UBSan + staged Vulkan recovery
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sanitizers:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      VULKAN_SDK: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64
+      LD_LIBRARY_PATH: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64/lib
+      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.x86_64.json
+      VK_INSTANCE_LAYERS: VK_LAYER_KHRONOS_validation
+      VK_LAYER_VALIDATE_SYNC: '1'
+      LWVK_GPU_DET_PREPROCESS: '0'
+      LWVK_GPU_TEXT_PREPROCESS: '0'
+      LWVK_GPU_CROP_PREPROCESS: '0'
+      LWVK_SOFTWARE_GRAPH_TIMEOUT_MS: '180000'
+      ASAN_OPTIONS: 'detect_leaks=1:halt_on_error=1:strict_string_checks=1'
+      UBSAN_OPTIONS: 'halt_on_error=1:print_stacktrace=1'
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install host instrumentation and software Vulkan prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-14 libclang-rt-14-dev ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
+          python -m pip install -r requirements-dev.txt
+      - uses: actions/cache@v4
+        id: sdk
+        with:
+          path: .ci/vulkan-sdk
+          key: vulkan-sdk-linux-1.4.350.0-b65f068a-v1
+      - name: Extract pinned official SDK
+        if: steps.sdk.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .ci/vulkan-sdk
+          curl --fail --location --retry 5 https://sdk.lunarg.com/sdk/download/1.4.350.0/linux/vulkansdk-linux-x86_64-1.4.350.0.tar.xz -o .ci/sdk.tar.xz
+          echo 'b65f068ab36263559da49d7cacd7e7b9df23824ca8b68ccc522a2b06f5725df2  .ci/sdk.tar.xz' | sha256sum --check
+          tar -xJf .ci/sdk.tar.xz -C .ci/vulkan-sdk
+      - name: Configure and instrument ALL native targets
+        run: |
+          test -x "$VULKAN_SDK/bin/glslc"
+          pkg-config --exists vulkan
+          python scripts/verify_assets.py
+          python scripts/contracts.py --check
+          python scripts/repository_preflight.py
+          cmake -S . -B build/sanitize -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_C_COMPILER=clang-14 -DCMAKE_CXX_COMPILER=clang++-14 \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLWVK_SANITIZERS=ON \
+            -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
+          cmake --build build/sanitize --parallel 2
+      - name: Host tests + instrumentation/leak tripwires (no GPU claims)
+        run: ctest --test-dir build/sanitize --output-on-failure --parallel 1
+      - name: Instrumented image shader probes (software Vulkan)
+        env:
+          LWVK_GPU_DET_PREPROCESS: '1'
+          LWVK_GPU_TEXT_PREPROCESS: '1'
+          LWVK_GPU_CROP_PREPROCESS: '1'
+        run: |
+          build/sanitize/lwvk_det_gpu_preprocess_probe 0
+          build/sanitize/lwvk_text_gpu_preprocess_probe 0
+          build/sanitize/lwvk_gpu_crop_probe 0
+      - name: Install to isolated staging and inspect actual dependencies
+        run: |
+          cmake --install build/sanitize --prefix build/sanitize/staging
+          # Test helper is not installed in customer release packages.
+          cp build/sanitize/lwvk_api_native build/sanitize/staging/lwvk-api-native
+          ldd build/sanitize/staging/lw-ppocr-vulkan-http-service
+          if ldd build/sanitize/staging/lw-ppocr-vulkan-http-service | grep -q 'not found'; then exit 1; fi
+          actual="$(ldd build/sanitize/staging/lwvk-api-native | awk '/liblw.PPOCR.Vulkan.so =>/ {print $3}')"
+          test "$(realpath "$actual")" = "$(realpath build/sanitize/staging/liblw.PPOCR.Vulkan.so)"
+      - name: Native C ABI + Tiny software Vulkan short changing-size soak
+        run: build/sanitize/staging/lwvk-api-native --package build/sanitize/staging 0 32
+      - name: Installed HTTP/config/errors/auth/overload/recovery + bounded hostile corpus
+        run: |
+          python tests/test_http.py --package build/sanitize/staging --output build/reports/sanitizer/http --device 0
+          python tests/test_http_invalid.py --package build/sanitize/staging --output build/reports/sanitizer/invalid --device 0 --iterations 200
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: host-sanitizer-diagnostics-not-a-release-package
+          path: |
+            build/sanitize/Testing/Temporary/**
+            build/sanitize/compile_commands.json
+            build/reports/sanitizer/**
+          if-no-files-found: warn

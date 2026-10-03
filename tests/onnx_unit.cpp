@@ -73,6 +73,24 @@ int main(int argc, char** argv) {
                 }
             }
         std::mt19937 rng(27);
+        // Malformed length/varint/wire tags, including lengths far beyond input.
+        for (const auto& bytes :
+             std::vector<Bytes>{{0x3a, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f},
+                                {0x3a, 0x80},
+                                {0x3a, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01},
+                                {0x3f, 0x00},
+                                {0x00},
+                                {0x3a, 0x02, 0x0a},
+                                {0x3a, 0x03, 0x0a, 0xff, 0xff}}) {
+            bool rejected = false;
+            try {
+                import_onnx(bytes, weights);
+            } catch (const std::exception&) {
+                rejected = true;
+            }
+            if (!rejected)
+                throw std::runtime_error("malformed protobuf length/tag accepted");
+        }
         for (auto op : {"Sigmoid", "Conv", "Add", "Reshape", "Identity"}) {
             auto bytes = malformed_graph(op, std::string(op) != "Sigmoid");
             bool rejected = false;

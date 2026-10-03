@@ -12,7 +12,11 @@ QQ：819069052<br>
 群名称：天天代码码天天<br>
 群号码：264292622
 
-## 当前阶段：0.6.0-dev.1 / v1.0 契约准备
+## 当前阶段：0.6.0-dev.2 / v1.0 测试加固
+
+新增 [ASan/UBSan 与异常恢复门禁](docs/SANITIZERS.md)：统一插桩全部原生目标，独立 Linux CI 校验 ASan/UBSan/LeakSanitizer 确实启用，测试安装后的 C ABI 与 HTTP 服务；增加 2000 次图像异常输入与恢复、200 次 HTTP 异常输入，以及 11 个旋转/宽高比/灰度/低对比度正确性场景。后者仍是同一张公开样图的派生集，不是多来源真实图片测试集。Linux sanitizer 结果须以推送后的 CI 为准；本机 Windows 普通构建不能证明无泄漏。
+
+[dev.2 本机验收](docs/LOCAL-VALIDATION-062.md)：23 项主机测试、双显卡三模型共 66 个场景组合、双卡图像精确探针、原生 ABI 与 HTTP smoke，以及 209 次异常 HTTP 请求后的真实 REC 恢复通过；附原始 JSON 报告。没有复用旧版本长测作为新二进制的无泄漏证明。
 
 新增可自动验收的 v1 **候选**契约：C ABI 的 19 个导出/结构布局基线、HTTP OpenAPI、配置与响应 JSON Schema、访问日志 JSONL Schema，以及契约哈希检查。配置执行 Schema/原生程序对照测试；HTTP 实测响应和日志严格校验。CI 包含 `schemas/` 与逐文件 `PACKAGE-MANIFEST.json`，压缩后再次验证附件及所有文件的 SHA-256。候选契约不等于正式冻结或 LTS；详细路线和未完成门槛见 [v1.0 发布验收](docs/RELEASE-GATES.md)。
 本机 [0.6 验收记录](docs/LOCAL-VALIDATION-060.md)：21 项主机测试、111 项配置矩阵、AMD/NVIDIA 三模型对拍，以及 NVIDIA 三模型各 1000 次混合尺寸 HTTP 回归通过；RSS/线程/句柄未见无界增长，不据此宣称无泄漏或远程 CI 已通过。
@@ -320,7 +324,7 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 
 兼容证据见 [COMPATIBILITY.md](docs/COMPATIBILITY.md)，开发边界见 [ROADMAP.md](docs/ROADMAP.md)。
 
-下一阶段：ASan/UBSan 与更广正确性集 → SBOM/供应链和兼容性审计 → 最终包长测/实体机部署验收 → RC → v1.0。正式发布不以超过 DML/TensorRT 或支持所有平台为前提，也不把软件 Vulkan 测试当作硬件 GPU 验收。
+下一阶段：验收本轮 ASan/UBSan CI、继续增加实际公开正确性样本 → SBOM/供应链和兼容性审计 → 最终包长测/实体机部署验收 → RC → v1.0。正式发布不以超过 DML/TensorRT 或支持所有平台为前提，也不把软件 Vulkan 测试当作硬件 GPU 验收。
 
 开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。
 

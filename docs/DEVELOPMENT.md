@@ -54,6 +54,8 @@ English: Format first-party C/C++ with clang-format 17 only. Keep vendored snaps
 
 ## v1 候选契约维护
 
+dev.2 增加 [原生 ASan/UBSan 与恢复门禁](SANITIZERS.md)。统一在所有 target 创建之前插桩，故障探针验证检测活性；sanitizer 配置下 ABI 调用使用原生 linked helper，不全局向 Python/ORT 注入 ASan。预检现在检查所有工作流引用的脚本，而不只检查主构建 workflow。
+
 `scripts/contracts.py --check` 是只读门禁，核对 Schema、OpenAPI、C ABI 头文件 token 指纹及五份契约的规范化 LF SHA-256。`--write` 仅用于明确审查后的候选变更，CI 禁止使用。不要为了消除报错直接重写基线；先判断是实现错、文档错还是确实需要公共变更。正式冻结前仍可审查调整，RC 开始后不再破坏契约。
 
 本轮运行通用发布技能预检：仓库/分支/脚本/依赖哈希检查通过；其“未约束 OpenCV 5”失败及 OpenCV 版本提醒不适用于本纯 Vulkan 项目，明确接受为不适用项，不为消除提醒引入 OpenCV。SBOM、sanitizer 等实际欠项继续保留在发布门槛中。
