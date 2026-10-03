@@ -149,16 +149,20 @@ otherwise CMake can report `missing: Vulkan_LIBRARY`. Compiled-package users do 
 Linux, ARM64/domestic distributions and macOS require separate validation;
 a Windows test does not establish their compatibility.
 
-The checked-in CI definitions build/package Windows x64 and Linux x64.
-Windows checks host ABI only when hardware is unavailable (explicit SKIP).
-Linux runs an independent DET reference test using software Vulkan/lavapipe,
-not a hardware acceleration benchmark. Full OCR reference tests explicitly use
+Daily `build.yml` builds/packages Windows x64 and Linux x64 with equivalent
+host ABI/config/unit and staged-package checks; neither job performs real OCR
+inference. Windows additionally tests the WinForms host UI, while Linux checks
+ELF dependencies and service-unit scripts. Hardware absence is explicit (SKIP).
+The original full software Vulkan suite now lives in the manual-only
+`linux-software-validation.yml`: run it on the candidate ref before release.
+It retains DET/CLS/REC, all three models, shader probes and real HTTP inference,
+not a hardware acceleration benchmark. See [CI layers](docs/CI.md). Full OCR reference tests explicitly use
 CPU image preprocessing while networks still execute through Vulkan. Independent
 shader probes cover GPU DET/CLS/REC preprocessing and perspective crops (exact
 bits, stride, padding and recovery), avoiding an eight-line software REC batch
 exceeding a single 30-second fence budget on shared runners. Hardware defaults
 are unchanged. Medium single graphs can also exceed 30 seconds on software
-Vulkan, so Linux CI explicitly sets `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`.
+Vulkan, so the full software suite explicitly sets `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`.
 This bounded engineering option applies only to CPU software devices (Vulkan
 device type 4), accepts 30000..300000 milliseconds, and defaults to 30000 when
 unset. Hardware/virtual GPUs always retain 30 seconds. Packaging does not persist

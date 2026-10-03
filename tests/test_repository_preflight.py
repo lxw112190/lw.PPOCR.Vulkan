@@ -110,4 +110,43 @@ class CSharpPackageTests(unittest.TestCase):
                              package.sha(archive)+'  '+archive.name)
 
 
+class WorkflowLayersTests(unittest.TestCase):
+    """Static scope checks; do not claim Linux or GPU execution."""
+    def test_daily_linux_keeps_host_checks_without_network_suite(self):
+        workflow = (path.parents[1]/'.github/workflows/build.yml').read_text(encoding='utf-8')
+        linux = workflow.split('\n  linux:\n', 1)[1]
+        self.assertIn('timeout-minutes: 30', linux)
+        for command in ('ctest --test-dir', '--allow-no-device',
+                        'tests/test_abi_exports.py', 'tests/test_api.py',
+                        'tests/test_http_host.py', 'scripts/supply_chain.py',
+                        'scripts/package.py', 'scripts/verify_archive.py',
+                        'install-service.sh --verify-only', 'ldd "$binary"'):
+            self.assertIn(command, linux)
+        for heavy in ('test_det_reference.py', 'test_text_reference.py',
+                      'test_ocr_reference.py', 'tests/test_http.py',
+                      'gpu_preprocess_probe', 'gpu_crop_probe',
+                      'LWVK_SOFTWARE_GRAPH_TIMEOUT_MS', 'requirements-dev.txt'):
+            self.assertNotIn(heavy, linux)
+
+    def test_full_software_suite_is_manual_and_preserves_coverage(self):
+        root = path.parents[1]
+        full = (root/'.github/workflows/linux-software-validation.yml').read_text(encoding='utf-8')
+        trigger = full.split('\non:\n', 1)[1].split('\npermissions:', 1)[0]
+        self.assertEqual(trigger.strip(), 'workflow_dispatch:')
+        self.assertIn('timeout-minutes: 90', full)
+        self.assertIn("LWVK_SOFTWARE_GRAPH_TIMEOUT_MS: '180000'", full)
+        self.assertIn('VK_LAYER_KHRONOS_validation', full)
+        self.assertIn("VK_LAYER_VALIDATE_SYNC: '1'", full)
+        for command in ('lwvk_det_gpu_preprocess_probe', 'lwvk_text_gpu_preprocess_probe',
+                        'lwvk_gpu_crop_probe', 'tests/test_invalid_models.py',
+                        'tests/test_http.py', '--quick --extended --iterations 2',
+                        'scripts/verify_archive.py'):
+            self.assertIn(command, full)
+        for variant in ('tiny', 'small', 'medium'):
+            self.assertIn(f'models/onnx/ppocrv6-{variant}', full)
+            self.assertIn(f'onnx-{variant}-text.json', full)
+            self.assertIn(f'onnx-{variant}-full.json', full)
+        self.assertIn('if: always()', full)
+
+
 if __name__ == '__main__':unittest.main()

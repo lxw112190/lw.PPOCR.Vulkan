@@ -10,7 +10,7 @@
 | 目标 | 构建/CI 范围 | 运行证据与状态 |
 | --- | --- | --- |
 | Windows x64 | MSVC / Windows-2022 CI，默认 FP32，WinForms .NET Framework 4 | 本机 Windows 10 AMD/NVIDIA 有历史及新版回归；干净机器、Windows 11、服务账户 GPU 仍需最终 RC 验证 |
-| Linux x64 | Ubuntu 22.04 / GCC / Ninja，软件 Vulkan + 验证层对拍，独立 Clang ASan/UBSan CI | lavapipe 是 CPU 软件设备，不能证明实体 GPU 性能或显卡兼容；本輪新 CI 及实体 GPU/服务部署待验证 |
+| Linux x64 | Ubuntu 22.04 / GCC / Ninja；日常主机测试/打包，完整 lavapipe 对拍为独立手动工作流；独立 Clang ASan/UBSan CI | 维护者报告上一轮 CI 全绿（Linux 约 43 分钟）；lavapipe 不是实体 GPU，不能证明显卡性能/兼容；新分层工作流须推送后复验，实体 GPU/服务部署按实际记录验收 |
 | Intel Vulkan GPU | 通用设备枚举/FP32代码路径 | 尚无物理测试记录，不能写已支持/已验收 |
 | Windows 7/8、x86 | 不提供该版本 CI/包 | 当前 cpp-httplib 要求 Windows 10+，不能因 .NET 4 或一个 DLL 能加载就承诺 Win7 |
 | Linux ARM64 / 国产化系统 | 当前无本项目对应 CI/包 | 未支持；需匹配架构驱动、发行版 ABI 和实际 GPU 验证后再扩展 |

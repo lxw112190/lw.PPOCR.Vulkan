@@ -16,9 +16,11 @@
 | 稳定性 | 异常恢复、限内存、429/503、同句柄并发；维护者报告最终包长测完成 | 将维护者测试条件/原始记录关联实际发布附件，不捏造次数或内存指标 |
 | GPU 正确性 | 独立 ORT 对拍、严格 GPU 前处理探针、历史 100 图三模型；新增 11 场景派生集 | 更多实际公开样本；最终二进制跨设备验证 |
 | 安全/供应链 | 固定资产/SBOM/完整性门禁、构建元数据；ASan/UBSan CI（不启用 CodeQL）；维护者报告依赖安全审查完成 | 当前 CI 实际结果、关联审查记录、样图/素材再分发权确认 |
-| 平台 | Windows x64 和 Linux x64 CI；Windows AMD/NVIDIA 实测；Linux 软件 Vulkan 对拍 | 当前 CI 结果、Linux 实体 GPU及服务部署；其他系统不自动纳入支持 |
+| 平台 | Windows x64 和 Linux x64 CI；Windows AMD/NVIDIA 实测；Linux 完整软件 Vulkan 对拍为手动工作流（发布前运行） | 当前构建/sanitizer CI 与手动完整对拍结果、Linux 实体 GPU及服务部署；其他系统不自动纳入支持 |
 
 表内“实现”不是所有验收通过。历史报告的 DLL 哈希和版本只对应当时二进制；不能挪用作 0.6 或 v1.0 的最终资格证明。
+
+CI 已按 [分层说明](CI.md) 调整：日常 Windows/Linux 只负责同等级的主机验证与打包；发布前仍须手动运行完整软件 Vulkan 工作流，并对最终附件进行实体机复测。普通 `build.yml` 绿色不等于完整推理门禁通过。
 
 dev.2 新增门禁的范围与限制见 [SANITIZERS.md](SANITIZERS.md)。常规部署包与 sanitizer 诊断产物分开；不以生成工作流代替 Linux 检测通过。
 

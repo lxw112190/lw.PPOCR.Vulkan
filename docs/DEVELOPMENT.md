@@ -81,11 +81,15 @@ SDK 缓存不包含 runner 的 apt 安装状态，因此系统依赖安装在缓
 
 这是构建依赖修复，不是 GPU 驱动验证；客户运行部署包仍需要可用的 Vulkan Loader/驱动。
 
+## CI 分层
+
+日常 `.github/workflows/build.yml` 的 Windows/Linux 均为构建、主机测试和安装目录/打包检查，不执行模型网络。Linux 完整软件对拍迁移到手动工作流 `.github/workflows/linux-software-validation.yml`；三模型、shader 探针和 HTTP 实际推理保留，发布前运行。独立 ASan/UBSan 工作流不变。详见 [CI.md](CI.md)。
+
 ## Linux 软件 Vulkan CI：REC batch fence 超时
 
 `submit/wait REC batch ... VkResult=2` 是 `VK_TIMEOUT`，不是识别内容不一致，也不能仅凭这条信息断定死锁。常规 REC 合批一次提交最多 8 行，整批共用 30 秒 fence 等待；lavapipe 使用 CPU 执行着色器，共享 runner 上整批可能超时。多路研究构建默认 OFF，CI 也显式设置 `-DLWVK_EXPERIMENTAL_REC_LANES=OFF`，因此不要误将该错误归因于多队列实验。
 
-软件 CI 的完整参考、安装目录、三模型和 HTTP 测试显式设置三个 `LWVK_GPU_*_PREPROCESS=0`：使用 CPU 图像前处理、逐行网络提交，**网络仍走 Vulkan**。另一个步骤仅覆盖环境为 1，通过 DET 8 例、CLS/REC 16 例和 crop 111 例轻量探针校验着色器精确结果、padding/stride、越界 canary 和错误恢复；保留 validation layer 与同步检查。不能省略这些覆盖，也不能把 CPU 前处理软件对拍当作完整硬件 GPU 默认流水线的验证。
+独立手动软件验证工作流的完整参考、安装目录、三模型和 HTTP 测试显式设置三个 `LWVK_GPU_*_PREPROCESS=0`：使用 CPU 图像前处理、逐行网络提交，**网络仍走 Vulkan**。另一个步骤仅覆盖环境为 1，通过 DET 8 例、CLS/REC 16 例和 crop 111 例轻量探针校验着色器精确结果、padding/stride、越界 canary 和错误恢复；保留 validation layer 与同步检查。不能省略这些覆盖，也不能把 CPU 前处理软件对拍当作完整硬件 GPU 默认流水线的验证。
 
 硬件 GPU 默认路径、模型、阈值、30 秒等待及 poisoned 生命周期处理不改；超时不是取消，禁止失败后复用仍可能在 GPU 执行的计划。完整 OCR 参考测试在推理前打印设备、模型、前处理环境、图片尺寸及预期文字框数，便于后续区分设备、批量负载与数值回归问题。若仍超时，应检查具体设备/variant、单行工作负载和验证层日志，不能直接扩大到无限等待。此改动需要远程 Linux CI 再确认，本机 Windows 实体卡通过不代表 lavapipe 已通过。
 
@@ -95,10 +99,10 @@ SDK 缓存不包含 runner 的 apt 安装状态，因此系统依赖安装在缓
 
 修复采用显式、软件设备限定的 `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS`，不扩大所有设备的默认等待：
 
-- Linux lavapipe CI 设为 180000 毫秒；仅 `VK_PHYSICAL_DEVICE_TYPE_CPU` 生效，合法范围 30000～300000，非法值启动时拒绝，未设置保持 30000。
+- 完整 lavapipe 验证工作流设为 180000 毫秒；仅 `VK_PHYSICAL_DEVICE_TYPE_CPU` 生效，合法范围 30000～300000，非法值启动时拒绝，未设置保持 30000。
 - 硬件独显、集显和虚拟 GPU 忽略该选项，固定 30 秒；下载包不会保存 runner 的环境变量。
 - DET/CLS/REC 单图与网络合批使用同一 Context 策略；图像裁剪、拷贝及轻量 shader probe 的 30 秒等待不变。
 - 单图失败信息打印真实模型 task、输入高宽、有效等待毫秒数和 VkResult；参考测试打印并写入软件超时设置，便于下一轮日志确认。
 - 主机单元测试覆盖硬件不受影响、默认值、有限上下界、非法数值及溢出。仍保留全部三模型内容/分数/坐标对拍、验证层和同步检查，不将超时当成功。
 
-这不是整张 OCR 的总超时，多个提交的总耗时可能更长；CI job 仍有 90 分钟总上限。fence 超时不取消设备任务，poisoned 标记、销毁前等待设备空闲的安全语义不变，不能将其宣传成硬实时中断。修复后仍须通过远程 Linux CI 验证，Windows 实体卡回归不能代替 lavapipe 验证。
+这不是整张 OCR 的总超时，多个提交的总耗时可能更长；完整软件验证 job 仍有 90 分钟总上限，日常构建 job 为 30 分钟。fence 超时不取消设备任务，poisoned 标记、销毁前等待设备空闲的安全语义不变，不能将其宣传成硬实时中断。修复后仍须通过远程 Linux CI 验证，Windows 实体卡回归不能代替 lavapipe 验证。

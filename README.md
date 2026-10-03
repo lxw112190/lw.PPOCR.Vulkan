@@ -288,10 +288,10 @@ nlohmann/json 为 MIT，模型保留 PaddleOCR 来源说明与 Apache-2.0 许可
 Windows CI 固定并校验官方 Vulkan SDK 1.4.350.0 下载，缓存安装器下载；构建、检查 C ABI、
 测试安装目录、WinForms 布局/框选映射，并生成 zip + SHA-256。WinForms CI 主机测试不执行 GPU OCR，
 无实体 GPU 时明确跳过硬件测试，不把跳过算作通过。
-Linux CI 缓存校验后的 SDK，使用 lavapipe 软件 Vulkan 对拍，生成 tar.gz + SHA-256。
-软件 Vulkan 对拍包含 DET、CLS、REC、CTC、BGR stride/长度及同句柄并发检查。
+日常 `build.yml` 的 Linux 任务现与 Windows 同等级：缓存校验后的 SDK，执行构建、主机 C ABI/配置/单元测试、安装目录与依赖/服务脚本检查，并生成 tar.gz + SHA-256；不执行真实 OCR 推理，不宣称硬件或软件推理验收。
+原完整对拍保留在独立手动工作流 `linux-software-validation.yml`，发布前应在候选 ref 运行；包含 DET、CLS、REC、CTC、BGR stride/长度、同句柄并发、三模型与 HTTP 实际推理检查。操作和验收边界见 [CI 分层说明](docs/CI.md)。
 完整 OCR 软件对拍显式使用 CPU 图像前处理，网络仍由 Vulkan 执行；GPU DET/CLS/REC 前处理与透视裁剪另用独立着色器探针检查精确位值、stride、补边和恢复。这样避免共享 runner 上 8 行软件 REC 合批超过单次 30 秒 fence 等待；不是关闭网络对拍或修改硬件 GPU 默认行为。
-Medium 在软件 Vulkan 上连单个网络提交也可能超过 30 秒，因此 Linux CI 显式设置 `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`（单次网络 fence 等待 180 秒）。此工程选项只对 Vulkan `device_type=4` 的 CPU 软件设备生效，允许范围为 30000～300000 毫秒；未设置仍为 30 秒，独显、集显及虚拟 GPU 始终保持 30 秒。打包不会将 CI 环境变量写入客户配置。它不是整个 OCR 请求的截止时间，更不代表超时会取消已提交任务；模型、精度比较和失败后的 poisoned 处理均保持不变。
+Medium 在软件 Vulkan 上连单个网络提交也可能超过 30 秒，因此完整软件对拍工作流显式设置 `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`（单次网络 fence 等待 180 秒）。此工程选项只对 Vulkan `device_type=4` 的 CPU 软件设备生效，允许范围为 30000～300000 毫秒；未设置仍为 30 秒，独显、集显及虚拟 GPU 始终保持 30 秒。打包不会将 CI 环境变量写入客户配置。它不是整个 OCR 请求的截止时间，更不代表超时会取消已提交任务；模型、精度比较和失败后的 poisoned 处理均保持不变。
 并增加完整 OCR、DB/crop 单元测试、裁剪资源上限和独立结果生命周期测试。
 本地检查不等于远程 CI 成功；当前修改仍须推送后确认 Actions 结果。
 

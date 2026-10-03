@@ -37,7 +37,9 @@ ELF 检查也覆盖内部提取代码的 `lw_` 前缀；普通与 sanitizer CI �
 `ffda5a8b713441028bc5296fd7ec00f0ee8f443f8b1bb3212b2c26a494cf91dd`，
 本轮未更新模型或依赖，也没有改公共 ABI 基线。上述本机结果不是 Linux CI 通过声明。
 
-修复后的 Linux 实际导出/软件 Vulkan/安装包结果仍需要下一次 CI 确认。
+维护者于 2026-10-03 报告上一轮 CI 已全部通过，Linux 完整任务耗时约 43 分钟。这是维护者报告的结果；未在本地重跑 Linux，也不补造 run URL、commit/hash 或额外硬件数据。
+
+本轮将日常 Windows/Linux 任务对齐，完整软件 Vulkan 测试迁移到独立手动工作流；修改后的工作流仍需推送复验，发布前运行完整套件，见 [CI 分层说明](CI.md)。
 维护者之前完成的验收不会被否认，但新生成的 Linux 附件需要至少重新核对
 哈希、启动和 OCR/服务 smoke，不能自动继承旧附件的完整验收身份。
 
@@ -48,5 +50,7 @@ ELF 检查也覆盖内部提取代码的 `lw_` 前缀；普通与 sanitizer CI �
 English: the maintainer reports dependency review, sustained package testing,
 clean-target deployment and service-account GPU validation complete. These are
 separate from local/CI evidence; no missing metrics or platform details are
-invented. The C/C++ visibility fix preserves the 19-symbol public ABI and needs
-fresh Linux CI plus a smoke of the resulting artifact before release.
+invented. The maintainer subsequently reports all previous CI jobs passed,
+with the full Linux job taking about 43 minutes. Daily host-only builds and a
+manual full software-Vulkan suite are now separated; the edited workflows need
+fresh CI, and the final release artifact still needs qualification and smoke.

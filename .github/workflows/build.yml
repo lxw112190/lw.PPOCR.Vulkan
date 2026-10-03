@@ -1,4 +1,4 @@
-name: Vulkan v1 candidate contracts and OCR
+name: Vulkan build and host contracts
 on:
   push:
     branches: [main, master]
@@ -76,36 +76,23 @@ jobs:
             build/reports/winforms/*
             build/reports/supply-chain.json
           if-no-files-found: error
-  linux-software-vulkan:
+  linux:
+    name: Linux x64 build / host checks
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 30
     env:
       VULKAN_SDK: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64
       LD_LIBRARY_PATH: ${{ github.workspace }}/.ci/vulkan-sdk/1.4.350.0/x86_64/lib
-      VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.x86_64.json
-      VK_INSTANCE_LAYERS: VK_LAYER_KHRONOS_validation
-      VK_LAYER_VALIDATE_SYNC: '1'
-      # lavapipe is CPU execution, not a hardware GPU. Full reference tests use
-      # per-line graph submissions: an 8-line REC GPU batch can exceed a single
-      # 30-second fence budget on a shared runner. Test GPU image shaders below
-      # in isolation instead of skipping their coverage. Medium single graphs
-      # also need a longer finite wait on this software device (GPU stays 30s).
-      LWVK_GPU_DET_PREPROCESS: '0'
-      LWVK_GPU_TEXT_PREPROCESS: '0'
-      LWVK_GPU_CROP_PREPROCESS: '0'
-      LWVK_SOFTWARE_GRAPH_TIMEOUT_MS: '180000'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Software Vulkan and validation prerequisites
+      - name: Build and host-test prerequisites (no inference)
         run: |
           sudo apt-get update
-          # libvulkan1 is runtime-only; FindVulkan needs the libvulkan.so
-          # linker file and pkg-config metadata supplied by libvulkan-dev.
-          sudo apt-get install -y ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
-          python -m pip install -r requirements-dev.txt
+          sudo apt-get install -y ninja-build pkg-config binutils libvulkan-dev
+          python -m pip install numpy==2.2.6 Pillow==11.3.0 psutil==7.0.0 -r requirements-contracts.txt
       - uses: actions/cache@v4
         id: sdk
         with:
@@ -118,7 +105,7 @@ jobs:
           curl --fail --location --retry 5 https://sdk.lunarg.com/sdk/download/1.4.350.0/linux/vulkansdk-linux-x86_64-1.4.350.0.tar.xz -o .ci/sdk.tar.xz
           echo 'b65f068ab36263559da49d7cacd7e7b9df23824ca8b68ccc522a2b06f5725df2  .ci/sdk.tar.xz' | sha256sum --check
           tar -xJf .ci/sdk.tar.xz -C .ci/vulkan-sdk
-      - name: Verify / build / ABI tests
+      - name: Verify / build / host ABI tests
         run: |
           test -x "$VULKAN_SDK/bin/glslc"
           pkg-config --exists vulkan
@@ -126,58 +113,39 @@ jobs:
           test -n "$vulkan_libdir"
           test -r "$vulkan_libdir/libvulkan.so"
           printf 'System Vulkan loader link library: %s/libvulkan.so\n' "$vulkan_libdir"
+          python scripts/contracts.py --check
           python scripts/verify_assets.py
           python scripts/supply_chain.py --report build/reports/supply-chain.json
           python scripts/repository_preflight.py
           python tests/test_repository_preflight.py
-          python scripts/contracts.py --check
           cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
           cmake --build build/ci --parallel 4
           ctest --test-dir build/ci --output-on-failure
-      - name: GPU image shaders / exact bits / stride / recovery (software Vulkan)
-        env:
-          LWVK_GPU_DET_PREPROCESS: '1'
-          LWVK_GPU_TEXT_PREPROCESS: '1'
-          LWVK_GPU_CROP_PREPROCESS: '1'
-        run: |
-          ./build/ci/lwvk_det_gpu_preprocess_probe 0
-          ./build/ci/lwvk_text_gpu_preprocess_probe 0
-          ./build/ci/lwvk_gpu_crop_probe 0
-      - name: Tiny DET reference using software Vulkan (not GPU performance)
-        run: |
-          ./build/ci/lw-ppocr-vulkan-probe
-          python tests/test_det_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --quick --iterations 20 --report build/reports/linux-software-det.json
-          python tests/test_invalid_models.py --library build/ci/liblw.PPOCR.Vulkan.so
-      - name: CLS / REC / native CTC and BGR reference (software Vulkan)
-        run: |
-          python tests/test_text_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --quick --iterations 10 --report build/reports/linux-software-text.json
-      - name: Full OCR / DB / crops / resource limits (software Vulkan, CPU image preprocessing)
-        run: |
-          python tests/test_ocr_reference.py --library build/ci/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --quick --extended --iterations 2 --report build/reports/linux-software-full.json
-      - name: Stage / test / package
+          ./build/ci/lw-ppocr-vulkan-probe --allow-no-device
+      - name: Stage and host checks (no inference claim)
         run: |
           cmake --install build/ci --prefix dist/staging
           python tests/test_abi_exports.py --library dist/staging/liblw.PPOCR.Vulkan.so
           python tests/test_api.py --library dist/staging/liblw.PPOCR.Vulkan.so
-          python tests/test_det_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model dist/staging/models/ppocrv6-tiny/det.json --quick --iterations 2
-          python tests/test_text_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model-root dist/staging/models/ppocrv6-tiny --quick --iterations 2
-          python tests/test_ocr_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --models dist/staging/models/ppocrv6-tiny --quick --iterations 1
-          python tests/test_http.py --package dist/staging --output build/reports/http-software --device 0
-          for variant in tiny small medium; do
-            python tests/test_text_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --model-root "dist/staging/models/onnx/ppocrv6-$variant" --quick --iterations 1 --report "build/reports/onnx-$variant-text.json"
-            python tests/test_ocr_reference.py --library dist/staging/liblw.PPOCR.Vulkan.so --geometry build/ci/liblwvk_geometry_reference.so --models "dist/staging/models/onnx/ppocrv6-$variant" --quick --iterations 1 --report "build/reports/onnx-$variant-full.json"
+          python tests/test_http_host.py --service dist/staging/lw-ppocr-vulkan-http-service
+          # Check the installed program, not just its build-tree RPATH.
+          for binary in dist/staging/liblw.PPOCR.Vulkan.so dist/staging/lw-ppocr-vulkan-probe dist/staging/lw-ppocr-vulkan-http-service; do
+            dependencies="$(ldd "$binary")"
+            printf '%s\n' "$dependencies"
+            if printf '%s\n' "$dependencies" | grep -q 'not found'; then exit 1; fi
           done
           dist/staging/install-service.sh --verify-only
+      - name: Package and verify archive
+        run: |
           python scripts/package.py --staging dist/staging --output dist --platform linux-x64
           for archive in dist/*.tar.gz; do
             python scripts/verify_archive.py --archive "$archive"
           done
       - uses: actions/upload-artifact@v4
         with:
-          name: linux-x64-software-validated-full-ocr-preview
+          name: linux-x64-full-ocr-preview
           path: |
             dist/*.tar.gz
             dist/*.sha256
-            build/reports/*.json
-            build/reports/http-software/**
+            build/reports/supply-chain.json
           if-no-files-found: error
