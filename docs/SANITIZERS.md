@@ -15,6 +15,19 @@ UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 没有全局关闭 LeakSanitizer，也没有宽泛的驱动泄漏抑制规则。若第三方驱动报告问题，应先保留栈并定位，再审查是否需要精确抑制，不能直接删掉检测。
 
+### Ubuntu 22.04 工具链包名
+
+Jammy 的 Clang 14 sanitizer 运行库位于 `libclang-common-14-dev`，不能套用其他发行版的 `libclang-rt-14-dev` 包名；否则 apt 在编译前就会报 `Unable to locate package`。安装命令为：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y clang-14 libclang-common-14-dev
+```
+
+CI 保留 `clang-14` / `clang++-14`，不添加额外 LLVM 软件源、不切换编译器版本。安装后通过 `clang-14 -print-resource-dir` 获取实际资源目录，检查 x86_64 的 ASan、ASan C++、UBSan 和 LSan 静态运行库，缺失即失败。版本、包版本和检查路径保存在诊断附件的 `toolchain.txt`；后续故障探针仍验证检测实际生效，运行库文件存在本身不等于 sanitizer 测试通过。
+
+Ubuntu 22.04 包信息：[clang-14](https://packages.ubuntu.com/jammy/clang-14)、[libclang-common-14-dev](https://packages.ubuntu.com/jammy/libclang-common-14-dev)。升级 runner 时需要重新核对该发行版的包布局，不能假设不同 Ubuntu 版本的包名相同。
+
 门禁同时检查每条 `compile_commands.json` 的插桩选项，并执行 CI 专用故障探针：堆越界、整数溢出、丢失分配必须非零退出且出现对应诊断。三个故障是测试刻意制造的，程序不会安装进客户包；它们用来证明检测真的启用，不代表 OCR 程序发生这些错误。
 
 ## Python 与运行库顺序

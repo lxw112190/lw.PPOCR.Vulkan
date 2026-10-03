@@ -32,8 +32,29 @@ jobs:
       - name: Install host instrumentation and software Vulkan prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-14 libclang-rt-14-dev ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
+          # Jammy ships compiler-rt in libclang-common-14-dev, not libclang-rt-14-dev.
+          sudo apt-get install -y clang-14 libclang-common-14-dev ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
           python -m pip install -r requirements-dev.txt
+      - name: Verify matching Clang 14 sanitizer runtimes before configure
+        shell: bash
+        run: |
+          mkdir -p build/reports/sanitizer
+          {
+            clang-14 --version
+            clang++-14 --version
+            dpkg-query -W clang-14 libclang-common-14-dev
+            # Ask the selected compiler: do not hard-code its patch-version directory.
+            resource_dir="$(clang-14 -print-resource-dir)"
+            printf 'Clang resource directory: %s\n' "$resource_dir"
+            for runtime in asan asan_cxx ubsan_standalone lsan; do
+              library="$resource_dir/lib/linux/libclang_rt.${runtime}-x86_64.a"
+              if [ ! -r "$library" ]; then
+                printf '::error::Missing Clang 14 sanitizer runtime: %s\n' "$library"
+                exit 1
+              fi
+              printf 'PASS: %s\n' "$library"
+            done
+          } 2>&1 | tee build/reports/sanitizer/toolchain.txt
       - uses: actions/cache@v4
         id: sdk
         with:
