@@ -1,4 +1,5 @@
 #include "graph.hpp"
+#include "rec_cache_policy.hpp"
 #include <algorithm>
 #include <cstring>
 #include <future>
@@ -16,8 +17,27 @@ struct RecBatchProbe {
     static size_t plans(const GraphEngine& e) {
         return e.rec_batch_plans_.size();
     }
+    static bool bounded_plans(const GraphEngine& e) {
+#ifdef LWVK_EXPERIMENTAL_REC_LANES
+        return plans(e) <= 32; // Unchanged, non-default research fork.
+#else
+        if (plans(e) > rec_cache_limit)
+            return false;
+        for (uint32_t slot = 0; slot < rec_cache_slots; ++slot)
+            if (std::count_if(e.rec_batch_plans_.begin(), e.rec_batch_plans_.end(),
+                              [&](const auto& p) { return p.slot == slot; }) > rec_cache_per_slot)
+                return false;
+        return true;
+#endif
+    }
     static size_t slots(const GraphEngine& e) {
         return e.rec_batch_io_.size();
+    }
+    static const Plan* cached(const GraphEngine& e, uint32_t slot, uint32_t width) {
+        for (const auto& p : e.rec_batch_plans_)
+            if (p.slot == slot && p.width == width)
+                return p.plan.get();
+        return nullptr;
     }
     static uint64_t single_budget(GraphEngine& e) {
         Plan plan(e.context_, e.model_, *e.constants_, 48, 48, e.max_bytes_);
@@ -148,10 +168,49 @@ int main(int argc, char** argv) {
             auto view = image.view();
             batch.recognize_batch({view}, {0}, output);
             require(equal(output[0], reference(single, view, false)), "40-width cache changed output");
-            require(lwvk::RecBatchProbe::plans(batch) <= 32, "unbounded REC LRU");
+            require(lwvk::RecBatchProbe::bounded_plans(batch), "unbounded REC LRU/slot quota");
         }
         batch.recognize_batch(views, rotations, output);
         compare(output, expected, 8);
+#ifndef LWVK_EXPERIMENTAL_REC_LANES
+        // Exercise >32 REAL Vulkan plans, then return to earlier widths. The
+        // old global LRU repeatedly evicted these even after all shapes warmed.
+        lwvk::GraphEngine mixed(argv[1], device, 0, "rec");
+        std::vector<Image> mixed_images;
+        std::vector<lwvk::TextResult> mixed_expected;
+        std::vector<std::array<const lwvk::Plan*, 8>> cached;
+        for (uint32_t width = 32; width <= 128; width += 8) {
+            mixed_images.emplace_back(width, 48, 7);
+            auto view = mixed_images.back().view();
+            mixed_expected.push_back(reference(single, view, false));
+            mixed.recognize_batch(std::vector<lwvk::BgrView>(8, view), std::vector<uint8_t>(8), output);
+            for (const auto& result : output)
+                require(equal(result, mixed_expected.back()), "mixed-width batch changed output");
+            std::array<const lwvk::Plan*, 8> saved{};
+            for (uint32_t slot = 0; slot < 8; ++slot)
+                saved[slot] = lwvk::RecBatchProbe::cached(mixed, slot, width);
+            cached.push_back(saved);
+        }
+        require(lwvk::RecBatchProbe::plans(mixed) == 104, "mixed plans not retained");
+        for (size_t i = mixed_images.size(); i-- > 0;) {
+            mixed.recognize_batch(std::vector<lwvk::BgrView>(8, mixed_images[i].view()), std::vector<uint8_t>(8),
+                                  output);
+            for (const auto& result : output)
+                require(equal(result, mixed_expected[i]), "returning width changed output");
+            for (uint32_t slot = 0; slot < 8; ++slot)
+                require(lwvk::RecBatchProbe::cached(mixed, slot, mixed_images[i].width) == cached[i][slot],
+                        "returning width recreated cached plan");
+        }
+        for (uint32_t width = 136; width <= 264; width += 8) {
+            Image changing(width, 48, 7);
+            mixed.recognize_batch(std::vector<lwvk::BgrView>(8, changing.view()), std::vector<uint8_t>(8), output);
+            const auto wanted = reference(single, changing.view(), false);
+            for (const auto& result : output)
+                require(equal(result, wanted), "eviction changed output");
+            require(lwvk::RecBatchProbe::bounded_plans(mixed), "real cache exceeded slot quotas");
+        }
+        require(lwvk::RecBatchProbe::plans(mixed) == lwvk::rec_cache_limit, "real 128 cap not exercised");
+#endif
         require(lwvk::RecBatchProbe::lanes(batch) == lwvk::RecBatchProbe::requested_lanes(batch),
                 "requested REC lanes not exercised");
         std::vector<std::future<void>> tasks;
@@ -191,10 +250,11 @@ int main(int argc, char** argv) {
         require(lwvk::RecBatchProbe::bytes(tight) <= budget, "primary growth exceeded total budget");
         tight.recognize_batch({views[0]}, {rotations[0]}, output);
         compare(output, expected, 1);
-        std::cout << "PASS: device=" << device << " model=" << argv[1]
-                  << " exact text/score, counts 1..8, rotation/stride, invalid recovery, LRU40/32 cap, 20 concurrent "
-                     "batches, shared arena, tight budget="
-                  << budget << " effective_lanes=" << lwvk::RecBatchProbe::lanes(batch) << "\n";
+        std::cout
+            << "PASS: device=" << device << " model=" << argv[1]
+            << " exact text/score, counts 1..8, rotation/stride, invalid recovery, bounded per-slot LRU, 20 concurrent "
+               "batches, shared arena, tight budget="
+            << budget << " effective_lanes=" << lwvk::RecBatchProbe::lanes(batch) << "\n";
         return 0;
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';

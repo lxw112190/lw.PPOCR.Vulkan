@@ -66,6 +66,11 @@ dev.2 增加 [原生 ASan/UBSan 与恢复门禁](SANITIZERS.md)。统一在所�
 
 ## FP32 kernel 回归
 
+大小图切换的默认 REC 缓存回归、实体 GPU 探针和复测命令见
+[REC-CACHE-SIZE-SWITCH.md](REC-CACHE-SIZE-SWITCH.md)。普通图缓存 32 条不变，默认批次 REC
+使用每槽位 16 条、总计 128 条的有界 LRU；更多命令缓存增加 CPU/驱动内存，不能用工作区
+预算来宣称整个进程内存不变。主机缓存策略测试自动纳入 CTest，实体 GPU 探针单独运行。
+
 FP32 kernel 优化新增 `tests/test_pointwise_regression.py --before <旧DLL> --after <新DLL> --device <GPU编号> --report <JSON>`，对三模型的 DET/CLS/REC 原始概率逐位对照；与独立 ORT 参考测试互补。GPU 算子、端到端和部署包验证均不能省略。自有 pointwise shader 位于 `src/shaders`，构建派生时注入统一 GELU/SiLU epilogue，保持固定 `third_party` 资产原始字节。
 
 ## Linux CI：Vulkan 头文件已找到但链接库缺失

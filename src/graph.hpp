@@ -178,6 +178,8 @@ class GraphEngine {
         uint64_t stamp;
         std::unique_ptr<Plan> plan;
     };
+    // Default serial path: independent 16-width LRUs for eight slots (128 max).
+    // These retain metadata/commands, not separate activation arenas or logits.
     std::vector<RecBatchPlan> rec_batch_plans_;
     bool batch_poisoned_{};
     Plan* plan_{};

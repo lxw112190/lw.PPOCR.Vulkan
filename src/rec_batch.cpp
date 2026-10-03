@@ -1,5 +1,6 @@
 #include "graph.hpp"
 #include "ocr_host.hpp"
+#include "rec_cache_policy.hpp"
 #include <algorithm>
 #include <chrono>
 #include <stdexcept>
@@ -59,15 +60,12 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
         auto found = std::find_if(rec_batch_plans_.begin(), rec_batch_plans_.end(),
                                   [&](const auto& p) { return p.slot == slot && p.width == widths[slot]; });
         if (found == rec_batch_plans_.end()) {
-            // Bounded metadata LRU; never evict a command selected for this batch.
-            if (rec_batch_plans_.size() >= 32) {
-                auto oldest = rec_batch_plans_.end();
-                for (auto it = rec_batch_plans_.begin(); it != rec_batch_plans_.end(); ++it)
-                    if (std::find(active.begin(), active.end(), it->plan.get()) == active.end() &&
-                        (oldest == rec_batch_plans_.end() || it->stamp < oldest->stamp))
-                        oldest = it;
-                rec_batch_plans_.erase(oldest);
-            }
+            // At most 16 widths per slot / 128 commands overall, not 128 arenas.
+            // Earlier active plans belong to other slots, so this eviction cannot
+            // invalidate a command already selected for the current submission.
+            const auto victim = rec_cache_victim(rec_batch_plans_, slot);
+            if (victim != no_rec_eviction)
+                rec_batch_plans_.erase(rec_batch_plans_.begin() + victim);
             auto plan = std::make_unique<Plan>(context_, model_, *constants_, 48, widths[slot], max_bytes_);
             rec_batch_plans_.push_back({slot, widths[slot], ++stamp_, std::move(plan)});
             active.push_back(rec_batch_plans_.back().plan.get());
@@ -137,14 +135,15 @@ double GraphEngine::recognize_batch(const std::vector<BgrView>& images, const st
         capacity = required;
         arena_capacity = required_arena;
     }
-    bool changed = arena_capacity != (rec_batch_arena_ ? rec_batch_arena_->size : 0) ||
-                   (shrink && rec_batch_io_.size() > images.size());
+    const bool arena_changed = arena_capacity != (rec_batch_arena_ ? rec_batch_arena_->size : 0);
+    const auto retained_slots = shrink ? images.size() : std::max(images.size(), rec_batch_io_.size());
+    std::vector<bool> io_changed(images.size());
     for (size_t i = 0; i < images.size(); ++i)
-        changed |= i >= rec_batch_io_.size() ||
-                   capacity[i][0] != (rec_batch_io_[i].upload ? rec_batch_io_[i].upload->size : 0) ||
-                   capacity[i][1] != (rec_batch_io_[i].ctc ? rec_batch_io_[i].ctc->size : 0);
-    if (changed)
-        for (auto& entry : rec_batch_plans_)
+        io_changed[i] = i >= rec_batch_io_.size() ||
+                        capacity[i][0] != (rec_batch_io_[i].upload ? rec_batch_io_[i].upload->size : 0) ||
+                        capacity[i][1] != (rec_batch_io_[i].ctc ? rec_batch_io_[i].ctc->size : 0);
+    for (auto& entry : rec_batch_plans_)
+        if (rec_cache_rebind(entry.slot, arena_changed, io_changed, retained_slots))
             entry.plan->invalidate();
     // Complete all frees before any allocations; shared arena is never N copies.
     if (shrink)
