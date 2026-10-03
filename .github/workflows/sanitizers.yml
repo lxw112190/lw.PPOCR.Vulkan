@@ -22,6 +22,7 @@ jobs:
       LWVK_GPU_CROP_PREPROCESS: '0'
       LWVK_SOFTWARE_GRAPH_TIMEOUT_MS: '180000'
       ASAN_OPTIONS: 'detect_leaks=1:halt_on_error=1:strict_string_checks=1'
+      ASAN_SYMBOLIZER_PATH: /usr/bin/llvm-symbolizer-14
       UBSAN_OPTIONS: 'halt_on_error=1:print_stacktrace=1'
       PYTHONUTF8: '1'
     steps:
@@ -33,7 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           # Jammy ships compiler-rt in libclang-common-14-dev, not libclang-rt-14-dev.
-          sudo apt-get install -y clang-14 libclang-common-14-dev ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
+          sudo apt-get install -y clang-14 llvm-14 libclang-common-14-dev ninja-build pkg-config binutils libvulkan-dev mesa-vulkan-drivers vulkan-validationlayers
           python -m pip install -r requirements-dev.txt
       - name: Verify matching Clang 14 sanitizer runtimes before configure
         shell: bash
@@ -42,7 +43,9 @@ jobs:
           {
             clang-14 --version
             clang++-14 --version
-            dpkg-query -W clang-14 libclang-common-14-dev
+            dpkg-query -W clang-14 llvm-14 libclang-common-14-dev libvulkan1 mesa-vulkan-drivers vulkan-validationlayers
+            test -x "$ASAN_SYMBOLIZER_PATH"
+            "$ASAN_SYMBOLIZER_PATH" --version
             # Ask the selected compiler: do not hard-code its patch-version directory.
             resource_dir="$(clang-14 -print-resource-dir)"
             printf 'Clang resource directory: %s\n' "$resource_dir"
@@ -83,14 +86,17 @@ jobs:
       - name: Host tests + instrumentation/leak tripwires (no GPU claims)
         run: ctest --test-dir build/sanitize --output-on-failure --parallel 1
       - name: Instrumented image shader probes (software Vulkan)
+        shell: bash
         env:
           LWVK_GPU_DET_PREPROCESS: '1'
           LWVK_GPU_TEXT_PREPROCESS: '1'
           LWVK_GPU_CROP_PREPROCESS: '1'
         run: |
-          build/sanitize/lwvk_det_gpu_preprocess_probe 0
-          build/sanitize/lwvk_text_gpu_preprocess_probe 0
-          build/sanitize/lwvk_gpu_crop_probe 0
+          # The loader may dlopen a driver/layer and unload it before LSan runs.
+          # Keep normal teardown as the gate; collect stack/layer controls on failure.
+          ldd build/sanitize/lwvk_det_gpu_preprocess_probe | tee build/reports/sanitizer/probe-dependencies.txt
+          python scripts/sanitizer_gpu_probes.py --build build/sanitize \
+            --output build/reports/sanitizer/shader-probes --device 0
       - name: Install to isolated staging and inspect actual dependencies
         run: |
           cmake --install build/sanitize --prefix build/sanitize/staging

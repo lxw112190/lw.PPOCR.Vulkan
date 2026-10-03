@@ -15,13 +15,27 @@ UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 没有全局关闭 LeakSanitizer，也没有宽泛的驱动泄漏抑制规则。若第三方驱动报告问题，应先保留栈并定位，再审查是否需要精确抑制，不能直接删掉检测。
 
+### 退出阶段的 `128 bytes / <unknown module>` 诊断
+
+DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进程退出的 LSan 报错仍是门禁失败。当前报告只有 `realloc` 与未知模块，不能据此认定为项目泄漏、驱动泄漏或误报。已检查正常路径的 buffer/mapping、fence、command/descriptor pool、pipeline、device 和 instance 释放，暂未找到遗漏；Linux 根因仍待有符号调用栈验证。
+
+CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 用慢速分配栈展开、40 层调用栈和正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。仅这些轻量探针启用慢速展开，不增加后续 OCR 长测的全局开销。所有探针仍启用 ASan/UBSan 和退出泄漏检查。
+
+原始探针失败后才收集诊断对照：设备枚举（不创建网络/着色器）、失败探针的保留动态库重跑、移除验证层的重跑。后两者开启 `LD_DEBUG=libs` 记录实际 loader、driver、layer 路径。Khronos loader 从 1.3.259 起支持 `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`，用于避免 `vkDestroyInstance` 时卸载库导致泄漏栈失去符号；旧 loader 可能忽略该变量，须结合依赖和 loader 日志核对，SDK 头文件版本不能证明实际 loader 版本。
+
+保留动态库可能改变 LSan 对全局可达对象的判断，所以它**只用于诊断，不替代正常卸载测试**。关闭验证层的对照也不替代原始 validation 测试。任何原始探针非零退出（含超时、启动失败）仍令步骤失败；不会因为对照通过而变绿，不设置泄漏 suppression。
+
+下载 `host-sanitizer-diagnostics-not-a-release-package` 附件，查看 `shader-probes/summary.json` 和三个原始 `.log`，以及失败探针的 `-retained-modules.log` / `-without-layers.log`。若同样的泄漏在纯枚举程序中出现，说明不执行 OCR/shader 也能复现；若仅移除 layer 后消失，则进一步调查 layer 路径，但二者均不足以直接宣称所有项目路径无泄漏。
+
+参考：[Clang 符号化配置](https://clang.llvm.org/docs/AddressSanitizer.html#symbolizing-the-reports)、[Khronos loader 环境变量](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderInterfaceArchitecture.md#environment-variable-table)。此修改增强根因定位，不声称已修复 128 字节泄漏；待实际 Linux CI 报告后再采取精确修复。
+
 ### Ubuntu 22.04 工具链包名
 
 Jammy 的 Clang 14 sanitizer 运行库位于 `libclang-common-14-dev`，不能套用其他发行版的 `libclang-rt-14-dev` 包名；否则 apt 在编译前就会报 `Unable to locate package`。安装命令为：
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y clang-14 libclang-common-14-dev
+sudo apt-get install -y clang-14 llvm-14 libclang-common-14-dev
 ```
 
 CI 保留 `clang-14` / `clang++-14`，不添加额外 LLVM 软件源、不切换编译器版本。安装后通过 `clang-14 -print-resource-dir` 获取实际资源目录，检查 x86_64 的 ASan、ASan C++、UBSan 和 LSan 静态运行库，缺失即失败。版本、包版本和检查路径保存在诊断附件的 `toolchain.txt`；后续故障探针仍验证检测实际生效，运行库文件存在本身不等于 sanitizer 测试通过。
