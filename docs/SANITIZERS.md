@@ -21,13 +21,21 @@ UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进程退出的 LSan 报错仍是门禁失败。当前报告只有 `realloc` 与未知模块，不能据此认定为项目泄漏、驱动泄漏或误报。已检查正常路径的 buffer/mapping、fence、command/descriptor pool、pipeline、device 和 instance 释放，暂未找到遗漏；Linux 根因仍待有符号调用栈验证。
 
-CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 用慢速分配栈展开、40 层调用栈和正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。仅这些轻量探针启用慢速展开，不增加后续 OCR 长测的全局开销。所有探针仍启用 ASan/UBSan 和退出泄漏检查。
+CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 使用正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。正式探针使用 `fast_unwind_on_malloc=1`、30 层分配栈，仍启用 ASan/UBSan 和退出泄漏检查。项目原生代码保留 frame pointer；第三方库栈不足时再收集诊断对照。
 
-原始探针失败后才收集诊断对照：设备枚举（不创建网络/着色器）、失败探针的保留动态库重跑、移除验证层的重跑。后两者开启 `LD_DEBUG=libs` 记录实际 loader、driver、layer 路径。Khronos loader 从 1.3.259 起支持 `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`，用于避免 `vkDestroyInstance` 时卸载库导致泄漏栈失去符号；旧 loader 可能忽略该变量，须结合依赖和 loader 日志核对，SDK 头文件版本不能证明实际 loader 版本。
+原始探针失败后只收集三次**设备枚举**对照（不创建网络/着色器）：正常卸载、保留动态库、移除显式 layer 并请求禁用其他 layer。它们使用慢速分配栈展开、40 层调用栈和 `LD_DEBUG=libs`，记录实际 loader、driver、layer 路径；不再反复重编译失败或超时的 shader。Khronos loader 从 1.3.259 起支持 `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`，用于避免 `vkDestroyInstance` 时卸载库导致泄漏栈失去符号；旧 loader 可能忽略保留库或 layer 过滤变量，须结合依赖和 loader 日志核对，SDK 头文件版本不能证明实际 loader 版本。
 
 保留动态库可能改变 LSan 对全局可达对象的判断，所以它**只用于诊断，不替代正常卸载测试**。关闭验证层的对照也不替代原始 validation 测试。任何原始探针非零退出（含超时、启动失败）仍令步骤失败；不会因为对照通过而变绿，不设置泄漏 suppression。
 
-下载 `host-sanitizer-diagnostics-not-a-release-package` 附件，查看 `shader-probes/summary.json` 和三个原始 `.log`，以及失败探针的 `-retained-modules.log` / `-without-layers.log`。若同样的泄漏在纯枚举程序中出现，说明不执行 OCR/shader 也能复现；若仅移除 layer 后消失，则进一步调查 layer 路径，但二者均不足以直接宣称所有项目路径无泄漏。
+下载 `host-sanitizer-diagnostics-not-a-release-package` 附件，查看 `shader-probes/summary.json` 和三个原始 `.log`，以及 `control-enumeration.log`、`control-enumeration-retained-modules.log` / `control-enumeration-without-layers.log`。若同样的泄漏在纯枚举程序中出现，说明不执行 OCR/shader 也能复现；若仅移除 layer 后消失，则进一步调查 layer 路径，但二者均不足以直接宣称所有项目路径无泄漏。
+
+### 诊断本身造成的 60 分钟超时
+
+实际 CI 日志显示，旧脚本给三个 shader 正式探针都设置了 `fast_unwind_on_malloc=0:malloc_context_size=40`，三者各超时 420 秒；随后对失败探针逐个进行保留库/移除 layer 重跑，最终触发 job 的 60 分钟总上限。慢速展开作用于每次分配，而 Mesa/LLVM 编译 shader 有大量分配；[Sanitizer 官方说明](https://github.com/google/sanitizers/wiki/AddressSanitizer#faq)也提醒该设置可能严重影响性能。这是本轮调整的主要依据，仍需要下一次 Linux CI 验证实际耗时。
+
+新脚本保持全部三个正式探针及其 420 秒单进程上限，慢速展开只用于三次枚举对照，每次最多 90 秒。所有子进程等待预算合计最多 1530 秒（25.5 分钟），步骤上限 30 分钟；总 job 仍为 60 分钟。每个子进程开始时输出日志位置，完成时输出实际耗时；每次完成都更新 `summary.json`，中途取消时 `completed: false`、`passed: false`，已完成结果不会等到最后才保存。
+
+同一份日志中正常枚举也报告 128 字节未知模块泄漏，且使用系统 `libvulkan.so.1`；移除显式 Khronos layer 的诊断仍加载 Mesa device-select 隐式 layer。因此现有日志不能精确归因，也不能称泄漏已修复。超时、泄漏、启动失败都继续令原始门禁失败。该工作流的四个 GitHub Actions 已改用 Node 24 版本；Node 20 弃用警告与 shader 超时是不同问题。
 
 参考：[Clang 符号化配置](https://clang.llvm.org/docs/AddressSanitizer.html#symbolizing-the-reports)、[Khronos loader 环境变量](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderInterfaceArchitecture.md#environment-variable-table)。此修改增强根因定位，不声称已修复 128 字节泄漏；待实际 Linux CI 报告后再采取精确修复。
 

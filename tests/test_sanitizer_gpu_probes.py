@@ -22,9 +22,13 @@ class ProbeGateTests(unittest.TestCase):
         primary = probes.diagnostic_env(source)
         self.assertIn('detect_leaks=1', primary['ASAN_OPTIONS'])
         self.assertIn('leak_check_at_exit=1', primary['ASAN_OPTIONS'])
+        self.assertIn('fast_unwind_on_malloc=1:malloc_context_size=30', primary['ASAN_OPTIONS'])
+        self.assertNotIn('fast_unwind_on_malloc=0', primary['ASAN_OPTIONS'])
         self.assertEqual(primary['VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING'], '0')
         self.assertEqual(primary['VK_INSTANCE_LAYERS'], 'validation')
-        control = probes.diagnostic_env(source, keep_modules=True, no_layers=True)
+        control = probes.diagnostic_env(source, keep_modules=True, no_layers=True,
+                                        slow_stacks=True)
+        self.assertIn('fast_unwind_on_malloc=0:malloc_context_size=40', control['ASAN_OPTIONS'])
         self.assertEqual(control['VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING'], '1')
         self.assertEqual(control['VK_LOADER_LAYERS_DISABLE'], '*')
         for key in ('VK_INSTANCE_LAYERS', 'VK_LOADER_LAYERS_ENABLE', 'VK_LOADER_LAYERS_ALLOW'):
@@ -36,7 +40,7 @@ class ProbeGateTests(unittest.TestCase):
             folder = Path(temp)
             calls = []
 
-            def fake(command, output, label, env):
+            def fake(command, output, label, env, timeout=probes.PRIMARY_TIMEOUT_SECONDS):
                 calls.append((label, env))
                 code = 1 if failure and label == probes.PROBES[0] else 0
                 return dict(label=label, command=command, exit_code=code, timed_out=False)
@@ -53,6 +57,9 @@ class ProbeGateTests(unittest.TestCase):
         self.assertEqual([item[0] for item in calls[:3]], list(probes.PROBES))
         self.assertEqual(len(calls), 6)
         self.assertTrue(all(item['exit_code'] == 0 for item in report['diagnostic_controls']))
+        self.assertTrue(report['completed'])
+        self.assertTrue(all('fast_unwind_on_malloc=1' in env['ASAN_OPTIONS']
+                            for _, env in calls[:3]))
 
     def test_clean_primary_does_not_run_controls(self):
         code, report, calls = self.suite(False)
@@ -61,11 +68,57 @@ class ProbeGateTests(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(report['diagnostic_controls'], [])
 
+    def test_all_timeouts_have_only_three_bounded_enumeration_controls(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            calls = []
+
+            def fake(command, output, label, env, timeout=probes.PRIMARY_TIMEOUT_SECONDS):
+                calls.append((command, timeout))
+                return dict(label=label, command=command, exit_code=124, timed_out=True)
+
+            with mock.patch.object(probes, 'run_case', side_effect=fake):
+                self.assertEqual(probes.run_suite(folder, folder / 'logs', 0, {}), 1)
+            self.assertEqual(len(calls), 6)
+            self.assertTrue(all(Path(command[0]).name == 'lw-ppocr-vulkan-probe'
+                                for command, _ in calls[3:]))
+            self.assertEqual([limit for _, limit in calls[3:]], [90, 90, 90])
+            self.assertLessEqual(sum(limit for _, limit in calls), 26 * 60)
+            report = json.loads((folder / 'logs/summary.json').read_text(encoding='utf-8'))
+            self.assertFalse(report['passed'])
+            self.assertEqual(report['max_child_seconds'], 1530)
+
+    def test_partial_summary_survives_interruption_before_controls(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            calls = []
+
+            def fake(command, output, label, env, timeout=probes.PRIMARY_TIMEOUT_SECONDS):
+                # The summary exists even before the first child finishes.
+                report = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
+                self.assertFalse(report['passed'])
+                self.assertFalse(report['completed'])
+                self.assertEqual(len(report['primary']), len(calls))
+                if len(calls) == 3:
+                    raise KeyboardInterrupt
+                calls.append(label)
+                return dict(label=label, command=command, exit_code=1, timed_out=False)
+
+            with mock.patch.object(probes, 'run_case', side_effect=fake):
+                with self.assertRaises(KeyboardInterrupt):
+                    probes.run_suite(folder, folder / 'logs', 0, {})
+            report = json.loads((folder / 'logs/summary.json').read_text(encoding='utf-8'))
+            self.assertEqual(len(report['primary']), 3)
+            self.assertFalse(report['completed'])
+            self.assertFalse(report['passed'])
+
     def test_real_child_failure_is_logged_not_swallowed(self):
         with tempfile.TemporaryDirectory() as temp:
             result = probes.run_case([sys.executable, '-c', 'print("fixture"); raise SystemExit(7)'],
                                      Path(temp), 'fixture', os.environ.copy())
             self.assertEqual(result['exit_code'], 7)
+            self.assertGreaterEqual(result['elapsed_seconds'], 0)
+            self.assertEqual(result['timeout_seconds'], 420)
             self.assertIn('fixture', (Path(temp) / 'fixture.log').read_text(encoding='utf-8'))
 
     def test_launch_failure_is_logged(self):
@@ -88,6 +141,9 @@ class ProbeGateTests(unittest.TestCase):
         for required in ('detect_leaks=1:halt_on_error=1', 'llvm-14',
                          'ASAN_SYMBOLIZER_PATH: /usr/bin/llvm-symbolizer-14',
                          'scripts/sanitizer_gpu_probes.py', 'if: always()',
+                         'timeout-minutes: 30', 'actions/checkout@v5',
+                         'actions/setup-python@v6', 'actions/cache@v5',
+                         'actions/upload-artifact@v6',
                          'build/reports/sanitizer/**'):
             self.assertIn(required, workflow)
         for forbidden in ('detect_leaks=0', 'continue-on-error:', 'LSAN_OPTIONS:',
