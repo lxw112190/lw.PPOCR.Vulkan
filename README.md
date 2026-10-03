@@ -2,76 +2,45 @@
 
 [English](README_EN.md)
 
-C++17 实现的 PP-OCR Vulkan GPU 推理项目，提供原生 C ABI、HTTP/Web 服务与 C# WinForms 示例。
-不依赖 OpenCV DNN、ONNX Runtime 或 CUDA **运行时**。
-
-新增 [REC 1/2/4 路实验报告](docs/REC-LANES-EXPERIMENT.md)：同一批 100 张图、三模型、正反两轮共 12,000 次调用，预测字段完全一致，但 2/4 路在 RTX 4060 上未超过已验证单路，且增加专用 GPU 内存。**不接入默认、不替换部署包**；研究代码仅通过默认 OFF 的 `LWVK_EXPERIMENTAL_REC_LANES` 构建选项启用。
+C++17 实现的跨平台 PP-OCR Vulkan GPU 推理项目，提供稳定 C ABI、HTTP/Web 服务与 C# WinForms 示例。
+不依赖 OpenCV DNN、ONNX Runtime 或 CUDA **运行时**；完整源码采用 Apache-2.0 开源。
 
 作者：天天代码码天天<br>
 QQ：819069052<br>
 群名称：天天代码码天天<br>
 群号码：264292622
 
-## 当前阶段：0.7.0-dev.1 / v1.0 供应链与发布边界
+## v1.0.0 正式版
 
-新增 [供应链审计与 SBOM](docs/SUPPLY-CHAIN.md)：181 个固定资产、16 个组件的确定性 CycloneDX 1.6 清单，官方 Schema 离线校验；部署包必须包含全部锁定许可证/模型，并带有 `SBOM.cdx.json`、`BUILD-INFO.json` 和逐文件校验清单。修正 fmt 的 MIT 许可证标注，未更新推理依赖或模型。保留供应链故障注入和独立资产/SBOM 校验 CI；不启用 CodeQL 或 Dependabot。SBOM 不等于漏洞清零或安全认证，依赖安全审查仍需维护者执行。
+v1.0.0 正式冻结 C ABI v1、HTTP API v1、配置 Schema v1 与 JSONL 访问日志 Schema v1。
+后续 1.x 维护遵守向后兼容原则；现有导出、结构布局、字段与语义不作破坏性变更，破坏性调整使用新的版本化接口。正式版不等于无限平台支持、永久 LTS 或无漏洞/无泄漏保证。
 
-支持范围见 [兼容矩阵](docs/COMPATIBILITY.md)，安全部署和升级/回滚见 [部署指南](docs/DEPLOYMENT-UPGRADE.md)。Windows/Linux CI、软件 Vulkan、物理 GPU 和 Windows Service 账户的验证分别记录；不继承其他 OCR 项目的 Win7/ARM/macOS 支持承诺。历史报告继续保留，本轮验证见 [0.7 本机验收](docs/LOCAL-VALIDATION-070.md)。
+- 支持固定的 PP-OCRv6 **Tiny / Small / Medium** ONNX 模型，原生 C++ 解析，无需客户转换模型。
+- 默认 **Vulkan FP32**：完整 OCR（DET → 可选 CLS → REC）以及已裁剪文字行仅识别。
+- C ABI 接收带实际字节长度与 stride 的 BGR8 像素，可直接对接相机；结果句柄独立管理，包含文字、四点坐标、置信度与耗时。
+- C# WinForms：选择或填写 GPU 编号、切换三模型、整图检测、鼠标框选仅识别、检测框与耗时展示；提供 C#/Python 示例。
+- HTTP/Web：二进制与 Base64 图片、仅识别批量、API Key、有界队列与等待超时、累计图片预算、运行/访问日志。
+- Windows SCM / Linux systemd 服务安装、卸载、启动、停止、重启脚本；模型、字典、网页、样图和示例随部署包提供。
+- 支持能力满足的设备自动启用 GPU DET/CLS/REC 前处理与透视裁剪，共享原图减少搬运；不支持 `shaderFloat64` 时图像处理留在 CPU，**网络仍在 Vulkan**。
+- 固定资产校验、19 个公共 C 导出与结构布局检查、OpenAPI/Schema、ASan/UBSan/LSan 门禁、SBOM、构建信息与附件 SHA-256。
 
-新增 [ASan/UBSan 与异常恢复门禁](docs/SANITIZERS.md)：统一插桩全部原生目标，独立 Linux CI 校验 ASan/UBSan/LeakSanitizer 确实启用，测试安装后的 C ABI 与 HTTP 服务；增加 2000 次图像异常输入与恢复、200 次 HTTP 异常输入，以及 11 个旋转/宽高比/灰度/低对比度正确性场景。后者仍是同一张公开样图的派生集，不是多来源真实图片测试集。Linux sanitizer 结果须以推送后的 CI 为准；本机 Windows 普通构建不能证明无泄漏。
+下载正式部署包及校验文件：[GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases)。Windows 包为 `lw.PPOCR.Vulkan-v1.0.0-windows-x64-full-ocr.zip`，Linux 包为 `lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`；各附同名 `.sha256`。CI 附件用于构建/验收，正式下载以维护者发布的 Release 附件为准。
 
-[dev.2 本机验收](docs/LOCAL-VALIDATION-062.md)：23 项主机测试、双显卡三模型共 66 个场景组合、双卡图像精确探针、原生 ABI 与 HTTP smoke，以及 209 次异常 HTTP 请求后的真实 REC 恢复通过；附原始 JSON 报告。没有复用旧版本长测作为新二进制的无泄漏证明。
+### 支持范围与运行前提
 
-新增可自动验收的 v1 **候选**契约：C ABI 的 19 个导出/结构布局基线、HTTP OpenAPI、配置与响应 JSON Schema、访问日志 JSONL Schema，以及契约哈希检查。配置执行 Schema/原生程序对照测试；HTTP 实测响应和日志严格校验。CI 包含 `schemas/` 与逐文件 `PACKAGE-MANIFEST.json`，压缩后再次验证附件及所有文件的 SHA-256。候选契约不等于正式冻结或 LTS；详细路线和未完成门槛见 [v1.0 发布验收](docs/RELEASE-GATES.md)。
-本机 [0.6 验收记录](docs/LOCAL-VALIDATION-060.md)：21 项主机测试、111 项配置矩阵、AMD/NVIDIA 三模型对拍，以及 NVIDIA 三模型各 1000 次混合尺寸 HTTP 回归通过；RSS/线程/句柄未见无界增长，不据此宣称无泄漏或远程 CI 已通过。
+提供 **Windows x64 / Linux x64** 构建与部署包。Windows 原生服务面向 Windows 10/11；已记录的物理 GPU 测试为 Windows 10 上的 AMD 集显与 NVIDIA RTX 4060 Laptop GPU。Linux CI 基线为 Ubuntu 22.04，软件 Vulkan 对拍不等于 Linux 实体 GPU 验收。具体状态见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
-已将 [共享原图与 GPU 前处理/透视裁剪](docs/GPU-DEFAULT.md) 接入**原生默认路径**，C#、Python 与 HTTP 无需额外开启：支持 `shaderFloat64` 的所选 GPU 自动启用，三网络共享 device，原图一次上传，裁剪结果不回读再上传；不支持时保留 CPU 图像处理，网络仍在 GPU。网络 FP32、DET960、预算和公共接口不变。可用 `Start-CSharp-Demo-CPU-Preprocess.bat` 显式关闭作兼容/性能对照。性能依据见 [历史实验报告](docs/GPU-CROP-EXPERIMENT.md)，当前开关规则见默认策略文档。
+目标机需安装匹配的 Vulkan Loader 与显卡驱动，设备须满足 Vulkan 1.1 和模型资源要求。运行预编译包不需要 Python/Vulkan SDK；WinForms 另需兼容的 .NET Framework 4.0+。不承诺 Win7/8、x86、ARM64、国产 Linux 或 macOS，也不自动继承其他项目的验证结果。没有兼容 Vulkan 设备时明确报错，**没有 CPU OCR 自动回退**。
 
-新增 [三模型 TensorRT 实际项目对比](docs/VULKAN-TENSORRT-100.md)：RTX 4060 上 100 图五轮，TensorRT 四 REC 实例为 15.97/23.12/34.08 ms，默认 Vulkan 为 23.09/35.75/75.67 ms，**当前 TensorRT 更快**；Vulkan 主对比资源开销较低。报告同时提供单实例 TensorRT、RAM/专用与共享显存、进程与整卡 GPU 利用率和 GT 指标，明确 FP16-enabled TensorRT 与 FP32 Vulkan 的流水线差异，不宣称纯后端全面胜负。
+协作矩阵/混合 FP16 和多 REC lane 为默认 OFF 的研究选项，不属于 v1.0 正式推理模式。项目不是通用 ONNX 引擎，也不提供 PDF、版面或表格结构解析。
 
-此前 [Medium REC 宽 tile 优化](docs/REC-WIDE-OPTIMIZATION.md)：复用输入 tile，扩大 FP32 1×1 投影的输出通道块。相对 `det-vector-opt1`，RTX 4060 的 100 图 Medium 完整调用均值再降 **3.6%**，样例 REC 阶段降约 **6.8%**，完整字段一致。仅符合条件的 NVIDIA REC 自动采用，Tiny/Small 不宣称加速；Small 首遍换图和 AMD 完整调用有退化数据，详见历史报告。FP32、DET960、预算和接口不变，不新增开关。
+### 验证、性能与后续维护
 
-本轮新增 [DET FP32 向量访存优化](docs/DET-VECTOR-OPTIMIZATION.md)：延续 GPU 前后处理、缓冲区复用和减少搬运的思路，四个 NHWC 通道共用地址计算与向量加载/写回。相对 REC 合批版，RTX 4060 的 100 图 Medium 完整调用均值再降 **4.8%**，连续换图降 **3.9%/4.2%**，完整预测一致；Tiny/Small 基本持平。仅 DET 自动启用，实验中退化的 REC 分派未保留。FP32、DET960、预算和公共接口不变，不新增开关；见报告中的文章借鉴、测试口径与局限。
+发布流程见 [发布验收与兼容政策](docs/RELEASE-GATES.md)、[CI 分层](docs/CI.md) 和 [维护者验收记录](docs/MAINTAINER-ACCEPTANCE.md)。日常构建、软件 Vulkan、实体 GPU 与服务账户测试是不同证据；每次发布仍须验证最终附件。本次版本/文档更新后的二进制由 CI 重新构建，不将历史包改名冒充 v1.0。
 
-当前是 **Tiny/Small/Medium Vulkan 完整 OCR 技术验证版**，同时支持完整 OCR 和裁剪文字区域仅识别，尚不是正式生产版：
+优化记录保留在独立报告中：[GPU 默认路径](docs/GPU-DEFAULT.md)、[三项目 100 图比较](docs/THREE-PROJECT-100.md)、[TensorRT 对照](docs/VULKAN-TENSORRT-100.md)、[REC 多路实验](docs/REC-LANES-EXPERIMENT.md)。不宣称所有图片/显卡均快于 DML 或 TensorRT；多路实验未取得稳定收益，未接入默认。历史测试的版本、哈希与条件仅对应当时产物。
 
-- Vulkan 设备枚举、明确的设备编号与能力信息；
-- C++ 原生运行时 + 实验性 C ABI；
-- 复用上游通用、注意力/LayerNorm shader，构建时派生 FP32 版本并嵌入 SPIR-V；
-- PP-OCRv6 Tiny DET 的完整 242 节点图在 Vulkan 上执行；
-- 动态高度/宽度，NHWC 中间张量、按生命周期复用的工作区；
-- 权重一次上传到 GPU 常驻；最多 32 个 LRU 尺寸计划共用一组工作区，arena/IO 合计按预算约束；
-- C++ 原生 ONNX protobuf 解析、图规范化，直接加载官方 PP-OCRv6 Tiny/Small/Medium；
-- FP32 分块 GEMM、NHWC 连续读取及预排布权重、寄存器分块 1×1 卷积、单消费者仿射/ReLU 融合、融合 LayerNorm/Attention、GPU 贪心 CTC；
-- ONNX Runtime CPU 独立对拍、异常输入及重复变尺寸测试。
-- Tiny CLS 方向分类、Tiny REC 概率输出与 CPU CTC 文字解码；
-- 带字节长度/stride 校验的 BGR 图片仅识别接口、自适应宽度、C#/Python 图片示例。
-- DB 检测框、阅读顺序、透视裁剪、竖长区域转横向、可选 CLS/180° 校正和 REC 串联；
-- 完整 OCR C ABI、独立结果句柄、坐标/文字/置信度/分阶段耗时，以及裁剪像素上限。
-- C# WinForms 测试程序：GPU 下拉选择/手填编号、整图 OCR、鼠标框选仅识别、检测框与耗时展示。
-- 单引擎 HTTP 服务与 Web 页面：二进制/Base64、完整/仅识别/批量、API Key、日志、过载保护和服务脚本。
-
-**尚未实现**：CPU 自动回退、
-协作矩阵、FP16 性能档。接口尚未冻结；性能需按同图、同模型、同参数和预热条件比较。
-
-ONNX 来源、模型切换与解析边界见 [模型说明](docs/ONNX-MODELS.md)。
-本机优化前后、CPU 对照与验证范围见 [0.5 性能与验证报告](docs/LOCAL-PERFORMANCE-050.md)。
-100 张带标准答案的生成图片、Tiny/Small/Medium、实际 C/原 DML/Vulkan 三项目的
-速度、RAM/GPU 内存和正确率比较见 [三项目 100 图测试报告](docs/THREE-PROJECT-100.md)。
-这与使用统一预处理的 DML 对拍器报告不同；原项目批处理/REC 宽度策略有差异，不能只看后端名称作性能归因。
-最新[三模型主机流水线优化报告](docs/PIPELINE-OPTIMIZATION.md)：同一 100 图平均耗时 Tiny/Small/Medium 为 41.04/50.53/98.98 ms，完整预测对象与上一轮一致。性能数据对应本机测试条件，不代表所有显卡、所有图片。
-
-新增[GPU DET 前处理实验](docs/GPU-DET-PREPROCESS-EXPERIMENT.md)：将缩放、归一化与输入布局转换合并到 GPU，网络仍为 FP32、DET 上限仍为 960。RTX 4060 上 100 图完整耗时均值下降约 Tiny 18.0%、Small 12.1%、Medium 5.9%，完整结果一致。实验阶段默认关闭（现已接入自动默认），通过 `LWVK_GPU_DET_PREPROCESS=1` 开启强制模式；额外要求 `shaderFloat64`，不支持时明确报错。
-
-继续优化：[GPU CLS/REC 前处理与上传实验](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md)。相对上一版 DET 实验，同一 100 图均值再下降 Tiny **14.6%**、Small **10.3%**、Medium **4.8%**，完整结果逐项一致。新增 `LWVK_GPU_TEXT_PREPROCESS=1`，融合文字行缩放、灰色填充、归一化与 REC 180° 校正，去掉原图上传的临时复制；这两项当时默认关闭（当前默认策略见上文）、额外要求 `shaderFloat64`。历史实验通过环境变量同时开启，当时普通启动脚本保持 CPU 前处理；当前默认入口自动选择 GPU 路径，旧实验启动脚本已移除。
-
-此前[回读内存与预处理优化报告](docs/HOST-TRANSFER-OPTIMIZATION.md)保留为历史对照。
-
-最新[FP32 1×1 卷积优化](docs/POINTWISE-OPTIMIZATION.md)：连续向量写回、小空间卷积专用 kernel 与安全的 SiLU 融合，按形状自动启用，不新增实验开关。相对上一轮，两边开启 GPU 前处理时，100 图均值再降 Tiny/Small/Medium **2.1%/3.0%/3.3%**；RTX/AMD 三模型 27 种原始概率输出逐位一致。当时的默认 CPU 前处理路径也通过回归；保持 FP32、DET960，不以降精度或缩小图片换取速度。
-
-继续[CLS 有界小批量提交优化](docs/CLS-BATCH-OPTIMIZATION.md)：开启文字行 GPU 前处理后，最多 8 行共享一次提交/等待，REC 仍逐行执行；裁剪暂存有界、合计工作区保持原预算，紧预算自动回退串行。相对上一版，RTX 4060 的 100 图均值再降 Tiny/Small/Medium **6.0%/6.3%/2.4%**，完整结果一致。当前使用 `Start-CSharp-Demo.bat` 自动选择 GPU 前处理，不新增开关；普通 CPU 前处理启动路径不宣称相同提速。
-
-新增[REC 共享 arena 合并提交优化](docs/REC-BATCH-OPTIMIZATION.md)：最多 8 行共享一块中间张量区、一次提交/等待，保留独立输入和紧凑 CTC 输出，不分配未使用的完整概率回读。相对上一轮 CLS 合批，100 图逐图预热均值再降 Tiny/Small/Medium **3.3%/2.6%/1.2%**；不逐图预热的连续换图首遍下降 **6.2%/4.1%/1.9%**，预测字段一致。仍通过现有 GPU 前处理实验脚本开启，该历史 CPU 前处理基线不宣称相同提速；REC 计算仍逐行、共享工作区受原预算约束。
+[供应链与 SBOM](docs/SUPPLY-CHAIN.md) 记录 181 个固定资产、16 个组件；它是来源/完整性清单，不是安全认证。[Sanitizer 与异常恢复](docs/SANITIZERS.md) 保留泄漏和错误失败门禁；RSS 平稳不是无泄漏证明。后续持续扩充真实正确性样本、驱动验证和性能优化，不通过降低精度、缩小 DET960 或放宽正确性门槛宣传提速。
 
 ## 项目原理：C++ 如何使用 Vulkan 推理 OCR
 
@@ -169,7 +138,7 @@ Windows 包解压后运行 `lw.PPOCR.Vulkan.WinFormsDemo.exe`，不需要 Python
 CLS/REC 输入预处理、回读标签后的 CTC 去重/去空白/字典映射、结果组装，以及执行计划准备、工作区分配和锁等待。
 因此不应要求流水线等于 `DET + CLS + REC`；上传、GPU 等待和回读已经算在网络耗时里，不会再次计入“其他”。
 
-GPU 裁剪实验中，“其他”还包含 GPU 裁剪的命令准备、提交与等待，以及 CPU 的框映射/方向判断；它不再等同于纯 CPU 时间。原图上传耗时计入 DET，CLS/REC 的网络缩放仍计入相应阶段，执行计划准备仍属于流水线开销。
+GPU 裁剪路径中，“其他”还包含 GPU 裁剪的命令准备、提交与等待，以及 CPU 的框映射/方向判断；它不等同于纯 CPU 时间。原图上传耗时计入 DET，CLS/REC 的网络缩放仍计入相应阶段，执行计划准备仍属于流水线开销。
 C# 图片转 BGR、JSON 复制/解析和界面更新也不属于这个“其他”。
 
 首轮或新尺寸可能建立计划、扩大工作区，不能当作预热后的稳态速度。耗时按一位小数显示，手工相加可能有舍入差异。
@@ -283,13 +252,13 @@ WinForms 可设置每模型工作区上限（MiB，0=默认）；DET 长边默�
 nlohmann/json 为 MIT，模型保留 PaddleOCR 来源说明与 Apache-2.0 许可证。
 复用上游不代表上游为本项目背书，也不能照搬其精度/性能结论。
 
-## CI 与技术验证包
+## CI 与正式部署包
 
 Windows CI 固定并校验官方 Vulkan SDK 1.4.350.0 下载，缓存安装器下载；构建、检查 C ABI、
 测试安装目录、WinForms 布局/框选映射，并生成 zip + SHA-256。WinForms CI 主机测试不执行 GPU OCR，
 无实体 GPU 时明确跳过硬件测试，不把跳过算作通过。
 日常 `build.yml` 的 Linux 任务现与 Windows 同等级：缓存校验后的 SDK，执行构建、主机 C ABI/配置/单元测试、安装目录与依赖/服务脚本检查，并生成 tar.gz + SHA-256；不执行真实 OCR 推理，不宣称硬件或软件推理验收。
-原完整对拍保留在独立手动工作流 `linux-software-validation.yml`，发布前应在候选 ref 运行；包含 DET、CLS、REC、CTC、BGR stride/长度、同句柄并发、三模型与 HTTP 实际推理检查。操作和验收边界见 [CI 分层说明](docs/CI.md)。
+完整对拍保留在独立手动工作流 `linux-software-validation.yml`，发布前应在发布 ref 运行；包含 DET、CLS、REC、CTC、BGR stride/长度、同句柄并发、三模型与 HTTP 实际推理检查。操作和验收边界见 [CI 分层说明](docs/CI.md)。
 完整 OCR 软件对拍显式使用 CPU 图像前处理，网络仍由 Vulkan 执行；GPU DET/CLS/REC 前处理与透视裁剪另用独立着色器探针检查精确位值、stride、补边和恢复。这样避免共享 runner 上 8 行软件 REC 合批超过单次 30 秒 fence 等待；不是关闭网络对拍或修改硬件 GPU 默认行为。
 Medium 在软件 Vulkan 上连单个网络提交也可能超过 30 秒，因此完整软件对拍工作流显式设置 `LWVK_SOFTWARE_GRAPH_TIMEOUT_MS=180000`（单次网络 fence 等待 180 秒）。此工程选项只对 Vulkan `device_type=4` 的 CPU 软件设备生效，允许范围为 30000～300000 毫秒；未设置仍为 30 秒，独显、集显及虚拟 GPU 始终保持 30 秒。打包不会将 CI 环境变量写入客户配置。它不是整个 OCR 请求的截止时间，更不代表超时会取消已提交任务；模型、精度比较和失败后的 poisoned 处理均保持不变。
 并增加完整 OCR、DB/crop 单元测试、裁剪资源上限和独立结果生命周期测试。
@@ -298,6 +267,7 @@ Medium 在软件 Vulkan 上连单个网络提交也可能超过 30 秒，因此�
 本地打包（确认测试通过后）：
 
 ```powershell
+cmake --build build/local --config Release --parallel 4
 cmake --install build/local --config Release --prefix dist/staging
 python tests/test_api.py --library dist/staging/lw.PPOCR.Vulkan.dll
 python scripts/package.py --staging dist/staging --output dist --platform windows-x64
@@ -328,7 +298,7 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 
 兼容证据见 [COMPATIBILITY.md](docs/COMPATIBILITY.md)，开发边界见 [ROADMAP.md](docs/ROADMAP.md)。
 
-下一阶段：验收本轮 ASan/UBSan CI、继续增加实际公开正确性样本 → SBOM/供应链和兼容性审计 → 最终包长测/实体机部署验收 → RC → v1.0。正式发布不以超过 DML/TensorRT 或支持所有平台为前提，也不把软件 Vulkan 测试当作硬件 GPU 验收。
+后续 1.x：保持 v1 接口兼容，持续修复 Bug、扩充正确性样本与驱动测试、审核依赖、优化性能。新增平台和实验模式通过独立验收后再宣布支持；升级/回滚建议完整包并列部署，见 [部署指南](docs/DEPLOYMENT-UPGRADE.md)。
 
 开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。
 

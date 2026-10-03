@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HTTP config v1 candidate",
+  "title": "HTTP config v1",
   "$comment": "Runtime additionally requires integer JSON tokens (not 1.0), finite numbers, api_key <=1024 UTF-8 bytes after LWVK_API_KEY override, and max_total_crop_pixels >= max_crop_pixels after defaults. Paths resolve relative to the config file. Schema defaults describe missing fields, not the shipped ONNX config.",
   "type": "object",
   "properties": {

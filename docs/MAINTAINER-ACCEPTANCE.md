@@ -1,5 +1,16 @@
 # 维护者验收记录 / Maintainer-reported acceptance
 
+## v1.0.0 正式发布确认
+
+2026-10-03，维护者确认进入 v1.0.0 正式发布，并要求更新中英文 README。版本源改为 1.0.0，现有 C ABI/HTTP/config/JSONL v1 契约转为 frozen；仅变更发布元数据，不更改接口、模型或推理精度。
+
+此前已报告完成的验收仍按下文记录保留。本次没有补造最新 CI run URL、泄漏归因、发布附件 SHA-256 或额外设备测试；文档和版本更新后的最终包仍须从对应 commit/tag 重新构建，保留 CI 与目标机结果并关联实际附件。下面 0.7/dev 阶段内容为历史问题和验收过程，不是当前版本状态。
+
+English: the maintainer authorizes the v1.0.0 stable release. Existing v1 contracts
+are frozen without changing interfaces/models/precision. Historical evidence remains
+attributed to its own binaries; no missing CI links, leak diagnosis, hashes or device
+results are invented. Rebuild and qualify the actual release attachments.
+
 记录日期：2026-10-03。项目维护者在本次沟通中确认，已自行完成下列项目：
 
 | 验收项 | 当前记录 |
@@ -43,7 +54,7 @@ ELF 检查也覆盖内部提取代码的 `lw_` 前缀；普通与 sanitizer CI �
 维护者之前完成的验收不会被否认，但新生成的 Linux 附件需要至少重新核对
 哈希、启动和 OCR/服务 smoke，不能自动继承旧附件的完整验收身份。
 
-当前仍是 v0.7.0-dev.1 开发预览，不自动发布 v1.0、冻结契约、推送或移动标签。
+当时仍是 v0.7.0-dev.1 开发预览，未自动发布 v1.0、冻结契约、推送或移动标签。
 此轮 CI 修复通过后，可推进 RC；升级/回滚、素材再分发权限和任何新增平台范围
 只按实际确认记录，不从上述四项验收推导。
 

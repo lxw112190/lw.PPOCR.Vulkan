@@ -1,6 +1,6 @@
 # 兼容矩阵 / Compatibility matrix
 
-当前为 0.7.0-dev.1 开发预览；正式承诺以最终 RC 附件的实测记录为准。
+当前为 1.0.0 正式版；支持与验证范围如下，具体部署仍需核对实际发布附件与目标环境。
 其他项目的 Win7、Linux ARM、统信、openEuler 或 macOS 成功不能移用于本项目。
 
 维护者现已报告干净目标机与服务账户 GPU 验收完成，见
@@ -9,8 +9,8 @@
 
 | 目标 | 构建/CI 范围 | 运行证据与状态 |
 | --- | --- | --- |
-| Windows x64 | MSVC / Windows-2022 CI，默认 FP32，WinForms .NET Framework 4 | 本机 Windows 10 AMD/NVIDIA 有历史及新版回归；干净机器、Windows 11、服务账户 GPU 仍需最终 RC 验证 |
-| Linux x64 | Ubuntu 22.04 / GCC / Ninja；日常主机测试/打包，完整 lavapipe 对拍为独立手动工作流；独立 Clang ASan/UBSan CI | 维护者报告上一轮 CI 全绿（Linux 约 43 分钟）；lavapipe 不是实体 GPU，不能证明显卡性能/兼容；新分层工作流须推送后复验，实体 GPU/服务部署按实际记录验收 |
+| Windows x64 | MSVC / Windows-2022 CI，Windows 10/11 运行目标，默认 FP32，WinForms .NET Framework 4 | 已记录 Windows 10 AMD/NVIDIA 回归；维护者报告干净机及服务账户验收完成，未提供更多具体 OS/驱动信息，不推导所有 Windows 11 显卡已验收 |
+| Linux x64 | Ubuntu 22.04 / GCC / Ninja；日常主机测试/打包，完整 lavapipe 对拍为独立手动工作流；独立 Clang ASan/UBSan CI | 软件 Vulkan 不证明显卡性能/兼容；实体 GPU、发行版 ABI 和服务账户按实际附件/环境记录验收，不笼统宣称所有 Linux GPU 已验证 |
 | Intel Vulkan GPU | 通用设备枚举/FP32代码路径 | 尚无物理测试记录，不能写已支持/已验收 |
 | Windows 7/8、x86 | 不提供该版本 CI/包 | 当前 cpp-httplib 要求 Windows 10+，不能因 .NET 4 或一个 DLL 能加载就承诺 Win7 |
 | Linux ARM64 / 国产化系统 | 当前无本项目对应 CI/包 | 未支持；需匹配架构驱动、发行版 ABI 和实际 GPU 验证后再扩展 |
@@ -35,7 +35,7 @@
 - Windows 普通包使用静态 MSVC C/C++ runtime，但仍依赖 Windows 系统 API、Vulkan loader 和 GPU 厂商驱动；WinForms 依赖已安装 .NET Framework。不能复制开发机驱动 DLL 替代驱动安装。
 - Linux 保留动态 libc/libstdc++/Vulkan loader 依赖，不打包 glibc。Ubuntu 22.04 是 CI 构建基线，不以发行版名称推导统一最低 GLIBC/GLIBCXX 版本；最终附件须查看实际 `readelf` 符号与 `ldd` 并在目标机测试。
 
-## 最终 RC 验收记录最少字段
+## 正式附件验收记录最少字段
 
 记录附件 SHA-256、DLL/SO SHA-256、`BUILD-INFO.json`、OS/架构、CPU、GPU 名称/驱动/API、设备编号、模型/样本哈希、三模型正确性/长测、RSS/VRAM/句柄趋势、服务账户、启动/停止/升级/回滚结果。截图不替代原始结果。
 

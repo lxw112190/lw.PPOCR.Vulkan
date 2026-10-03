@@ -15,7 +15,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Experimental ABI: not frozen. Exceptions never cross this boundary. */
+/* Frozen C ABI v1 for x64. Exceptions never cross this boundary. */
 typedef enum lwvk_status {
     LWVK_OK = 0,
     LWVK_INVALID_ARGUMENT = 1,
@@ -90,7 +90,7 @@ LWVK_API lwvk_status LWVK_CALL lwvk_recognize_bgr(lwvk_network_handle network, c
                                                   uint64_t text_capacity_bytes, uint64_t* required_utf8_bytes,
                                                   float* score, double* elapsed_ms);
 /* Full OCR: DET -> DB -> perspective crop -> optional CLS -> REC -> CTC.
- * Experimental config/JSON, not frozen. Initialize with config_default(), then
+ * Frozen v1 config/JSON. Initialize with config_default(), then
  * override fields. Source <=40M pixels, each dimension <=20000. Positive BGR8
  * stride and explicit buffer size; same handle calls serialize. No CPU fallback.
  * max_workspace_bytes is PER GRAPH (DET/REC and optional CLS), not process total.

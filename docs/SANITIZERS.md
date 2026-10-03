@@ -17,6 +17,8 @@ UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 ### 退出阶段的 `128 bytes / <unknown module>` 诊断
 
+本节保留开发阶段报错的诊断方法，不作为 v1.0 当前 CI 状态声明。正式发布确认见 MAINTAINER-ACCEPTANCE.md；后续发布仍须审核原始探针与实际 Linux CI 结果，不因版本转正移除检测。
+
 DET 探针打印 PASS 只表示张量对拍与尾部 canary 通过；随后进程退出的 LSan 报错仍是门禁失败。当前报告只有 `realloc` 与未知模块，不能据此认定为项目泄漏、驱动泄漏或误报。已检查正常路径的 buffer/mapping、fence、command/descriptor pool、pipeline、device 和 instance 释放，暂未找到遗漏；Linux 根因仍待有符号调用栈验证。
 
 CI 安装匹配的 `llvm-symbolizer-14` 并检查可执行性。`scripts/sanitizer_gpu_probes.py` 用慢速分配栈展开、40 层调用栈和正常库卸载依次运行三个 shader 探针；即使 DET 失败，也收集 TEXT/CROP 各自的结果。仅这些轻量探针启用慢速展开，不增加后续 OCR 长测的全局开销。所有探针仍启用 ASan/UBSan 和退出泄漏检查。

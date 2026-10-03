@@ -1,6 +1,6 @@
 # Vulkan HTTP 服务 / HTTP service
 
-0.7.0-dev.1 技术验证版。HTTP/config/log v1 已提供机器可读候选契约，尚未正式冻结。
+1.0.0 正式版。HTTP API v1、配置 Schema v1 与 JSONL 访问日志 Schema v1 已正式冻结；后续 1.x 保持现有字段与语义兼容。
 规范文件在 `schemas/`：OpenAPI、配置/响应/访问日志 JSON Schema、契约哈希锁。CI 与真实 HTTP 测试会验证输出；JSON Schema 验证库仅是开发依赖，客户运行程序不需要 Python。
 单引擎串行处理，Vulkan FP32，不依赖 OpenCV、CUDA、ONNX Runtime。WinForms 同时保留。
 

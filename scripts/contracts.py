@@ -1,4 +1,4 @@
-"""Reviewed v1 candidate contracts. --check never rewrites; --write is an explicit review step."""
+"""Frozen v1 contracts. --check never rewrites; --write requires explicit compatibility review."""
 import argparse
 import hashlib
 import json
@@ -51,7 +51,7 @@ def config_schema():
     for name, lo, hi, default in [('bitmap_threshold',0,1,.3), ('box_threshold',0,1,.6),
                                   ('unclip_ratio',.1,5,1.5), ('cls_threshold',0,1,.9)]:
         props[name] = dict(type='number',minimum=lo,maximum=hi,default=default)
-    return dict({'$schema':DRAFT, 'title':'HTTP config v1 candidate',
+    return dict({'$schema':DRAFT, 'title':'HTTP config v1',
         '$comment':'Runtime additionally requires integer JSON tokens (not 1.0), finite numbers, api_key <=1024 UTF-8 bytes after LWVK_API_KEY override, and max_total_crop_pixels >= max_crop_pixels after defaults. Paths resolve relative to the config file. Schema defaults describe missing fields, not the shipped ONNX config.'},
         **obj(props,['schema_version']))
 
@@ -83,7 +83,7 @@ def response_schema():
                       device_name=dict(type='string'),backend=dict(const='vulkan-fp32'),engine_instances=dict(const=1))),
         Error=obj(dict(common,ok=dict(const=False),error_code=dict(type='string',pattern='^[a-z][a-z0-9_]*$'),
                        error=dict(type='string'))))
-    return {'$schema':DRAFT, 'title':'HTTP response v1 candidate', '$defs':defs,
+    return {'$schema':DRAFT, 'title':'HTTP response v1', '$defs':defs,
             'oneOf':[{'$ref':'#/$defs/'+k} for k in ('OcrSuccess','RecognitionSuccess','BatchSuccess','Health','Info','Error')]}
 
 def access_schema():
@@ -93,7 +93,7 @@ def access_schema():
         status=integer(100,599),request_bytes=dict(type='integer',minimum=0),
         response_bytes=dict(type='integer',minimum=0),duration_ms=dict(type='number',minimum=0),
         error_code=dict(type='string',pattern='^[a-z][a-z0-9_]*$'))
-    return dict({'$schema':DRAFT,'title':'Access JSONL v1 candidate',
+    return dict({'$schema':DRAFT,'title':'Access JSONL v1',
                  '$comment':'One record per parsed HTTP request. Transport queue rejection precedes parsing and has no request ID/access record. runtime.log is human-readable and not governed by this schema.'},
                 **obj(props,[k for k in props if k!='error_code']))
 
@@ -123,7 +123,7 @@ def openapi():
             operation['requestBody'] = dict(required=True,content=content)
         paths[path] = {method:operation}
     return dict(openapi='3.1.0', info=dict(title='lw.PPOCR.Vulkan HTTP API',version='1',
-        description='v1 candidate, not yet a frozen production contract. API Key requirements depend on configuration. Full OCR coordinates refer to decoded original pixels; no EXIF auto rotation. Network timings include host submit/wait/readback, not GPU timestamps.'),
+        description='Frozen HTTP API v1, released with lw.PPOCR.Vulkan v1.0.0. API Key requirements depend on configuration. Full OCR coordinates refer to decoded original pixels; no EXIF auto rotation. Network timings include host submit/wait/readback, not GPU timestamps.'),
         paths=paths,components=dict(securitySchemes=dict(ApiKey=dict(type='apiKey',**{'in':'header'},name='X-API-Key'))))
 
 def abi():
@@ -133,7 +133,7 @@ def abi():
     device_names = ('struct_size','device_index','vendor_id','device_id','api_version','device_type','max_shared_memory_bytes','subgroup_size','name')
     config_names = ('struct_size','device_index','det_limit_side','max_candidates','enable_classifier','use_dilation','reading_order','reserved',
                     'max_workspace_bytes','max_crop_pixels','max_total_crop_pixels','bitmap_threshold','box_threshold','unclip_ratio','cls_threshold')
-    return dict(contract_version=1,status='candidate',architecture='x64',calling_convention='cdecl',encoding='UTF-8',
+    return dict(contract_version=1,status='frozen',architecture='x64',calling_convention='cdecl',encoding='UTF-8',
         public_header_token_sha256=fingerprint, symbols=sorted(SYMBOLS),
         status_codes=dict(LWVK_OK=0,LWVK_INVALID_ARGUMENT=1,LWVK_UNAVAILABLE=2,LWVK_MODEL_ERROR=3,LWVK_RUNTIME_ERROR=4,LWVK_BUFFER_TOO_SMALL=5),
         structures=dict(lwvk_device_info=dict(size=288,alignment=4,offsets=dict(zip(device_names,list(range(0,32,4))+[32]))),
@@ -150,16 +150,16 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     modes = p.add_mutually_exclusive_group();modes.add_argument('--write',action='store_true');modes.add_argument('--check',action='store_true')
     a = p.parse_args(); folder=ROOT/'schemas'; docs=documents()
-    lock = dict(contract_version=1,status='candidate',files={k:hashlib.sha256(encoded(v)).hexdigest() for k,v in docs.items()})
+    lock = dict(contract_version=1,status='frozen',files={k:hashlib.sha256(encoded(v)).hexdigest() for k,v in docs.items()})
     docs['contracts-v1.lock.json'] = lock
     for name,value in docs.items():
         path=folder/name; data=encoded(value)
         if a.write:
             folder.mkdir(exist_ok=True);path.write_bytes(data)
         elif not path.is_file() or path.read_bytes().replace(b'\r\n',b'\n')!=data:
-            raise SystemExit(f'Contract drift: {path}; review before explicitly regenerating candidate contracts. Never regenerate in CI.')
+            raise SystemExit(f'Contract drift: {path}; review v1 compatibility before explicitly regenerating contracts. Never regenerate in CI.')
     version=(ROOT/'RELEASE_VERSION').read_text().strip()
     if not re.fullmatch(r'\d+\.\d+\.\d+(?:-[a-z0-9.]+)?',version): raise SystemExit('Invalid RELEASE_VERSION')
-    print(f'PASS: {len(docs)-1} candidate contracts / reviewed hashes / header fingerprint; version={version}')
+    print(f'PASS: {len(docs)-1} frozen v1 contracts / reviewed hashes / header fingerprint; version={version}')
 
 if __name__=='__main__':main()

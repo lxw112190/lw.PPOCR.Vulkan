@@ -3,7 +3,7 @@
   "info": {
     "title": "lw.PPOCR.Vulkan HTTP API",
     "version": "1",
-    "description": "v1 candidate, not yet a frozen production contract. API Key requirements depend on configuration. Full OCR coordinates refer to decoded original pixels; no EXIF auto rotation. Network timings include host submit/wait/readback, not GPU timestamps."
+    "description": "Frozen HTTP API v1, released with lw.PPOCR.Vulkan v1.0.0. API Key requirements depend on configuration. Full OCR coordinates refer to decoded original pixels; no EXIF auto rotation. Network timings include host submit/wait/readback, not GPU timestamps."
   },
   "paths": {
     "/health": {

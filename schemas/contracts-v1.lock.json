@@ -1,11 +1,11 @@
 {
   "contract_version": 1,
-  "status": "candidate",
+  "status": "frozen",
   "files": {
-    "http-service-config-v1.schema.json": "f928b56bdc01bcfe73cf4dd45024b5eed0d1bec5293886974bb1ed0dd05814ec",
-    "http-response-v1.schema.json": "bdfbe32145293db76f4ecf89008612d34dee792c0f550dd21f8c9023718afc3d",
-    "access-log-v1.schema.json": "e9d02eb6789f444135cb7c04feee0b58f19eaa2a37b4df99d3ebd3c7a3ede1e5",
-    "http-api-v1.openapi.json": "5dda256b848eaf9124a2ff5fa7754823eecc0f7a7cee184976ff78d569d7eefd",
-    "c-abi-v1.json": "a6a576caecebfd395edb0c34fdbc55eda6ef0a27d4be16c1828d194e5f735edb"
+    "http-service-config-v1.schema.json": "01a9a09e342cd4a1d6fe7928d5eb5e9d9c1d9525aedefdf5b8ff9419d098801d",
+    "http-response-v1.schema.json": "ed28d58af4971dfc16d0da35eecdcd42bc17f4ef6c72b92ca526921c80c1aa9b",
+    "access-log-v1.schema.json": "16704b23934e0ad945d44f4379ef2beabf5a97a341d31b0d1f2748c8c0065d7b",
+    "http-api-v1.openapi.json": "5a04b25c362c8420ad57cacc4168cc9e4f0b19afc66aa18b4be6b078094d605d",
+    "c-abi-v1.json": "6aa269c439caf0f83a052ae6af2a0d8039cd35878d3856c8a2c51b9d136ee939"
   }
 }

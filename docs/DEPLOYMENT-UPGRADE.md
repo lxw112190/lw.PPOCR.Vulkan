@@ -1,6 +1,6 @@
 # 安全部署、升级与回滚 / Deployment and rollback
 
-当前接口/配置/日志仍是 v1 候选，未正式冻结；预览版升级必须核对 Schema，不只替换 DLL。
+v1.0.0 已正式冻结 C ABI/HTTP/config/JSONL v1；后续 1.x 保持现有接口兼容。旧开发版升级仍须核对 Schema、模型和默认参数，不只替换 DLL。
 
 ## 首次启动
 
@@ -25,15 +25,16 @@
 2. 将新包解压到并列新目录。先核对版本/Schema/许可证/完整文件清单；比较默认 config，将业务值逐项迁移，避免把旧配置整个覆盖新模板。未知字段/版本会明确拒绝启动。
 3. 在测试端口前台启动新包，验证 `/health`、样图/业务样图、API Key、OCR/REC、异常返回与日志。确认三套模型/字典来自同一审核快照，不混用新 DLL、旧页面和未知模型。
 4. 安排维护窗口，停止旧服务并确认进程退出；运行旧目录卸载脚本，再按新目录脚本安装/启动。检查脚本输出与服务账户/GPU；安装失败不得留两个进程争用生产端口。
-5. 保存新附件、哈希、构建信息与验收记录。候选阶段推荐完整包替换，不承诺增量 DLL 兼容；v1.0 冻结后再明确允许替换的最小文件集。
+5. 保存新附件、哈希、构建信息与验收记录。默认推荐完整包并列部署；C ABI 兼容不代表可以任意混用旧网页、配置、模型或库。仅当对应版本的升级说明明确列出可替换文件并完成回归后，才进行增量 DLL/SO 更新。
 
 ## 回滚步骤
 
 停止/卸载新服务，确认进程退出；恢复旧完整目录及其对应配置/模型/网页，用旧脚本安装并启动。复验健康、业务样图、API Key、日志和服务重启，保留故障版本日志与附件供诊断。不得只倒退一个 DLL 而保留新版本配置/模型。
 
-这些是部署操作说明，本轮没有在用户生产机器执行安装、卸载、迁移或修改服务权限；Windows/Linux 服务账户和回滚验收仍是正式 RC 门槛。
+这些是部署操作说明，本轮没有在用户生产机器执行安装、卸载、迁移或修改服务权限。维护者的既有验收见 MAINTAINER-ACCEPTANCE.md；每次新附件/新环境仍需复验服务账户 GPU 与回滚路径。
 
 English: verify provenance and artifact bytes, stage side-by-side, migrate config
 explicitly, test before switching, and retain the entire prior package for rollback.
-Use TLS/reverse-proxy and least privilege for network deployment. Candidate
-schemas do not promise binary-only incremental upgrades.
+Use TLS/reverse-proxy and least privilege for network deployment. v1 contracts
+are frozen, but binary compatibility alone does not authorize mixing package assets.
+Use incremental replacements only when explicitly documented and regression-tested.

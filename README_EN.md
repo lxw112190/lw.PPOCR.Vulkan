@@ -1,105 +1,62 @@
 # lw.PPOCR.Vulkan
 
-New [REC 1/2/4-lane experiment report](docs/REC-LANES-EXPERIMENT.md): 12,000 calls across three models and two mode orders on the same 100-image corpus, with exact prediction equality. Multi-queue lanes did not beat the qualified serial implementation on RTX 4060 and increased dedicated GPU memory. **Not enabled by default; deployment packages unchanged.** The research fork requires the OFF-by-default `LWVK_EXPERIMENTAL_REC_LANES` CMake option; normal builds retain the original serial path.
-
-GPU preprocessing and shared-original perspective cropping are now the **native default** for C#, Python and HTTP. On the selected GPU, `shaderFloat64` enables the validated path automatically; otherwise image processing remains CPU-side while networks still run on Vulkan. One original upload and GPU-resident BGR8 crops avoid pixel re-upload. FP32 networks, DET960, budgets and the ABI are unchanged. Use `Start-CSharp-Demo-CPU-Preprocess.bat` for explicit legacy preprocessing. See [default policy](docs/GPU-DEFAULT.md) and the [historical performance report](docs/GPU-CROP-EXPERIMENT.md).
-
-New [three-model comparison with the actual TensorRT project](docs/VULKAN-TENSORRT-100.md): 100 images × five measured passes on RTX 4060. Four-REC-instance TensorRT averages 15.97/23.12/34.08 ms versus default Vulkan 23.09/35.75/75.67 ms; **TensorRT is currently faster**, while Vulkan has lower resource costs in that main configuration. The report includes single-instance TRT controls, RAM/dedicated/shared GPU memory, per-process/board utilization and GT metrics. These are different real pipelines: FP16-enabled TRT plans versus FP32 Vulkan, not a precision-matched backend contest.
-
-Previous: [Medium REC wide-tile optimization](docs/REC-WIDE-OPTIMIZATION.md) reuses an input tile across twice as many FP32 pointwise output channels. Against det-vector-opt1, paired RTX 4060 Medium 100-image full-call means improve **3.6%**, and sample REC stage medians improve about **6.8%**, with exact prediction equality. Automatic selection is restricted to eligible NVIDIA REC shapes; Tiny/Small have no acceleration claim. Small first-pass and AMD end-to-end regressions are disclosed in that historical report. FP32, DET960, budgets and ABI stay unchanged; no new flag.
-
-Latest: [DET FP32 vector memory optimization](docs/DET-VECTOR-OPTIMIZATION.md) shares spatial address arithmetic and NHWC loads/stores across four channels. Against rec-batch-opt1, paired RTX 4060 Medium 100-image full-call means improve **4.8%**, with **3.9%/4.2%** gains on a changing stream and exact prediction equality. Tiny/Small remain essentially unchanged. Enable automatically for eligible DET shapes only: an experimental REC dispatch regressed changing-width streams and was not retained. FP32, DET960, resource limits and the public ABI stay unchanged; no new flag is required. The report maps the GPU preprocessing/postprocessing article's lessons to implemented features and retained CPU work.
-
 [中文](README.md)
 
-A C++17 PP-OCR Vulkan GPU inference project with a native C ABI, HTTP/Web service and C# WinForms examples.
-No OpenCV DNN, ONNX Runtime or CUDA **runtime** dependency.
+A cross-platform C++17 PP-OCR Vulkan GPU inference project with a stable C ABI, HTTP/Web service and C# WinForms examples.
+No OpenCV DNN, ONNX Runtime or CUDA **runtime** dependency. Full source is available under Apache-2.0.
+
 Author: 天天代码码天天<br>
 QQ: 819069052<br>
 QQ group name: 天天代码码天天<br>
 QQ group number: 264292622
 
-## Status: 0.7.0-dev.1 / v1.0 supply chain and release boundaries
+## v1.0.0 stable release
 
-Added [supply-chain audit and SBOM](docs/SUPPLY-CHAIN.md): 181 pinned assets,
-16 components, deterministic CycloneDX 1.6 validated offline against official
-schemas, mandatory model/license completeness, and packaged `SBOM.cdx.json` /
-`BUILD-INFO.json`. Corrected fmt's MIT license metadata without changing models
-or inference dependencies. Fault injection and a separate asset/SBOM audit CI
-are retained; CodeQL and Dependabot are not enabled. This is not vulnerability
-clearance or security certification; dependency security review remains a
-maintainer responsibility.
+v1.0.0 freezes C ABI v1, HTTP API v1, configuration Schema v1 and JSONL access-log Schema v1.
+Subsequent 1.x maintenance preserves existing exports, structure layouts, fields and semantics; breaking changes require new versioned interfaces. Stable does not mean unlimited platform support, perpetual LTS, or a guarantee of zero vulnerabilities/leaks.
 
-See the [compatibility matrix](docs/COMPATIBILITY.md), [secure deployment and
-upgrade/rollback guide](docs/DEPLOYMENT-UPGRADE.md), and [local 0.7 validation](docs/LOCAL-VALIDATION-070.md).
-CI, software Vulkan, physical GPUs and service-account access are separate
-evidence levels; Win7/ARM/macOS qualifications from other projects do not transfer.
+- Pinned PP-OCRv6 **Tiny / Small / Medium** ONNX models, loaded directly by the native C++ reader.
+- Default **Vulkan FP32** full OCR (DET → optional CLS → REC) and recognition-only for pre-cropped text lines.
+- Length/stride-checked BGR8 C ABI for camera pixels; independent result handles with text, four-point coordinates, confidence and timings.
+- C# WinForms with editable GPU selection, three models, full-image OCR, mouse-selected recognition, overlays and timings; C#/Python integration examples.
+- HTTP/Web with binary/Base64, recognition batches, API Key, bounded queue/wait and image budgets, rotating runtime/access logs.
+- Windows SCM / Linux systemd install/uninstall/start/stop/restart scripts, with models, dictionaries, pages, sample and examples included.
+- Capability-aware GPU DET/CLS/REC preprocessing and perspective crops share the original image. Without `shaderFloat64`, image processing stays CPU-side; **networks still use Vulkan**.
+- Pinned assets, 19 C exports/layout checks, OpenAPI/Schemas, ASan/UBSan/LSan gates, SBOM, build metadata and archive SHA-256.
 
-Added [ASan/UBSan and recovery gates](docs/SANITIZERS.md): all native targets are
-instrumented in dedicated Linux CI, intentional fault probes verify ASan/UBSan/
-LeakSanitizer activation, and installed C ABI/HTTP binaries are tested. Added 2000
-malformed-image cases, 200 hostile HTTP cases and 11 transformed correctness
-scenarios. These are derivatives of one reviewed sample, not diverse real-world
-ground truth. Linux sanitizer results require the next CI run; a normal Windows
-build or flat RSS does not prove the absence of leaks.
+Download deployment packages and checksums from [GitHub Releases](https://github.com/lxw112190/lw.PPOCR.Vulkan/releases):
+`lw.PPOCR.Vulkan-v1.0.0-windows-x64-full-ocr.zip` and
+`lw.PPOCR.Vulkan-v1.0.0-linux-x64-full-ocr.tar.gz`, each with a matching `.sha256`.
+CI artifacts support build/qualification; published Release attachments are the official downloads.
 
-The [dev.2 local validation](docs/LOCAL-VALIDATION-062.md) records 23 host tests,
-66 model/device/scenario combinations across AMD and NVIDIA, exact image shader
-probes, native ABI/HTTP smoke and recovery after 209 hostile HTTP requests.
-Previous-version soak reports do not qualify this binary as leak-free.
+### Supported scope and prerequisites
 
-Added machine-checked v1 **candidate** contracts: 19 C exports and native/ctypes
-layout baselines, OpenAPI, config/response/access-log JSON Schemas and reviewed
-contract hashes. Tests compare config cases with the actual service, validate live
-HTTP responses and JSONL logs, and check each archived payload file against
-`PACKAGE-MANIFEST.json`. CI packages include `schemas/`. This is not an ABI-frozen
-or LTS release; see the [release gates](docs/RELEASE-GATES.md) for remaining work.
-The [local v0.6 report](docs/LOCAL-VALIDATION-060.md) records 21 host tests, 111 config
-cases, three-model AMD/NVIDIA references, and 1000 varied-size HTTP OCR requests
-per model on NVIDIA. RSS/thread/handle signals are not leak-proof or remote CI evidence.
+Build/package targets are **Windows x64 / Linux x64**. Windows native services target Windows 10/11; recorded physical GPU tests cover Windows 10 with AMD integrated graphics and NVIDIA RTX 4060 Laptop GPU. Linux CI uses Ubuntu 22.04; software Vulkan references do not qualify Linux hardware GPUs. See the [compatibility matrix](docs/COMPATIBILITY.md).
 
-Implemented: Vulkan device enumeration, experimental length-aware C ABI,
-the entire 242-node PP-OCRv6 Tiny DET graph on Vulkan, portable FP32 shaders
-derived from pinned upstream kernels, lifetime-reused NHWC workspace,
-resident device-local weights and at most 32 LRU shape plans sharing one budget-bounded arena/IO workspace.
-Native C++ ONNX protobuf parsing loads official Tiny/Small/Medium files directly;
-no customer-side Python, Protobuf or ONNX Runtime is needed. FP32 tiled GEMM,
-register-tiled pointwise convolution, fused LayerNorm/attention and GPU greedy CTC
-are implemented. See [model sources and loader boundaries](docs/ONNX-MODELS.md).
-See the [0.5 local performance and validation report](docs/LOCAL-PERFORMANCE-050.md)
-for measured improvements and the limits of the CPU comparison.
-See the [100-image, three-project benchmark](docs/THREE-PROJECT-100.md)
-for Tiny/Small/Medium speed, process RAM, WDDM GPU memory and ground-truth accuracy.
-It calls the actual C and legacy DML project DLLs, not the unified DML reference helper.
-Batching and REC width policies differ, so it measures deployed pipelines rather than identical operators.
-The latest [host-pipeline optimization report](docs/PIPELINE-OPTIMIZATION.md)
-records mean Tiny/Small/Medium latency of 41.04/50.53/98.98 ms on the same 100-image corpus,
-with identical prediction objects. Results apply to the measured local conditions, not every GPU/image.
-The earlier [host/readback report](docs/HOST-TRANSFER-OPTIMIZATION.md) remains a historical comparison.
+Install a matching Vulkan loader/vendor driver. Devices need Vulkan 1.1 plus actual model/resource capabilities.
+Prebuilt packages do not need Python or the Vulkan SDK; WinForms also needs a compatible .NET Framework 4.0+ installation.
+Win7/8, x86, ARM64, domestic Linux distributions and macOS are not promised, nor inherited from other projects.
+Missing compatible Vulkan devices fail explicitly: **there is no automatic CPU OCR fallback**.
 
-The new [GPU DET preprocessing experiment](docs/GPU-DET-PREPROCESS-EXPERIMENT.md) fuses resize, normalization and input packing directly into the DET arena. It was initially off by default (now automatic on capable GPUs), requires `shaderFloat64`, and keeps FP32 networks/DET cap 960. Enable `LWVK_GPU_DET_PREPROCESS=1` before launching a new process, for explicit control. On RTX 4060, paired 100-image mean latency fell by 18.0%/12.1%/5.9% for Tiny/Small/Medium with every prediction field unchanged; this is not a universal speed or DML-superiority claim.
+Cooperative-matrix/mixed-FP16 and multi-REC-lane research options remain OFF by default, outside the stable inference mode.
+This is not a generic ONNX engine, PDF/layout parser or table-structure recognizer.
 
-The follow-up [GPU CLS/REC preprocessing and upload experiment](docs/GPU-TEXT-PREPROCESS-EXPERIMENT.md) reduces mean latency by another **14.6%/10.3%/4.8%** for Tiny/Small/Medium against that DET-only baseline on the same 100 images, with exact prediction-field equality. `LWVK_GPU_TEXT_PREPROCESS=1` fuses text-line resize, gray padding, normalization and REC 180-degree sampling, while segmented uploads eliminate a full-source temporary copy. Both experiments were initially off by default (now capability-aware defaults) and require `shaderFloat64`; networks stay FP32. That historical experiment enabled both through environment variables and its normal launcher retained CPU preprocessing. The current normal launcher selects automatically; the old experimental launchers have been removed.
+### Validation, performance and maintenance
 
-The latest [FP32 pointwise optimization](docs/POINTWISE-OPTIMIZATION.md) uses contiguous vector stores, a small-spatial kernel and guarded Conv→SiLU epilogues, selected automatically without a new flag. Against the previous GPU-preprocessing build, paired 100-image means improve by another **2.1%/3.0%/3.3%** for Tiny/Small/Medium. Both sides enable GPU preprocessing for that comparison. RTX/AMD tests retain exact FP32 output bits across 27 shapes per device; the historical CPU-preprocessing baseline also passes. FP32 networks and DET960 remain unchanged.
+See [release qualification and compatibility policy](docs/RELEASE-GATES.md), [CI layers](docs/CI.md)
+and [maintainer-reported acceptance](docs/MAINTAINER-ACCEPTANCE.md). Host builds, software Vulkan,
+physical GPUs and service accounts are separate evidence levels. Qualify the final attachment for every release;
+CI rebuilds this version/documentation update, rather than renaming historical binaries to v1.0.
 
-The follow-up [bounded CLS submission batching](docs/CLS-BATCH-OPTIMIZATION.md) groups at most eight independent text-line commands into one submission/fence when GPU text preprocessing is enabled; REC remains sequential. Cropped staging and combined workspace stay bounded, with sequential fallback under tight budgets. Against network-opt1, paired RTX 4060 100-image means improve another **6.0%/6.3%/2.4%** for Tiny/Small/Medium, with exact item equality. Use the existing GPU-preprocessing experimental launcher; no new flag is required. The normal CPU-preprocessing path has no claimed equivalent speedup.
+Detailed optimization evidence remains in [GPU defaults](docs/GPU-DEFAULT.md),
+[100-image three-project comparison](docs/THREE-PROJECT-100.md), [TensorRT comparison](docs/VULKAN-TENSORRT-100.md)
+and [REC-lane experiment](docs/REC-LANES-EXPERIMENT.md). No universal DML/TensorRT superiority is claimed;
+multiple lanes lacked reliable gains and are not the default. Historical reports qualify their own versions/hashes/conditions only.
 
-The latest [REC shared-arena submission optimization](docs/REC-BATCH-OPTIMIZATION.md) groups up to eight serial line commands with independent raw input/compact CTC IO and one shared tensor arena. It avoids unused full-logit readback and retains the workspace cap. Against cls-batch-opt1, warmed 100-image means improve **3.3%/2.6%/1.2%** for Tiny/Small/Medium; a changing stream without per-image warmup improves **6.2%/4.1%/1.9%** on its first pass, with exact prediction equality. Use the existing GPU-preprocessing experimental launcher. It is not batch-N or guaranteed parallel inference; the historical CPU-preprocessing baseline has no equivalent speedup claim.
-
-Also implemented: Tiny CLS/REC GPU graphs, native greedy CTC decoding,
-length/stride-checked BGR recognition-only, adaptive width and C#/Python image examples.
-Full OCR now composes DB boxes, reading order, perspective crops, tall-region rotation,
-optional CLS/180-degree correction and REC. Independent result handles return JSON
-with coordinates, text, confidence and stage timing. Crop memory/work is bounded.
-The single-engine HTTP/Web service supports binary/Base64, full/REC-only/batch,
-API Key, bounded queues/decoding, split rotating logs and service scripts.
-The C# WinForms tester supports editable GPU selection, full OCR, mouse-selected
-recognition-only, box overlays, text/JSON/confidence and timing.
-
-Not available as a release mode: automatic CPU fallback or FP16 performance mode.
-A separately gated cooperative-matrix experiment exists, but fails the current real-model accuracy gate and remains off by default.
-This is not a production OCR release. The ABI and internal model format are not frozen.
+[Supply chain and SBOM](docs/SUPPLY-CHAIN.md) covers 181 pinned assets and 16 components, not security certification.
+[Sanitizer/recovery gates](docs/SANITIZERS.md) retain leak/error failures; flat RSS is not leak proof.
+Further work expands real correctness samples, driver qualification and performance without reducing FP32 precision,
+shrinking DET960 or relaxing correctness gates to claim acceleration.
 
 ## How it works
 
@@ -146,15 +103,15 @@ Configure with `-G Ninja -DCMAKE_BUILD_TYPE=Release`, then build and run CTest.
 On Ubuntu, install `libvulkan-dev`, not just the runtime package `libvulkan1`.
 SDK headers and `glslc` alone do not satisfy the loader link-library requirement;
 otherwise CMake can report `missing: Vulkan_LIBRARY`. Compiled-package users do not need this development package.
-Linux, ARM64/domestic distributions and macOS require separate validation;
-a Windows test does not establish their compatibility.
+Linux hardware GPUs and additional ARM64/domestic distributions/macOS require separate qualification;
+Windows tests and Linux software Vulkan do not establish their compatibility.
 
 Daily `build.yml` builds/packages Windows x64 and Linux x64 with equivalent
 host ABI/config/unit and staged-package checks; neither job performs real OCR
 inference. Windows additionally tests the WinForms host UI, while Linux checks
 ELF dependencies and service-unit scripts. Hardware absence is explicit (SKIP).
 The original full software Vulkan suite now lives in the manual-only
-`linux-software-validation.yml`: run it on the candidate ref before release.
+`linux-software-validation.yml`: run it on the release ref before publication.
 It retains DET/CLS/REC, all three models, shader probes and real HTTP inference,
 not a hardware acceleration benchmark. See [CI layers](docs/CI.md). Full OCR reference tests explicitly use
 CPU image preprocessing while networks still execute through Vulkan. Independent
@@ -215,7 +172,8 @@ order, perspective crops and rotation, CLS/REC preprocessing, CPU CTC repeat/bla
 dictionary mapping and result assembly, plus plan preparation, workspace allocation and lock waiting.
 Pipeline time therefore need not equal DET + CLS + REC. Upload/wait/readback are already counted
 in network timings, not counted again in Other. C# pixel conversion, JSON copying/parsing and
-UI updates are outside Other.
+UI updates are outside Other. With GPU cropping, Other also includes crop submission/wait
+and CPU box/orientation work; it is not pure CPU time. Original upload is counted in DET.
 
 First calls/new shapes may prepare plans or grow workspace; do not treat them as warmed-up
 performance. One-decimal displays can introduce rounding differences. Compare the same image,
@@ -297,9 +255,10 @@ and [full OCR report](docs/LOCAL-OCR-REPORT.md), plus [roadmap](docs/ROADMAP.md)
 Full OCR tests use independent ORT graphs/NumPy preprocessing/CTC but share C geometry;
 they are NOT independent DB algorithm comparisons. Python tests use Python >=3.10 (CI: 3.12).
 
-To create a technical-preview package after testing:
+To build a deployment archive after qualification (use a fresh staging directory):
 
 ```powershell
+cmake --build build/local --config Release --parallel 4
 cmake --install build/local --config Release --prefix dist/staging
 python tests/test_api.py --library dist/staging/lw.PPOCR.Vulkan.dll
 python scripts/package.py --staging dist/staging --output dist --platform windows-x64
@@ -342,7 +301,7 @@ See the [Demo timing and presentation revision](docs/DEMO-TIMING-OPTIMIZATION.md
 
 The latest [host-pipeline optimization](docs/PIPELINE-OPTIMIZATION.md) reduces redundant CLS/REC resize and crop work without changing FP32, models or shaders. Paired RTX 4060 tests improve Tiny by 20–24%, Small by ~16% and Medium by 9–10%; all 100-image predictions remain exactly equal. Other GPUs may not gain equally.
 
-The [complete C# sharing preview](docs/CSHARP-SHARE-PACKAGE.md) bundles three
+The [complete C# sharing package](docs/CSHARP-SHARE-PACKAGE.md) bundles three
 models, an official x64 Vulkan loader, an optional Runtime installer and C#
 source. A compatible installed GPU vendor driver is still required.
 

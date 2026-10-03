@@ -95,7 +95,7 @@ def prepare(a):
     for name in ('lw.PPOCR.Vulkan.dll','vulkan-1.dll','lw-ppocr-vulkan-probe.exe',
                  'lw.PPOCR.Vulkan.CSharpDemo.exe','lw.PPOCR.Vulkan.WinFormsDemo.exe'):
         require_x64(a.staging/name)
-    info=dict(package_kind='Windows x64 C# complete sharing preview',
+    info=dict(package_kind='Windows x64 C# complete sharing package',
         version=(ROOT/'RELEASE_VERSION').read_text().strip(),created_utc=datetime.now(timezone.utc).isoformat(),
         native_library_sha256=sha(dll),runtime_version=RUNTIME_VERSION,
         demo_revision=a.revision,native_qualification_sha256=sha(a.qualification),

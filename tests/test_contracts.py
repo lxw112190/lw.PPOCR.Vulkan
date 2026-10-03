@@ -7,6 +7,13 @@ from jsonschema import Draft202012Validator,ValidationError
 from contract_common import ROOT,schema,CONFIG,HTTP,ACCESS
 
 class Contracts(unittest.TestCase):
+    def test_v1_release_freeze_metadata(self):
+        version=(ROOT/'RELEASE_VERSION').read_text(encoding='utf-8').strip()
+        self.assertEqual(version.split('.')[0],'1')
+        for name in ('c-abi-v1.json','contracts-v1.lock.json'):
+            value=json.loads((ROOT/'schemas'/name).read_text(encoding='utf-8'))
+            self.assertEqual(value['contract_version'],1)
+            self.assertEqual(value['status'],'frozen')
     def test_schemas_and_shipped_config(self):
         for v in (CONFIG,HTTP,ACCESS):Draft202012Validator.check_schema(v.schema)
         CONFIG.validate(json.loads((ROOT/'http-service.json').read_text()))

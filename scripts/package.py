@@ -1,4 +1,4 @@
-"""Archive the already-installed technical-preview package, with SHA-256."""
+"""Archive the already-installed deployment package, with SHA-256."""
 import argparse
 import hashlib
 import json
@@ -22,8 +22,9 @@ build_info=json.loads((root/'BUILD-INFO.json').read_text(encoding='utf-8'))
 validate_release_build(build_info,version,a.platform)
 for name in ('http-service-config-v1.schema.json','http-response-v1.schema.json','access-log-v1.schema.json',
              'http-api-v1.openapi.json','c-abi-v1.json','contracts-v1.lock.json'):
-    if not (root/'schemas'/name).is_file():raise RuntimeError(f'missing candidate contract: {name}')
+    if not (root/'schemas'/name).is_file():raise RuntimeError(f'missing v1 contract: {name}')
 contracts=json.loads((root/'schemas/contracts-v1.lock.json').read_text(encoding='utf-8'))
+if contracts.get('status') != 'frozen':raise RuntimeError('deployment package requires frozen v1 contracts')
 for name,expected in contracts['files'].items():
     actual=hashlib.sha256((root/'schemas'/name).read_bytes().replace(b'\r\n',b'\n')).hexdigest()
     if actual!=expected:raise RuntimeError(f'package contract checksum mismatch: {name}')
@@ -63,14 +64,15 @@ if a.platform == "windows-x64":
     for name in ("lw.PPOCR.Vulkan.CSharpDemo.exe", "lw.PPOCR.Vulkan.WinFormsDemo.exe",
                  "lw.PPOCR.Vulkan.WinFormsDemo.exe.config"):
         if not (root/name).is_file(): raise RuntimeError(f"missing Windows demo: {name}; enable LWVK_BUILD_CSHARP_EXAMPLE and install the C# compiler")
-name=f"lw.PPOCR.Vulkan-v{version}-{a.platform}-full-ocr-preview"
+suffix='-preview' if '-' in version else ''
+name=f"lw.PPOCR.Vulkan-v{version}-{a.platform}-full-ocr{suffix}"
 output=a.output.resolve(); output.mkdir(parents=True,exist_ok=True)
 inventory={}
 for path in sorted(root.rglob('*')):
     if path.is_file() and path!=root/'PACKAGE-MANIFEST.json':
         inventory[path.relative_to(root).as_posix()]={'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
 (root/'PACKAGE-MANIFEST.json').write_text(json.dumps(dict(manifest_version=1,version=version,platform=a.platform,
-    contract_status='candidate',files=inventory),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    contract_status=contracts['status'],files=inventory),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 archive=Path(shutil.make_archive(str(output/name),"zip" if a.platform=="windows-x64" else "gztar",root_dir=root.parent,base_dir=root.name))
 digest=hashlib.sha256(archive.read_bytes()).hexdigest()
 archive.with_name(archive.name+".sha256").write_text(f"{digest}  {archive.name}\n",encoding="ascii")

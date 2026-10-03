@@ -26,7 +26,10 @@ def verify(path):
         roots={PurePosixPath(n).parts[0] for n in names};assert len(roots)==1,'Expected one package root'
         prefix=next(iter(roots))+'/'
         with opener(prefix+'PACKAGE-MANIFEST.json') as stream:manifest=json.load(stream)
-        assert manifest['manifest_version']==1 and manifest['contract_status']=='candidate'
+        assert manifest['manifest_version']==1 and manifest['contract_status'] in ('candidate','frozen')
+        # Keep historical pre-1.0 archives verifiable, but reject unfrozen 1.x releases.
+        if int(manifest['version'].split('.')[0]) >= 1 and '-' not in manifest['version']:
+            assert manifest['contract_status']=='frozen','Stable 1.x archive requires frozen contracts'
         assert set(names)=={prefix+n for n in manifest['files']}|{prefix+'PACKAGE-MANIFEST.json'},'Archive file set differs from manifest'
         for name,entry in manifest['files'].items():
             digest=hashlib.sha256();size=0

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HTTP response v1 candidate",
+  "title": "HTTP response v1",
   "$defs": {
     "OcrItem": {
       "type": "object",

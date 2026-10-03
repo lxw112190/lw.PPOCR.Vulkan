@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Access JSONL v1 candidate",
+  "title": "Access JSONL v1",
   "$comment": "One record per parsed HTTP request. Transport queue rejection precedes parsing and has no request ID/access record. runtime.log is human-readable and not governed by this schema.",
   "type": "object",
   "properties": {

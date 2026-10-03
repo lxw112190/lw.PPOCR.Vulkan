@@ -1,5 +1,14 @@
 # Roadmap / 开发边界
 
+## 1.0.0: stable release / 正式版
+
+Frozen existing x64 C ABI v1 and HTTP/config/JSONL v1 contracts; versioned,
+checksum-verified Windows/Linux packages, default FP32 Tiny/Small/Medium OCR,
+capability-aware GPU image processing, WinForms/C#/Python and HTTP/Web integration.
+Maintenance preserves existing 1.x interfaces. See [release policy](RELEASE-GATES.md)
+and [compatibility matrix](COMPATIBILITY.md); stable is not unlimited platform support
+or an indefinite LTS promise. The earlier milestones below are historical records.
+
 ## 0.1.0-dev.1: Tiny DET 技术验证
 
 Implemented: portable FP32 shaders, device probe,
@@ -57,13 +66,13 @@ process equivalence cases, live response/log validation, packaged schemas and
 per-file archive integrity checks. RELEASE_VERSION is the single version source.
 No production freeze, LTS or full security audit is claimed.
 
-## Next: validation and hardening
+## After 1.0: ongoing validation and maintenance
 
 1. Wider correctness corpus, driver/device matrix and 1000..5000 full OCR stress.
 2. Linux physical GPU and service-account deployment checks; wider WinForms usage.
 3. GPU validation layers, sanitizer and fault recovery/shutdown tests.
-4. Supply-chain inventory/SBOM, license and vulnerability review, upgrade/rollback,
-   final artifact qualification, RC and explicit support policy. See [release gates](RELEASE-GATES.md).
+4. Keep supply-chain/SBOM audits, dependency security review, upgrade/rollback and
+   final-artifact qualification active for every release. See [release policy](RELEASE-GATES.md).
 
 ## Optional optimization / release gates
 
@@ -74,7 +83,8 @@ No production freeze, LTS or full security audit is claimed.
 - Independent Intel/AMD/NVIDIA tests; OS-specific loader/package and service tests.
 - ASan/UBSan, GPU-assisted/synchronization validation, concurrent calls, shutdown,
   fault recovery, 1000..5000 varied real-image requests; do not infer leak freedom from RSS alone.
-- Frozen C ABI / HTTP / config / model contracts, SBOM and dependency audits before 1.0.
+- Preserve frozen C ABI / HTTP / config / log v1 and pinned model snapshots;
+  review dependency/model changes and version any breaking interface change.
 
 不承诺未经验证的 Win7、国产 Linux、ARM64、macOS 或“所有 Vulkan 显卡”。
 不把软件 Vulkan CI 对拍说成真实 GPU 性能测试。

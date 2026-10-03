@@ -36,6 +36,17 @@ class Integrity(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             path=self.archive(d,change=lambda e:e.update({'staging/library.dll':b'changed'}))
             with self.assertRaises(AssertionError):verify(path)
+    def test_stable_release_requires_frozen_contract(self):
+        def stable(entries, status):
+            name='staging/PACKAGE-MANIFEST.json'
+            manifest=json.loads(entries[name])
+            manifest.update(version='1.0.0',contract_status=status)
+            entries[name]=json.dumps(manifest).encode()
+        with tempfile.TemporaryDirectory() as d:
+            for kind in ('zip','tar'):
+                self.assertEqual(verify(self.archive(d,kind,lambda e:stable(e,'frozen')))['version'],'1.0.0')
+                with self.assertRaisesRegex(AssertionError,'requires frozen'):
+                    verify(self.archive(d,kind,lambda e:stable(e,'candidate')))
     def test_extra_missing_unsafe(self):
         with tempfile.TemporaryDirectory() as d:
             for change in (lambda e:e.update({'staging/extra':b'x'}),lambda e:e.pop('staging/library.dll'),

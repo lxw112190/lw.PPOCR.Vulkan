@@ -18,7 +18,7 @@ Windows 额外检查 WinForms 主机布局/框选映射，Linux 额外检查 ELF
 - Windows 与 Linux job 总上限均为 30 分钟；这是失败边界，不是预计耗时。
 - Linux 仍缓存官方 SDK，校验下载哈希；不再安装仅完整网络对拍需要的 ORT/ONNX Python 包。
 - 设备探测使用 `--allow-no-device`。即使成功列出设备，也只证明枚举，不证明 OCR 或显卡兼容。
-- 日常 Linux artifact 为 `linux-x64-full-ocr-preview`，不再叫 `software-validated`；full-ocr 指包包含完整 OCR 能力，不代表本次 CI 已跑真实推理。
+- 日常 artifact 为 `windows-x64-full-ocr` / `linux-x64-full-ocr`；手动完整验证为 `linux-x64-software-validated-full-ocr`。full-ocr 指包包含完整 OCR 能力，不代表日常 CI 已跑真实推理；正式版本的压缩包文件名不再带 preview。
 - 不缓存最终发布二进制来跳过编译，也不关闭主机接口、配置、SBOM、依赖闭包或安装目录检查。
 
 这会减少日常工作量，但实际耗时仍受 SDK 缓存命中、runner 负载和下载影响；不承诺固定 5 分钟。

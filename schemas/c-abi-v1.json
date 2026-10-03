@@ -1,6 +1,6 @@
 {
   "contract_version": 1,
-  "status": "candidate",
+  "status": "frozen",
   "architecture": "x64",
   "calling_convention": "cdecl",
   "encoding": "UTF-8",
