@@ -1,0 +1,62 @@
+#version 450
+#extension GL_EXT_control_flow_attributes : require
+// Apache-2.0, lw.PPOCR.Vulkan 2026. FP32 M16/N128/K32 REC projection.
+// Four rows x four adjacent classes per invocation. Short REC rows avoid
+// computing the unused rows of a larger tile. Keep the FP32 accumulation order.
+// K divisible by four; only weights pad N. Uses 18 KiB shared memory.
+layout(local_size_x = 128) in;
+layout(binding = 0, std430) readonly buffer X { vec4 x[]; };
+layout(binding = 1, std430) readonly buffer W { vec4 w[]; };
+layout(binding = 2, std430) readonly buffer B { float b[]; };
+layout(binding = 3, std430) writeonly buffer O { float o[]; };
+layout(push_constant) uniform PC { uint M; uint N; uint K; uint flags; } p;
+shared float aa[512];
+shared vec4 bb[1024];
+void main() {
+    uint lid = gl_LocalInvocationID.x, m0 = gl_WorkGroupID.x * 16, n0 = gl_WorkGroupID.y * 128;
+    uint mr = (lid / 32) * 4, nv = lid % 32, N4 = (p.N + 3) / 4, K4 = p.K / 4;
+    vec4 r[4];
+    [[unroll]] for (uint j = 0; j < 4; ++j) r[j] = vec4(0);
+    for (uint k0 = 0; k0 < p.K; k0 += 32) {
+        for (uint i = lid; i < 128; i += 128) {
+            uint m = m0 + i / 8, k4 = k0 / 4 + i % 8;
+            vec4 v = (m < p.M && k4 < K4) ? x[m * K4 + k4] : vec4(0);
+            aa[i * 4] = v.x; aa[i * 4 + 1] = v.y;
+            aa[i * 4 + 2] = v.z; aa[i * 4 + 3] = v.w;
+        }
+        for (uint i = lid; i < 1024; i += 128) {
+            uint k = k0 + i / 32, n4 = n0 / 4 + i % 32;
+            bb[i] = (k < p.K && n4 < N4) ? w[k * N4 + n4] : vec4(0);
+        }
+        barrier();
+        [[unroll]] for (uint k = 0; k < 32; ++k) {
+            vec4 v = bb[k * 32 + nv];
+            [[unroll]] for (uint j = 0; j < 4; ++j) r[j] += aa[(mr + j) * 32 + k] * v;
+        }
+        barrier();
+    }
+    uint n4 = n0 / 4 + nv;
+    if (n4 >= N4) return;
+    uint n = n4 * 4;
+    vec4 bias = vec4(0);
+    if ((p.flags & 1u) != 0) {
+        bias.x = b[n];
+        if (n + 1 < p.N) bias.y = b[n + 1];
+        if (n + 2 < p.N) bias.z = b[n + 2];
+        if (n + 3 < p.N) bias.w = b[n + 3];
+    }
+    [[unroll]] for (uint j = 0; j < 4; ++j) {
+        vec4 v = r[j] + bias;
+        if ((p.flags & 16u) != 0) v = max(v, vec4(0));
+        if ((p.flags & 32u) != 0) v = lwvk_gelu(v);
+        if ((p.flags & 128u) != 0) v = lwvk_silu(v);
+        uint m = m0 + mr + j;
+        if (m < p.M) {
+            uint offset = m * p.N + n;
+            o[offset] = v.x;
+            if (n + 1 < p.N) o[offset + 1] = v.y;
+            if (n + 2 < p.N) o[offset + 2] = v.z;
+            if (n + 3 < p.N) o[offset + 3] = v.w;
+        }
+    }
+}

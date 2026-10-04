@@ -3,6 +3,51 @@
 #include <cmath>
 #include <cstring>
 namespace lwvk {
+uint32_t fold_pointwise_bias(std::vector<Node>& nodes, const std::vector<Tensor>& tensors, uint32_t output) {
+    std::vector<uint32_t> uses(tensors.size());
+    for (const auto& node : nodes)
+        for (auto id : node.inputs)
+            ++uses.at(id);
+    ++uses.at(output);
+    std::vector<Node> result;
+    uint32_t fused = 0;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        auto node = nodes[i];
+        // Pointwise kernels add bias AFTER the unchanged FP32 dot product.
+        // Never merge two biases, cross an activation, or erase a shared output.
+        if (node.op == "Conv" && node.inputs.size() == 2 && node.attrs.value("group", 1u) == 1 &&
+            uses.at(node.output) == 1 && !node.attrs.value("fused_relu", false) &&
+            !node.attrs.value("fused_gelu", false) && !node.attrs.value("fused_silu", false) &&
+            !node.attrs.value("fused_sigmoid", false) && i + 1 < nodes.size()) {
+            const auto& weight = tensors.at(node.inputs[1]);
+            const auto& add = nodes[i + 1];
+            uint32_t bias = UINT32_MAX;
+            if (add.op == "Add" && add.inputs.size() == 2) {
+                if (add.inputs[0] == node.output)
+                    bias = add.inputs[1];
+                else if (add.inputs[1] == node.output)
+                    bias = add.inputs[0];
+            }
+            const auto channels = weight.shape[0];
+            if (weight.constant && weight.shape[1] % 4 == 0 && weight.shape[2] == 1 && weight.shape[3] == 1 &&
+                node.attrs.value("strides", std::vector<int>{1, 1}) == std::vector<int>{1, 1} &&
+                node.attrs.value("pads", std::vector<int>{0, 0, 0, 0}) == std::vector<int>{0, 0, 0, 0} &&
+                bias != UINT32_MAX) {
+                const auto& value = tensors.at(bias);
+                if (value.constant && value.shape == Shape{1, channels, 1, 1} &&
+                    value.bytes == uint64_t(channels) * 4) {
+                    node.inputs.push_back(bias);
+                    node.output = add.output;
+                    ++i;
+                    ++fused;
+                }
+            }
+        }
+        result.push_back(std::move(node));
+    }
+    nodes = std::move(result);
+    return fused;
+}
 uint32_t fold_gelu(std::vector<Node>& nodes, const std::vector<Tensor>& tensors, const std::vector<uint8_t>& weights,
                    uint32_t output, bool conv_epilogue) {
     auto counts = [&] {

@@ -9,6 +9,11 @@
 #include <iomanip>
 #include <stdexcept>
 using namespace lwvk;
+#ifdef LWVK_VOCAB_POINTWISE_PROBE
+constexpr bool vocab_pointwise_probe = true;
+#else
+constexpr bool vocab_pointwise_probe = false;
+#endif
 #ifdef LWVK_WIDE_POINTWISE_PROBE
 constexpr bool wide_pointwise_probe = true;
 #else
@@ -86,7 +91,8 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
         const auto shader = shader_override.empty() ? (depthwise ? "conv_dw4" : "conv_coop_gemm") : shader_override;
         const bool pointwise = shader == "conv_pointwise" || shader == "conv_pointwise_tiled" ||
                                shader == "conv_pointwise_tiled64" || shader == "conv_pointwise_vector" ||
-                               shader == "conv_pointwise_smallm" || shader == "conv_pointwise_wide";
+                               shader == "conv_pointwise_smallm" || shader == "conv_pointwise_wide" ||
+                               shader == "conv_pointwise_vocab";
         auto& pipeline = ctx.pipeline(shader, 4, depthwise ? 48 : pointwise ? 16 : 52);
         VkCommandPoolCreateInfo pc{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
         pc.queueFamilyIndex = ctx.queue_family;
@@ -138,7 +144,9 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
         } else if (pointwise) {
             const std::array<uint32_t, 4> push{{ow * oh, n, c, p[12]}};
             vkCmdPushConstants(cmd, pipeline.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 16, push.data());
-            if (shader == "conv_pointwise_wide")
+            if (shader == "conv_pointwise_vocab")
+                vkCmdDispatch(cmd, (ow * oh + 15) / 16, (n + 127) / 128, 1);
+            else if (shader == "conv_pointwise_wide")
                 vkCmdDispatch(cmd, (ow * oh + 31) / 32, (n + 127) / 128, 1);
             else if (shader == "conv_pointwise_tiled64")
                 vkCmdDispatch(cmd, (ow * oh + 63) / 64, (n + 63) / 64, 1);
@@ -202,26 +210,41 @@ int main(int argc, char** argv) {
     try {
         uint32_t index = argc > 1 ? static_cast<uint32_t>(std::stoul(argv[1])) : 0;
         Context ctx(index);
-        if (!depthwise && !gelu_probe && !vector_gemm_probe && !wide_pointwise_probe && !ctx.cooperative_matrix)
+        if (!depthwise && !gelu_probe && !vector_gemm_probe && !wide_pointwise_probe && !vocab_pointwise_probe &&
+            !ctx.cooperative_matrix)
             throw std::runtime_error("set LWVK_EXPERIMENTAL_COOP=1 for the opt-in probe");
-        if (wide_pointwise_probe) {
-            const std::array<std::array<uint32_t, 13>, 9> cases{{{1, 1, 4, 4, 1, 1, 1, 1, 0, 0, 1, 1, 0},
-                                                                 {17, 1, 68, 36, 1, 1, 1, 1, 0, 0, 17, 1, 0},
-                                                                 {31, 1, 132, 68, 1, 1, 1, 1, 0, 0, 31, 1, 0},
-                                                                 {32, 1, 128, 64, 1, 1, 1, 1, 0, 0, 32, 1, 0},
-                                                                 {33, 1, 256, 132, 1, 1, 1, 1, 0, 0, 33, 1, 0},
-                                                                 {67, 1, 100, 512, 1, 1, 1, 1, 0, 0, 67, 1, 0},
-                                                                 {35, 1, 512, 1024, 1, 1, 1, 1, 0, 0, 35, 1, 0},
-                                                                 {41, 1, 768, 1536, 1, 1, 1, 1, 0, 0, 41, 1, 0},
-                                                                 {41, 1, 1536, 768, 1, 1, 1, 1, 0, 0, 41, 1, 0}}};
+        if (wide_pointwise_probe || vocab_pointwise_probe) {
+            std::vector<std::array<uint32_t, 13>> cases{{{1, 1, 4, 4, 1, 1, 1, 1, 0, 0, 1, 1, 0},
+                                                         {17, 1, 68, 36, 1, 1, 1, 1, 0, 0, 17, 1, 0},
+                                                         {31, 1, 132, 68, 1, 1, 1, 1, 0, 0, 31, 1, 0},
+                                                         {32, 1, 128, 64, 1, 1, 1, 1, 0, 0, 32, 1, 0},
+                                                         {33, 1, 256, 132, 1, 1, 1, 1, 0, 0, 33, 1, 0},
+                                                         {67, 1, 100, 512, 1, 1, 1, 1, 0, 0, 67, 1, 0},
+                                                         {35, 1, 512, 1024, 1, 1, 1, 1, 0, 0, 35, 1, 0},
+                                                         {41, 1, 768, 1536, 1, 1, 1, 1, 0, 0, 41, 1, 0},
+                                                         {41, 1, 1536, 768, 1, 1, 1, 1, 0, 0, 41, 1, 0}}};
+            if (vocab_pointwise_probe)
+                for (const auto shape : std::vector<std::array<uint32_t, 3>>{{1, 6906, 80},
+                                                                             {7, 18710, 120},
+                                                                             {8, 18710, 192},
+                                                                             {9, 129, 132},
+                                                                             {16, 6906, 80},
+                                                                             {17, 18710, 120},
+                                                                             {31, 4097, 196},
+                                                                             {33, 6906, 4}})
+                    cases.push_back({shape[0], 1, shape[1], shape[2], 1, 1, 1, 1, 0, 0, shape[0], 1, 0});
             double error = 0;
             unsigned count = 0;
             for (auto p : cases)
                 for (uint32_t flags : {0u, 1u, 16u, 17u, 32u, 33u, 128u, 129u}) {
                     p[12] = flags;
                     std::vector<float> baseline, candidate;
-                    error = std::max(error, run_case(ctx, p, "conv_pointwise_vector", &baseline));
-                    error = std::max(error, run_case(ctx, p, "conv_pointwise_wide", &candidate));
+                    error =
+                        std::max(error, run_case(ctx, p, p[2] % 4 ? "conv_pointwise_tiled" : "conv_pointwise_vector",
+                                                 &baseline));
+                    error = std::max(
+                        error, run_case(ctx, p, vocab_pointwise_probe ? "conv_pointwise_vocab" : "conv_pointwise_wide",
+                                        &candidate));
                     if (baseline.size() != candidate.size() ||
                         std::memcmp(baseline.data(), candidate.data(), baseline.size() * sizeof(float)) != 0)
                         throw std::runtime_error("wide pointwise changed FP32 bits/guard: case " +
@@ -229,7 +252,8 @@ int main(int argc, char** argv) {
                     ++count;
                 }
             std::cout << "{\"device_index\":" << index << ",\"device\":\"" << ctx.properties.deviceName
-                      << "\",\"fp32_wide_pointwise\":true,\"exact_baseline_bits\":true,\"cases\":" << count
+                      << "\",\"fp32_wide_pointwise\":true,\"vocab_tile\":" << (vocab_pointwise_probe ? "true" : "false")
+                      << ",\"exact_baseline_bits\":true,\"cases\":" << count
                       << ",\"max_absolute_error_vs_cpu\":" << std::setprecision(9) << error << "}\n";
             return 0;
         }

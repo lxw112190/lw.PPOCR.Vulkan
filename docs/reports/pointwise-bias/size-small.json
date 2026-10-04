@@ -1,0 +1,1966 @@
+{
+  "passed": true,
+  "exact_items_equal": true,
+  "measurements": {
+    "before": {
+      "library_sha256": "1f1e1bcdb4e7de3b161bf5cf20617f97d0658ddf0d893b375af1f158e9fa8699",
+      "version": "1.0.0",
+      "device": 1,
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "model_root_name": "ppocrv6-small",
+      "images": {
+        "small": {
+          "width": 500,
+          "height": 500
+        },
+        "large": {
+          "width": 1792,
+          "height": 1392
+        }
+      },
+      "image_sha256": {
+        "small": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+        "large": "efd48e73027bbf7fda0d02cbed90a19be257129ac289718efbb29b7d0f03c8b8"
+      },
+      "summaries": {
+        "small_baseline_small": {
+          "count": 6,
+          "median_wall_ms": 39.18445000454085,
+          "median_total_ms": 38.7091,
+          "median_other_ms": 3.818799999999996,
+          "first_rss_bytes": 242622464,
+          "last_rss_bytes": 242638848
+        },
+        "alternating_small": {
+          "count": 20,
+          "median_wall_ms": 38.98689999914495,
+          "median_total_ms": 38.4875,
+          "median_other_ms": 3.6061999999999976,
+          "first_rss_bytes": 242642944,
+          "last_rss_bytes": 242778112
+        },
+        "alternating_large": {
+          "count": 20,
+          "median_wall_ms": 37.452499997016275,
+          "median_total_ms": 36.8397,
+          "median_other_ms": 6.080349999999999,
+          "first_rss_bytes": 242642944,
+          "last_rss_bytes": 242778112
+        },
+        "small_tail_small": {
+          "count": 6,
+          "median_wall_ms": 39.0643499995349,
+          "median_total_ms": 38.5553,
+          "median_other_ms": 3.53885,
+          "first_rss_bytes": 242782208,
+          "last_rss_bytes": 242798592
+        }
+      },
+      "samples": [
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 85.893199997372,
+          "timing": {
+            "cls_ms": 5.5268,
+            "det_ms": 5.479699999999999,
+            "rec_ms": 24.6738,
+            "total_ms": 85.266
+          },
+          "other_ms": 49.5857,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 206860288
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 48.39350000111153,
+          "timing": {
+            "cls_ms": 5.3879,
+            "det_ms": 4.947,
+            "rec_ms": 24.4354,
+            "total_ms": 47.8303
+          },
+          "other_ms": 13.060000000000002,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 214085632
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 38.8295000011567,
+          "timing": {
+            "cls_ms": 5.4542,
+            "det_ms": 4.8325000000000005,
+            "rec_ms": 24.512500000000003,
+            "total_ms": 38.3804
+          },
+          "other_ms": 3.5811999999999955,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 214089728
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 104.67459999927087,
+          "timing": {
+            "cls_ms": 2.7355,
+            "det_ms": 59.296,
+            "rec_ms": 14.8198,
+            "total_ms": 104.2068
+          },
+          "other_ms": 27.355500000000006,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 233664512
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 36.15269999863813,
+          "timing": {
+            "cls_ms": 2.7928,
+            "det_ms": 13.2172,
+            "rec_ms": 14.8178,
+            "total_ms": 35.6738
+          },
+          "other_ms": 4.846,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 233664512
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 37.04019999713637,
+          "timing": {
+            "cls_ms": 2.672,
+            "det_ms": 13.214799999999999,
+            "rec_ms": 14.7965,
+            "total_ms": 36.4073
+          },
+          "other_ms": 5.724,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 233664512
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 61.36580000020331,
+          "timing": {
+            "cls_ms": 5.4016,
+            "det_ms": 4.8687000000000005,
+            "rec_ms": 24.4215,
+            "total_ms": 60.775
+          },
+          "other_ms": 26.083199999999998,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242601984
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 38.65070000028936,
+          "timing": {
+            "cls_ms": 5.3695,
+            "det_ms": 4.9157,
+            "rec_ms": 24.394,
+            "total_ms": 38.1115
+          },
+          "other_ms": 3.432299999999998,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242622464
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 39.835499999753665,
+          "timing": {
+            "cls_ms": 5.3674,
+            "det_ms": 4.928000000000001,
+            "rec_ms": 24.569699999999997,
+            "total_ms": 38.6457
+          },
+          "other_ms": 3.7805999999999997,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242622464
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 38.99900000396883,
+          "timing": {
+            "cls_ms": 5.386,
+            "det_ms": 4.8185,
+            "rec_ms": 24.5258,
+            "total_ms": 38.5323
+          },
+          "other_ms": 3.8019999999999996,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242622464
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 39.10320000431966,
+          "timing": {
+            "cls_ms": 5.422599999999999,
+            "det_ms": 4.884200000000001,
+            "rec_ms": 24.552500000000002,
+            "total_ms": 38.6949
+          },
+          "other_ms": 3.8355999999999923,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242622464
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 38.65870000299765,
+          "timing": {
+            "cls_ms": 5.415900000000001,
+            "det_ms": 4.8982,
+            "rec_ms": 24.5689,
+            "total_ms": 38.0866
+          },
+          "other_ms": 3.2035999999999945,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242626560
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 39.26570000476204,
+          "timing": {
+            "cls_ms": 5.4125,
+            "det_ms": 4.9919,
+            "rec_ms": 24.5841,
+            "total_ms": 38.7233
+          },
+          "other_ms": 3.7348,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242630656
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 39.441599998099264,
+          "timing": {
+            "cls_ms": 5.4488,
+            "det_ms": 4.9303,
+            "rec_ms": 24.5647,
+            "total_ms": 38.9374
+          },
+          "other_ms": 3.9936000000000007,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242634752
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 39.79530000651721,
+          "timing": {
+            "cls_ms": 5.4335,
+            "det_ms": 5.0576,
+            "rec_ms": 24.5809,
+            "total_ms": 39.4385
+          },
+          "other_ms": 4.366499999999995,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242638848
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.681900001189206,
+          "timing": {
+            "cls_ms": 2.6874,
+            "det_ms": 13.2992,
+            "rec_ms": 14.8627,
+            "total_ms": 37.0606
+          },
+          "other_ms": 6.211300000000001,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242642944
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.1271999978926,
+          "timing": {
+            "cls_ms": 5.4074,
+            "det_ms": 4.919,
+            "rec_ms": 24.5365,
+            "total_ms": 38.7462
+          },
+          "other_ms": 3.8833000000000055,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242642944
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.50009999930626,
+          "timing": {
+            "cls_ms": 2.6975,
+            "det_ms": 13.193,
+            "rec_ms": 14.8863,
+            "total_ms": 36.8382
+          },
+          "other_ms": 6.061399999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242642944
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.945000000239816,
+          "timing": {
+            "cls_ms": 5.4741,
+            "det_ms": 4.960100000000001,
+            "rec_ms": 24.5226,
+            "total_ms": 38.4471
+          },
+          "other_ms": 3.4902999999999977,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242642944
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.60560000227997,
+          "timing": {
+            "cls_ms": 2.7035,
+            "det_ms": 13.2208,
+            "rec_ms": 14.8754,
+            "total_ms": 36.9931
+          },
+          "other_ms": 6.193399999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242642944
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.170399999420624,
+          "timing": {
+            "cls_ms": 5.403700000000001,
+            "det_ms": 4.8889000000000005,
+            "rec_ms": 24.6168,
+            "total_ms": 38.6011
+          },
+          "other_ms": 3.6916999999999973,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242647040
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.29419999581296,
+          "timing": {
+            "cls_ms": 2.7032,
+            "det_ms": 13.2408,
+            "rec_ms": 14.885,
+            "total_ms": 36.7082
+          },
+          "other_ms": 5.879199999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242647040
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.816899999801535,
+          "timing": {
+            "cls_ms": 5.4171,
+            "det_ms": 4.934200000000001,
+            "rec_ms": 24.5706,
+            "total_ms": 38.4438
+          },
+          "other_ms": 3.5219000000000023,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242647040
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.399199994979426,
+          "timing": {
+            "cls_ms": 2.6943,
+            "det_ms": 13.1919,
+            "rec_ms": 14.8622,
+            "total_ms": 36.8086
+          },
+          "other_ms": 6.060199999999998,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242647040
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.209000002301764,
+          "timing": {
+            "cls_ms": 5.4039,
+            "det_ms": 5.0317,
+            "rec_ms": 24.583,
+            "total_ms": 38.66
+          },
+          "other_ms": 3.6413999999999973,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242655232
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.556200004473794,
+          "timing": {
+            "cls_ms": 2.718,
+            "det_ms": 13.0685,
+            "rec_ms": 14.859,
+            "total_ms": 36.8652
+          },
+          "other_ms": 6.219700000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242663424
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.26320000027772,
+          "timing": {
+            "cls_ms": 5.398,
+            "det_ms": 4.9909,
+            "rec_ms": 24.5619,
+            "total_ms": 38.7303
+          },
+          "other_ms": 3.7794999999999987,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242663424
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.46859999955632,
+          "timing": {
+            "cls_ms": 2.7205,
+            "det_ms": 13.1254,
+            "rec_ms": 14.8534,
+            "total_ms": 36.8827
+          },
+          "other_ms": 6.183399999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242663424
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.131599995016586,
+          "timing": {
+            "cls_ms": 5.4039,
+            "det_ms": 4.8849,
+            "rec_ms": 24.5858,
+            "total_ms": 38.6475
+          },
+          "other_ms": 3.7729,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242663424
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.42890000285115,
+          "timing": {
+            "cls_ms": 2.7217,
+            "det_ms": 13.1002,
+            "rec_ms": 14.8614,
+            "total_ms": 36.8412
+          },
+          "other_ms": 6.1579000000000015,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242663424
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.96050000184914,
+          "timing": {
+            "cls_ms": 5.4216,
+            "det_ms": 4.8722,
+            "rec_ms": 24.5642,
+            "total_ms": 38.4543
+          },
+          "other_ms": 3.5963000000000065,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242683904
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.40960000141058,
+          "timing": {
+            "cls_ms": 2.7174,
+            "det_ms": 13.1249,
+            "rec_ms": 14.8964,
+            "total_ms": 36.838
+          },
+          "other_ms": 6.0992999999999995,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242688000
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.911200004804414,
+          "timing": {
+            "cls_ms": 5.4236,
+            "det_ms": 4.8972,
+            "rec_ms": 24.5546,
+            "total_ms": 38.4134
+          },
+          "other_ms": 3.538000000000004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242688000
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.13710000010906,
+          "timing": {
+            "cls_ms": 2.6944,
+            "det_ms": 13.2159,
+            "rec_ms": 14.9112,
+            "total_ms": 36.5534
+          },
+          "other_ms": 5.731900000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242692096
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.06439999991562,
+          "timing": {
+            "cls_ms": 5.4048,
+            "det_ms": 4.8934,
+            "rec_ms": 24.607,
+            "total_ms": 38.5826
+          },
+          "other_ms": 3.6773999999999987,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242696192
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.251100002322346,
+          "timing": {
+            "cls_ms": 2.6867,
+            "det_ms": 13.203899999999999,
+            "rec_ms": 14.8689,
+            "total_ms": 36.6724
+          },
+          "other_ms": 5.912900000000004,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242704384
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.28340000129538,
+          "timing": {
+            "cls_ms": 5.4308,
+            "det_ms": 4.9242,
+            "rec_ms": 24.587699999999998,
+            "total_ms": 38.7935
+          },
+          "other_ms": 3.8508000000000067,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242708480
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.22550000384217,
+          "timing": {
+            "cls_ms": 2.7001,
+            "det_ms": 13.1968,
+            "rec_ms": 14.8659,
+            "total_ms": 36.6066
+          },
+          "other_ms": 5.843800000000002,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242712576
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.01169999880949,
+          "timing": {
+            "cls_ms": 5.4686,
+            "det_ms": 4.8727,
+            "rec_ms": 24.5609,
+            "total_ms": 38.5057
+          },
+          "other_ms": 3.603499999999997,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242716672
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.18929999740794,
+          "timing": {
+            "cls_ms": 2.7221,
+            "det_ms": 13.1076,
+            "rec_ms": 14.8697,
+            "total_ms": 36.6113
+          },
+          "other_ms": 5.911899999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242716672
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.6921999961487,
+          "timing": {
+            "cls_ms": 5.4417,
+            "det_ms": 4.852200000000001,
+            "rec_ms": 24.622700000000002,
+            "total_ms": 38.1861
+          },
+          "other_ms": 3.2695000000000007,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242737152
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.63579999940703,
+          "timing": {
+            "cls_ms": 2.6957,
+            "det_ms": 13.413899999999998,
+            "rec_ms": 14.88,
+            "total_ms": 37.144
+          },
+          "other_ms": 6.154399999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242745344
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 39.22169999714242,
+          "timing": {
+            "cls_ms": 5.4139,
+            "det_ms": 5.1472,
+            "rec_ms": 24.5889,
+            "total_ms": 38.7937
+          },
+          "other_ms": 3.6437000000000026,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242745344
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 38.405899998906534,
+          "timing": {
+            "cls_ms": 2.7034,
+            "det_ms": 13.3166,
+            "rec_ms": 14.8717,
+            "total_ms": 37.8228
+          },
+          "other_ms": 6.931100000000001,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242745344
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.88670000014827,
+          "timing": {
+            "cls_ms": 5.4393,
+            "det_ms": 5.0360000000000005,
+            "rec_ms": 24.5325,
+            "total_ms": 38.3459
+          },
+          "other_ms": 3.338099999999997,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242753536
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.43639999447623,
+          "timing": {
+            "cls_ms": 2.7235,
+            "det_ms": 13.2134,
+            "rec_ms": 14.8723,
+            "total_ms": 36.7571
+          },
+          "other_ms": 5.947900000000001,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242753536
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.83740000310354,
+          "timing": {
+            "cls_ms": 5.3819,
+            "det_ms": 4.844200000000001,
+            "rec_ms": 24.540399999999998,
+            "total_ms": 38.3754
+          },
+          "other_ms": 3.6088999999999984,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242753536
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.51349999947706,
+          "timing": {
+            "cls_ms": 2.7147,
+            "det_ms": 13.1124,
+            "rec_ms": 14.9543,
+            "total_ms": 36.9099
+          },
+          "other_ms": 6.1285000000000025,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242757632
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.87669999676291,
+          "timing": {
+            "cls_ms": 5.4413,
+            "det_ms": 4.9172,
+            "rec_ms": 24.557699999999997,
+            "total_ms": 38.469
+          },
+          "other_ms": 3.552800000000005,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242757632
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.49260000040522,
+          "timing": {
+            "cls_ms": 2.6965,
+            "det_ms": 13.3151,
+            "rec_ms": 14.8663,
+            "total_ms": 36.922
+          },
+          "other_ms": 6.044099999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242757632
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 40.009200005442835,
+          "timing": {
+            "cls_ms": 6.443899999999999,
+            "det_ms": 4.886900000000001,
+            "rec_ms": 24.557499999999997,
+            "total_ms": 39.5086
+          },
+          "other_ms": 3.6203000000000003,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242769920
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.38619999785442,
+          "timing": {
+            "cls_ms": 2.693,
+            "det_ms": 13.0688,
+            "rec_ms": 14.863,
+            "total_ms": 36.662
+          },
+          "other_ms": 6.037199999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242769920
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.82470000098692,
+          "timing": {
+            "cls_ms": 5.38,
+            "det_ms": 4.8701,
+            "rec_ms": 24.548299999999998,
+            "total_ms": 38.2944
+          },
+          "other_ms": 3.496000000000002,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242774016
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 37.52660000463948,
+          "timing": {
+            "cls_ms": 2.714,
+            "det_ms": 13.163699999999999,
+            "rec_ms": 14.8799,
+            "total_ms": 36.8996
+          },
+          "other_ms": 6.142000000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 242778112
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 38.962099999480415,
+          "timing": {
+            "cls_ms": 5.4062,
+            "det_ms": 4.9632,
+            "rec_ms": 24.5731,
+            "total_ms": 38.4693
+          },
+          "other_ms": 3.5267999999999944,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242778112
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 39.96270000061486,
+          "timing": {
+            "cls_ms": 5.9914000000000005,
+            "det_ms": 5.3532,
+            "rec_ms": 24.5701,
+            "total_ms": 39.4331
+          },
+          "other_ms": 3.5183999999999997,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242782208
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 39.16000000026543,
+          "timing": {
+            "cls_ms": 5.4083000000000006,
+            "det_ms": 4.8625,
+            "rec_ms": 24.5657,
+            "total_ms": 38.6854
+          },
+          "other_ms": 3.8489000000000004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242786304
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 38.7847999954829,
+          "timing": {
+            "cls_ms": 5.4055,
+            "det_ms": 4.8622000000000005,
+            "rec_ms": 24.5395,
+            "total_ms": 38.2805
+          },
+          "other_ms": 3.473300000000002,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242790400
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 39.11389999848325,
+          "timing": {
+            "cls_ms": 5.3957999999999995,
+            "det_ms": 4.8881,
+            "rec_ms": 24.5804,
+            "total_ms": 38.6035
+          },
+          "other_ms": 3.7391999999999967,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242794496
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 38.78239999903599,
+          "timing": {
+            "cls_ms": 5.3848,
+            "det_ms": 4.8629,
+            "rec_ms": 24.5504,
+            "total_ms": 38.2817
+          },
+          "other_ms": 3.4836000000000027,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242794496
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 39.01480000058655,
+          "timing": {
+            "cls_ms": 5.41,
+            "det_ms": 4.9777000000000005,
+            "rec_ms": 24.5601,
+            "total_ms": 38.5071
+          },
+          "other_ms": 3.5593000000000004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 242798592
+        }
+      ],
+      "items_sha256": {
+        "small": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+        "large": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779"
+      },
+      "peak_rss_bytes": 253612032,
+      "end_rss_bytes": 242798592,
+      "handles": 296
+    },
+    "after": {
+      "library_sha256": "a08b047fc94deae0f01c70402721dee9ac5b68c1f0a99c8798eafb5b55c6ac3d",
+      "version": "1.0.1",
+      "device": 1,
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "model_root_name": "ppocrv6-small",
+      "images": {
+        "small": {
+          "width": 500,
+          "height": 500
+        },
+        "large": {
+          "width": 1792,
+          "height": 1392
+        }
+      },
+      "image_sha256": {
+        "small": "30c417c9f758a3b62718729f5a944f7d2e10cdd2bde0e8ce6785523ddb68ffe9",
+        "large": "efd48e73027bbf7fda0d02cbed90a19be257129ac289718efbb29b7d0f03c8b8"
+      },
+      "summaries": {
+        "small_baseline_small": {
+          "count": 6,
+          "median_wall_ms": 35.90095000254223,
+          "median_total_ms": 35.39545,
+          "median_other_ms": 3.6933000000000007,
+          "first_rss_bytes": 231227392,
+          "last_rss_bytes": 231321600
+        },
+        "alternating_small": {
+          "count": 20,
+          "median_wall_ms": 35.97559999980149,
+          "median_total_ms": 35.549949999999995,
+          "median_other_ms": 3.8179,
+          "first_rss_bytes": 231321600,
+          "last_rss_bytes": 231456768
+        },
+        "alternating_large": {
+          "count": 20,
+          "median_wall_ms": 35.3974499994365,
+          "median_total_ms": 34.8001,
+          "median_other_ms": 6.1091,
+          "first_rss_bytes": 231321600,
+          "last_rss_bytes": 231456768
+        },
+        "small_tail_small": {
+          "count": 6,
+          "median_wall_ms": 36.12300000168034,
+          "median_total_ms": 35.6474,
+          "median_other_ms": 3.7706999999999997,
+          "first_rss_bytes": 231464960,
+          "last_rss_bytes": 231481344
+        }
+      },
+      "samples": [
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 80.19539999804692,
+          "timing": {
+            "cls_ms": 5.3939,
+            "det_ms": 5.4554,
+            "rec_ms": 21.6282,
+            "total_ms": 79.5779
+          },
+          "other_ms": 47.1004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 204046336
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 43.41589999967255,
+          "timing": {
+            "cls_ms": 5.2722,
+            "det_ms": 4.8916,
+            "rec_ms": 21.481,
+            "total_ms": 42.8655
+          },
+          "other_ms": 11.220699999999994,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 208363520
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 35.55459999915911,
+          "timing": {
+            "cls_ms": 5.292999999999999,
+            "det_ms": 4.8145999999999995,
+            "rec_ms": 21.4615,
+            "total_ms": 35.0679
+          },
+          "other_ms": 3.498800000000003,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 208367616
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 77.41799999348586,
+          "timing": {
+            "cls_ms": 2.6961,
+            "det_ms": 32.7439,
+            "rec_ms": 12.7803,
+            "total_ms": 76.7515
+          },
+          "other_ms": 28.5312,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 222875648
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 35.62719999899855,
+          "timing": {
+            "cls_ms": 2.6858,
+            "det_ms": 13.3235,
+            "rec_ms": 12.753,
+            "total_ms": 34.9247
+          },
+          "other_ms": 6.162400000000002,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 222875648
+        },
+        {
+          "phase": "warmup",
+          "image": "large",
+          "wall_ms": 34.982699995453004,
+          "timing": {
+            "cls_ms": 2.6501,
+            "det_ms": 13.3694,
+            "rec_ms": 12.7481,
+            "total_ms": 34.5185
+          },
+          "other_ms": 5.7509000000000015,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 222875648
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 59.66140000236919,
+          "timing": {
+            "cls_ms": 5.3629999999999995,
+            "det_ms": 4.9724,
+            "rec_ms": 21.571399999999997,
+            "total_ms": 59.2001
+          },
+          "other_ms": 27.293300000000002,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231219200
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 36.04009999980917,
+          "timing": {
+            "cls_ms": 5.2744,
+            "det_ms": 4.907,
+            "rec_ms": 21.5872,
+            "total_ms": 35.5998
+          },
+          "other_ms": 3.8312000000000026,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231223296
+        },
+        {
+          "phase": "warmup",
+          "image": "small",
+          "wall_ms": 36.211300001014024,
+          "timing": {
+            "cls_ms": 5.300599999999999,
+            "det_ms": 4.9025,
+            "rec_ms": 21.5642,
+            "total_ms": 35.4697
+          },
+          "other_ms": 3.7024000000000044,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231223296
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 36.0482999967644,
+          "timing": {
+            "cls_ms": 5.2813,
+            "det_ms": 4.905,
+            "rec_ms": 21.5297,
+            "total_ms": 35.6615
+          },
+          "other_ms": 3.945499999999999,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231227392
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 35.655099993164185,
+          "timing": {
+            "cls_ms": 5.2884,
+            "det_ms": 4.8953999999999995,
+            "rec_ms": 21.582900000000002,
+            "total_ms": 35.149
+          },
+          "other_ms": 3.3823000000000008,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231231488
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 35.98190000047907,
+          "timing": {
+            "cls_ms": 5.2827,
+            "det_ms": 4.9043,
+            "rec_ms": 21.5258,
+            "total_ms": 35.4749
+          },
+          "other_ms": 3.7620999999999967,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231309312
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 35.61769999942044,
+          "timing": {
+            "cls_ms": 5.256600000000001,
+            "det_ms": 4.8726,
+            "rec_ms": 21.554000000000002,
+            "total_ms": 35.2609
+          },
+          "other_ms": 3.5776999999999965,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231313408
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 36.04780000023311,
+          "timing": {
+            "cls_ms": 5.2933,
+            "det_ms": 4.9159,
+            "rec_ms": 21.5707,
+            "total_ms": 35.578
+          },
+          "other_ms": 3.798100000000005,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231317504
+        },
+        {
+          "phase": "small_baseline",
+          "image": "small",
+          "wall_ms": 35.82000000460539,
+          "timing": {
+            "cls_ms": 5.287,
+            "det_ms": 4.8342,
+            "rec_ms": 21.5703,
+            "total_ms": 35.316
+          },
+          "other_ms": 3.6245000000000047,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231321600
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.611499995866325,
+          "timing": {
+            "cls_ms": 2.6464,
+            "det_ms": 13.0901,
+            "rec_ms": 12.7467,
+            "total_ms": 34.9892
+          },
+          "other_ms": 6.505999999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231321600
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.92660000140313,
+          "timing": {
+            "cls_ms": 5.2798,
+            "det_ms": 4.8481000000000005,
+            "rec_ms": 21.6134,
+            "total_ms": 35.4104
+          },
+          "other_ms": 3.669100000000004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231321600
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.792100003163796,
+          "timing": {
+            "cls_ms": 2.6899,
+            "det_ms": 13.102,
+            "rec_ms": 12.7661,
+            "total_ms": 35.1536
+          },
+          "other_ms": 6.5955999999999975,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231325696
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.84009999758564,
+          "timing": {
+            "cls_ms": 5.2892,
+            "det_ms": 4.8966,
+            "rec_ms": 21.644399999999997,
+            "total_ms": 35.3938
+          },
+          "other_ms": 3.563600000000001,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231325696
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.306099998706486,
+          "timing": {
+            "cls_ms": 2.6895,
+            "det_ms": 13.2576,
+            "rec_ms": 12.7382,
+            "total_ms": 34.6644
+          },
+          "other_ms": 5.979099999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231325696
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.93390000605723,
+          "timing": {
+            "cls_ms": 5.296799999999999,
+            "det_ms": 4.8625,
+            "rec_ms": 21.566,
+            "total_ms": 35.5376
+          },
+          "other_ms": 3.8123000000000005,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231337984
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.29810000327416,
+          "timing": {
+            "cls_ms": 2.6711,
+            "det_ms": 13.3133,
+            "rec_ms": 12.7211,
+            "total_ms": 34.6942
+          },
+          "other_ms": 5.9887000000000015,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231337984
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.99730000132695,
+          "timing": {
+            "cls_ms": 5.2709,
+            "det_ms": 4.8758,
+            "rec_ms": 21.526699999999998,
+            "total_ms": 35.504
+          },
+          "other_ms": 3.8306000000000004,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231342080
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.4146999961813,
+          "timing": {
+            "cls_ms": 2.658,
+            "det_ms": 13.215200000000001,
+            "rec_ms": 12.7646,
+            "total_ms": 34.8647
+          },
+          "other_ms": 6.226899999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231342080
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.46659999503754,
+          "timing": {
+            "cls_ms": 5.291399999999999,
+            "det_ms": 4.917400000000001,
+            "rec_ms": 21.6048,
+            "total_ms": 36.0212
+          },
+          "other_ms": 4.207599999999999,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231346176
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.546099999919534,
+          "timing": {
+            "cls_ms": 2.6832,
+            "det_ms": 13.2658,
+            "rec_ms": 12.7134,
+            "total_ms": 34.9189
+          },
+          "other_ms": 6.256499999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231346176
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.58490000432357,
+          "timing": {
+            "cls_ms": 5.2438,
+            "det_ms": 4.8886,
+            "rec_ms": 21.5518,
+            "total_ms": 35.227
+          },
+          "other_ms": 3.542799999999996,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231350272
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.37000000505941,
+          "timing": {
+            "cls_ms": 2.6814,
+            "det_ms": 13.2371,
+            "rec_ms": 12.7493,
+            "total_ms": 34.786
+          },
+          "other_ms": 6.118200000000002,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231354368
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.20450000016717,
+          "timing": {
+            "cls_ms": 5.3035,
+            "det_ms": 4.8709,
+            "rec_ms": 21.607300000000002,
+            "total_ms": 35.68
+          },
+          "other_ms": 3.898299999999999,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231354368
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.44859999965411,
+          "timing": {
+            "cls_ms": 2.687,
+            "det_ms": 13.2765,
+            "rec_ms": 12.7348,
+            "total_ms": 34.7983
+          },
+          "other_ms": 6.099999999999998,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231354368
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.18010000354843,
+          "timing": {
+            "cls_ms": 5.2881,
+            "det_ms": 4.9735,
+            "rec_ms": 21.5993,
+            "total_ms": 35.7369
+          },
+          "other_ms": 3.8759999999999977,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231399424
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 34.80800000397721,
+          "timing": {
+            "cls_ms": 2.6567,
+            "det_ms": 13.1927,
+            "rec_ms": 12.75,
+            "total_ms": 34.2586
+          },
+          "other_ms": 5.659200000000002,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231407616
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.70910000073491,
+          "timing": {
+            "cls_ms": 5.2542,
+            "det_ms": 4.8965000000000005,
+            "rec_ms": 21.549599999999998,
+            "total_ms": 36.239
+          },
+          "other_ms": 4.538699999999999,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231411712
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.19580000283895,
+          "timing": {
+            "cls_ms": 2.6462,
+            "det_ms": 13.1973,
+            "rec_ms": 12.7324,
+            "total_ms": 34.6111
+          },
+          "other_ms": 6.0352,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231411712
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.00439999718219,
+          "timing": {
+            "cls_ms": 5.2701,
+            "det_ms": 4.8917,
+            "rec_ms": 21.5686,
+            "total_ms": 35.5077
+          },
+          "other_ms": 3.7773000000000003,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231415808
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.23990000394406,
+          "timing": {
+            "cls_ms": 2.6878,
+            "det_ms": 13.3275,
+            "rec_ms": 12.7661,
+            "total_ms": 34.6875
+          },
+          "other_ms": 5.906099999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231419904
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.99669999675825,
+          "timing": {
+            "cls_ms": 5.2672,
+            "det_ms": 4.905,
+            "rec_ms": 21.5848,
+            "total_ms": 35.6195
+          },
+          "other_ms": 3.8625000000000007,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231424000
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.3938999978709,
+          "timing": {
+            "cls_ms": 2.6813,
+            "det_ms": 13.244499999999999,
+            "rec_ms": 12.7303,
+            "total_ms": 34.7265
+          },
+          "other_ms": 6.070400000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231428096
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.662199996295385,
+          "timing": {
+            "cls_ms": 5.271100000000001,
+            "det_ms": 4.872599999999999,
+            "rec_ms": 21.5629,
+            "total_ms": 35.2074
+          },
+          "other_ms": 3.5008000000000017,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231428096
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.654899998917244,
+          "timing": {
+            "cls_ms": 2.6531,
+            "det_ms": 13.182500000000001,
+            "rec_ms": 12.7383,
+            "total_ms": 35.0293
+          },
+          "other_ms": 6.455399999999997,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231432192
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.91400000004796,
+          "timing": {
+            "cls_ms": 5.2948,
+            "det_ms": 4.8664,
+            "rec_ms": 21.6565,
+            "total_ms": 35.4289
+          },
+          "other_ms": 3.6111999999999966,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231432192
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.4010000010021,
+          "timing": {
+            "cls_ms": 2.6779,
+            "det_ms": 13.3287,
+            "rec_ms": 12.7569,
+            "total_ms": 34.8019
+          },
+          "other_ms": 6.038400000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231436288
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.954500002844725,
+          "timing": {
+            "cls_ms": 5.306100000000001,
+            "det_ms": 4.8188,
+            "rec_ms": 21.639,
+            "total_ms": 35.5623
+          },
+          "other_ms": 3.798400000000001,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231440384
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.216700001910795,
+          "timing": {
+            "cls_ms": 2.6601,
+            "det_ms": 13.408900000000001,
+            "rec_ms": 12.7566,
+            "total_ms": 34.6533
+          },
+          "other_ms": 5.8277,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231440384
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 37.161899999773595,
+          "timing": {
+            "cls_ms": 5.2890999999999995,
+            "det_ms": 4.9326,
+            "rec_ms": 21.618299999999998,
+            "total_ms": 36.5672
+          },
+          "other_ms": 4.727200000000003,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231444480
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.46690000075614,
+          "timing": {
+            "cls_ms": 2.6393,
+            "det_ms": 13.286999999999999,
+            "rec_ms": 12.7408,
+            "total_ms": 34.8614
+          },
+          "other_ms": 6.1943000000000055,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231444480
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.12190000421833,
+          "timing": {
+            "cls_ms": 5.2654,
+            "det_ms": 4.918900000000001,
+            "rec_ms": 21.559199999999997,
+            "total_ms": 35.6561
+          },
+          "other_ms": 3.9126000000000047,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231448576
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.36059999896679,
+          "timing": {
+            "cls_ms": 2.6759,
+            "det_ms": 13.3005,
+            "rec_ms": 12.7518,
+            "total_ms": 34.7528
+          },
+          "other_ms": 6.024600000000003,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231448576
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.95060000225203,
+          "timing": {
+            "cls_ms": 5.2809,
+            "det_ms": 4.932,
+            "rec_ms": 21.5644,
+            "total_ms": 35.6008
+          },
+          "other_ms": 3.8234999999999992,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231448576
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.38729999854695,
+          "timing": {
+            "cls_ms": 2.6942,
+            "det_ms": 13.1382,
+            "rec_ms": 12.75,
+            "total_ms": 34.8071
+          },
+          "other_ms": 6.224699999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231448576
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.85449999809498,
+          "timing": {
+            "cls_ms": 5.2663,
+            "det_ms": 4.9423,
+            "rec_ms": 21.624,
+            "total_ms": 35.3834
+          },
+          "other_ms": 3.5508000000000024,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231452672
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.62769999552984,
+          "timing": {
+            "cls_ms": 2.6516,
+            "det_ms": 13.3398,
+            "rec_ms": 12.7689,
+            "total_ms": 35.0579
+          },
+          "other_ms": 6.297599999999996,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231456768
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 35.68480000103591,
+          "timing": {
+            "cls_ms": 5.312799999999999,
+            "det_ms": 4.947900000000001,
+            "rec_ms": 21.5423,
+            "total_ms": 35.2253
+          },
+          "other_ms": 3.4222999999999963,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231456768
+        },
+        {
+          "phase": "alternating",
+          "image": "large",
+          "wall_ms": 35.50410000025295,
+          "timing": {
+            "cls_ms": 2.671,
+            "det_ms": 13.2286,
+            "rec_ms": 12.733,
+            "total_ms": 34.9683
+          },
+          "other_ms": 6.335699999999999,
+          "count": 8,
+          "items_sha256": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779",
+          "rss_bytes": 231456768
+        },
+        {
+          "phase": "alternating",
+          "image": "small",
+          "wall_ms": 36.177599999064114,
+          "timing": {
+            "cls_ms": 5.2832,
+            "det_ms": 4.902900000000001,
+            "rec_ms": 21.5863,
+            "total_ms": 35.7448
+          },
+          "other_ms": 3.972399999999997,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231456768
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 36.21459999703802,
+          "timing": {
+            "cls_ms": 5.3068,
+            "det_ms": 4.8966,
+            "rec_ms": 21.575699999999998,
+            "total_ms": 35.7355
+          },
+          "other_ms": 3.956400000000002,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231464960
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 35.44039999542292,
+          "timing": {
+            "cls_ms": 5.255,
+            "det_ms": 4.872,
+            "rec_ms": 21.579700000000003,
+            "total_ms": 34.9913
+          },
+          "other_ms": 3.284600000000001,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231469056
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 36.05480000260286,
+          "timing": {
+            "cls_ms": 5.27,
+            "det_ms": 4.8937,
+            "rec_ms": 21.5596,
+            "total_ms": 35.5699
+          },
+          "other_ms": 3.8465999999999987,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231469056
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 36.33629999967525,
+          "timing": {
+            "cls_ms": 5.255,
+            "det_ms": 4.9477,
+            "rec_ms": 22.0116,
+            "total_ms": 35.9091
+          },
+          "other_ms": 3.6948000000000008,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231473152
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 36.19120000075782,
+          "timing": {
+            "cls_ms": 5.2757000000000005,
+            "det_ms": 4.8331,
+            "rec_ms": 21.5807,
+            "total_ms": 35.7249
+          },
+          "other_ms": 4.035399999999996,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231481344
+        },
+        {
+          "phase": "small_tail",
+          "image": "small",
+          "wall_ms": 35.93090000504162,
+          "timing": {
+            "cls_ms": 5.3385,
+            "det_ms": 4.8815,
+            "rec_ms": 21.5845,
+            "total_ms": 35.4514
+          },
+          "other_ms": 3.6469000000000023,
+          "count": 16,
+          "items_sha256": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+          "rss_bytes": 231481344
+        }
+      ],
+      "items_sha256": {
+        "small": "4cc2e96f35400a2a19357060586a1c25effff4f2665081a79a452a7547804463",
+        "large": "5e592180d2b5580313f97b422e579d439cde709fa0d0fc92800bf796be1ed779"
+      },
+      "peak_rss_bytes": 252784640,
+      "end_rss_bytes": 231481344,
+      "handles": 296
+    }
+  },
+  "method": "Separate processes; predecoded BGR; FP32 DET960 CLS on; warmup then small baseline, alternating large/small, small tail. No initialization/GUI time in samples.",
+  "limitations": "One machine/input pair; RSS and handle samples, not VRAM or leak proof. Cold plans remain slower; finite cache can still evict larger working sets."
+}

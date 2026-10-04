@@ -46,7 +46,7 @@ class Plan {
     double run(const float* input, float* output, bool ctc = false);
     double run_bgr(const uint8_t* input, uint64_t span, uint32_t width, uint32_t height, uint32_t stride, float* output,
                    bool rotate = false);
-    double run_gpu_bgr(const BgrView&, float* output, bool rotate = false);
+    double run_gpu_bgr(const BgrView&, float* output, bool rotate = false, VkCommandBuffer prefix = VK_NULL_HANDLE);
     std::array<uint64_t, 4> workspace_requirements() const {
         return {arena_bytes_, input_bytes_, output_bytes_, ctc_bytes_};
     }
@@ -76,7 +76,7 @@ class Plan {
     };
     void profile_result(bool ctc);
     void record(const Model& model, bool ctc = false, bool bgr = false);
-    void submit_readback(VkCommandBuffer cmd, float* output, bool ctc);
+    void submit_readback(VkCommandBuffer cmd, float* output, bool ctc, VkCommandBuffer prefix = VK_NULL_HANDLE);
     void dispatch(const std::string& shader, const std::vector<VkDescriptorBufferInfo>& bindings,
                   const std::vector<uint32_t>& push, uint32_t groups, uint32_t groups_y = 1);
     VkDescriptorBufferInfo binding(uint32_t tensor) const;
@@ -104,7 +104,8 @@ class GraphEngine {
                 const std::string& required_task = "det");
     GraphEngine(const std::filesystem::path&, std::shared_ptr<Context>, uint64_t, const std::string&);
     void reserve_shared_source(uint64_t, const std::vector<Buffer*>&);
-    double run_det_gpu_bgr(const BgrView&, uint32_t, uint32_t, float*, uint64_t);
+    double run_det_gpu_bgr(const BgrView&, uint32_t, uint32_t, float*, uint64_t,
+                           VkCommandBuffer prefix = VK_NULL_HANDLE);
     double run(const float* input, uint32_t height, uint32_t width, float* output, uint64_t capacity = UINT64_MAX);
     double run_det_bgr(const uint8_t* input, uint64_t bytes, uint32_t width, uint32_t height, uint32_t stride,
                        uint32_t out_height, uint32_t out_width, float* output, uint64_t capacity);

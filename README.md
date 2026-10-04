@@ -308,6 +308,8 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 
 开发目录、格式化与关键设计说明见 [开发指南](docs/DEVELOPMENT.md)。
 
+最新本地开发优化见 [Pointwise Bias 融合报告](docs/POINTWISE-BIAS-OPTIMIZATION.md)：RTX 4060 三模型交替测试整图耗时降低约 3.5%～8.4%，100 张变尺寸流的热身轮降低约 2.5%～5.1%，完整结果字段不变。保持 FP32、DET960 和公共接口；这是发布后的开发快照，不覆盖 v1.0.1 正式包，其他设备不保证同等收益。
+
 ## 捐赠支持
 
 如果项目对你有帮助，欢迎自愿扫码支持开源维护。感谢你的使用、反馈和支持！

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 using namespace lwvk;
-static std::vector<uint8_t> read_gpu(Context& ctx, Buffer& gpu) {
+static std::vector<uint8_t> read_gpu(Context& ctx, Buffer& gpu, VkCommandBuffer prefix = VK_NULL_HANDLE) {
     Buffer cpu(ctx, gpu.size, true, true);
     VkCommandPool pool{};
     VkFence fence{};
@@ -30,10 +30,10 @@ static std::vector<uint8_t> read_gpu(Context& ctx, Buffer& gpu) {
         VkCommandBufferBeginInfo begin{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
         check(vkBeginCommandBuffer(cmd, &begin), "probe begin");
         VkMemoryBarrier barrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
-        barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+        barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, &barrier,
-                             0, nullptr, 0, nullptr);
+        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, &barrier, 0, nullptr, 0, nullptr);
         VkBufferCopy copy{0, 0, gpu.size};
         vkCmdCopyBuffer(cmd, gpu.handle, cpu.handle, 1, &copy);
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -44,8 +44,9 @@ static std::vector<uint8_t> read_gpu(Context& ctx, Buffer& gpu) {
         VkFenceCreateInfo fc{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
         check(vkCreateFence(ctx.device, &fc, nullptr, &fence), "probe fence");
         VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
-        submit.commandBufferCount = 1;
-        submit.pCommandBuffers = &cmd;
+        const std::array<VkCommandBuffer, 2> commands{prefix, cmd};
+        submit.commandBufferCount = prefix ? 2 : 1;
+        submit.pCommandBuffers = prefix ? commands.data() : &cmd;
         check(vkQueueSubmit(ctx.queue, 1, &submit, fence), "probe submit");
         check(vkWaitForFences(ctx.device, 1, &fence, VK_TRUE, UINT64_C(30000000000)), "probe wait");
         std::vector<uint8_t> out(gpu.size);
@@ -80,7 +81,21 @@ int main(int argc, char** argv) {
             std::vector<uint8_t> pixels(size_t(h - 1) * stride + w * 3);
             for (size_t i = 0; i < pixels.size(); ++i)
                 pixels[i] = uint8_t((i * 73 + i / 7) % 256);
-            crops.upload({pixels.data(), pixels.size(), w, h, stride});
+            crops.upload({pixels.data(), pixels.size(), w, h, stride}, true);
+            bool pending_rejected = false;
+            try {
+                crops.upload({pixels.data(), pixels.size(), w, h, stride});
+            } catch (const std::logic_error&) {
+                pending_rejected = true;
+            }
+            if (!pending_rejected)
+                throw std::runtime_error("pending upload overwritten");
+            crops.consume_upload([&](VkCommandBuffer prefix) {
+                const auto uploaded = read_gpu(*ctx, *crops.image().gpu_buffer, prefix);
+                if (std::memcmp(uploaded.data() + 32, pixels.data(), pixels.size()))
+                    throw std::runtime_error("deferred upload payload mismatch");
+                return 0.0;
+            });
             std::vector<lw_detection_box> quads{
                 box({0, 0, 82, 0, 82, 64, 0, 64}),     box({1.25f, 2.5f, 60.25f, 3.75f, 62.125f, 28.5f, 0.5f, 27.25f}),
                 box({10, 1, 26, 3, 29, 58, 9, 61}),    box({-7, -5, 30, -5, 30, 24, -7, 24}),
@@ -120,6 +135,34 @@ int main(int argc, char** argv) {
                 }
             }
             std::vector<BgrView> views;
+            crops.crop({quads[0]}, views);
+            // Vary crop metadata after a larger allocation; retained capacity
+            // must not affect pixel output or revive stale dimensions.
+            crops.crop({box({0, 0, 80, 0, 80, 240, 0, 240})}, views);
+            for (unsigned i = 1; i <= 24; ++i) {
+                const auto shape = box({0, 0, 80, 0, 80, float(i * 10), 0, float(i * 10)});
+                crops.crop({shape}, views);
+                uint32_t cw = 0, ch = 0;
+                uint64_t bytes = 0;
+                if (lw_crop_quad_size(&shape, &cw, &ch, &bytes) != LW_STATUS_OK)
+                    throw std::runtime_error("cache-pressure CPU crop size");
+                std::vector<uint8_t> cpu(bytes);
+                if (lwvk_crop_quad_bgr_u8(pixels.data(), pixels.size(), w, h, stride, &shape, cpu.data(), cpu.size(),
+                                          &cw, &ch, &bytes) != LW_STATUS_OK)
+                    throw std::runtime_error("cache-pressure CPU crop reference");
+                const auto gpu = read_gpu(*ctx, *views[0].gpu_buffer);
+                if (std::memcmp(gpu.data() + 32, cpu.data(), cpu.size()))
+                    throw std::runtime_error("changing crop metadata/pixel mismatch");
+                ++count;
+            }
+            crops.upload({pixels.data(), pixels.size(), w, h, stride}, true);
+            try {
+                crops.consume_upload(
+                    [](VkCommandBuffer) -> double { throw std::length_error("probe: reject before submitting"); });
+            } catch (const std::length_error&) {
+            }
+            crops.release_capacity();
+            crops.upload({pixels.data(), pixels.size(), w, h, stride});
             crops.crop({quads[0]}, views);
             auto large = read_gpu(*ctx, *views[0].gpu_buffer);
             crops.crop({quads[6]}, views);

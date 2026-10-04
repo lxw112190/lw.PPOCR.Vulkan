@@ -45,6 +45,8 @@ std::string OcrEngine::run(const uint8_t* p, uint64_t bytes, uint32_t w, uint32_
     if (gpu_crop_) {
         graphs.det_bgr = [&](const uint8_t* in, uint64_t bytes, uint32_t w, uint32_t h, uint32_t stride, uint32_t oh,
                              uint32_t ow, float* output, uint64_t capacity) {
+            // The combined upload experiment did not improve changing streams.
+            // Keep the qualified serialized transport as the production default.
             auto ms = gpu_crop_->upload({in, bytes, w, h, stride});
             return ms + det_->run_det_gpu_bgr(gpu_crop_->image(), oh, ow, output, capacity);
         };

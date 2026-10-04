@@ -45,6 +45,49 @@ struct Fixture {
 int main() {
     try {
         unsigned tests = 0;
+        for (unsigned condition = 0; condition < 14; ++condition) {
+            Fixture f;
+            f.tensors[11].constant = true;
+            f.tensors[11].shape = {6, 4, 1, 1};
+            f.tensors[7].shape = {1, 6, 1, 1};
+            f.tensors[7].bytes = 24;
+            f.nodes = {{"Conv", {0, 11}, 1, Json::object()}, {"Add", {1, 7}, 2, Json::object()}};
+            uint32_t output = 2;
+            if (condition == 1)
+                f.nodes[1].inputs = {7, 1};
+            if (condition == 2)
+                output = 1;
+            if (condition == 3)
+                f.nodes.push_back({"Mul", {1, 0}, 12, Json::object()});
+            if (condition == 4)
+                f.nodes[0].inputs.push_back(8);
+            if (condition == 5)
+                f.nodes[0].attrs["group"] = 4;
+            if (condition == 6)
+                f.nodes[0].attrs["fused_relu"] = true;
+            if (condition == 7)
+                f.nodes[0].attrs["fused_silu"] = true;
+            if (condition == 8)
+                f.tensors[7].constant = false;
+            if (condition == 9)
+                f.tensors[7].shape = {1, 1, 1, 6};
+            if (condition == 10)
+                f.tensors[7].bytes = 20;
+            if (condition == 11)
+                f.tensors[11].shape[1] = 3;
+            if (condition == 12)
+                f.nodes[0].attrs["pads"] = {1, 0, 0, 0};
+            if (condition == 13)
+                f.tensors[11].shape[2] = 3;
+            const bool expected = condition < 2;
+            require(fold_pointwise_bias(f.nodes, f.tensors, output) == (expected ? 1u : 0u),
+                    "unsafe pointwise bias fold");
+            if (expected)
+                require(f.nodes.size() == 1 && f.nodes[0].inputs == std::vector<uint32_t>{0, 11, 7} &&
+                            f.nodes[0].output == 2,
+                        "pointwise bias lost output/operand");
+            ++tests;
+        }
         for (unsigned condition = 0; condition < 8; ++condition) {
             Fixture f;
             f.nodes = {{"Conv", {0, 11}, 1, Json::object()}, {"SiLU", {1}, 2, Json::object()}};

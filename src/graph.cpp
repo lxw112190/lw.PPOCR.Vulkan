@@ -385,6 +385,8 @@ Model::Model(const std::filesystem::path& path) {
         throw std::runtime_error("invalid DET graph output");
     if (!reference_graph()) {
         fold_affine_and_relu(*this);
+        if (!reference_kernels())
+            fold_pointwise_bias(nodes, tensors, output);
         if (!gelu_fusion_disabled())
             fold_gelu(nodes, tensors, weights, output);
         fold_transpose_epilogue(nodes, tensors, output);
@@ -799,8 +801,13 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                     // Large REC channel projections amortize a wider output tile.
                     // Keep small shapes and DET on their qualified kernels.
                     const bool wide = wide_rec && y[1] >= 512 && x[1] >= 512 && y[2] * y[3] >= 32 && vector;
+                    // Vocabulary tails retain unpadded output rows and exact
+                    // FP32 bias epilogues; other devices keep qualified kernels.
+                    const bool vocab =
+                        wide_rec && !tiled_pointwise_disabled() && y[1] >= 4096 && y[1] % 4 != 0 && x[1] >= 64;
                     const bool small_m = y[2] * y[3] <= 4 && y[1] >= 64 && x[1] >= 64;
-                    dispatch(tile64    ? "conv_pointwise_tiled64"
+                    dispatch(vocab     ? "conv_pointwise_vocab"
+                             : tile64  ? "conv_pointwise_tiled64"
                              : small_m ? "conv_pointwise_smallm"
                              : wide    ? "conv_pointwise_wide"
                              : vector  ? "conv_pointwise_vector"
@@ -808,13 +815,14 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                                        : "conv_pointwise",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[2] * y[3], y[1], x[1], flag},
-                             small_m  ? (y[2] * y[3] * y[1] + 63) / 64
-                             : tile64 ? (y[2] * y[3] + 63) / 64
-                             : tiled  ? (y[2] * y[3] + 31) / 32
-                                      : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
-                             wide    ? (y[1] + 127) / 128
-                             : tiled ? (y[1] + 63) / 64
-                                     : 1);
+                             vocab     ? (y[2] * y[3] + 15) / 16
+                             : small_m ? (y[2] * y[3] * y[1] + 63) / 64
+                             : tile64  ? (y[2] * y[3] + 63) / 64
+                             : tiled   ? (y[2] * y[3] + 31) / 32
+                                       : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
+                             (wide || vocab) ? (y[1] + 127) / 128
+                             : tiled         ? (y[1] + 63) / 64
+                                             : 1);
                 } else if (!reference && !tiled_gemm_disabled() && weight.packed_bytes && y[2] * y[3] >= 32 &&
                            y[1] >= 32)
                     // NHWC vec4 loads share address arithmetic across channels.
@@ -991,21 +999,23 @@ void Plan::bind_gpu_source(Buffer* source) {
     close();
     attach_buffers(arena_, upload_, readback_, ctc_readback_, bgr_only_, source);
 }
-double Plan::run_gpu_bgr(const BgrView& image, float* output, bool rotate) {
+double Plan::run_gpu_bgr(const BgrView& image, float* output, bool rotate, VkCommandBuffer prefix) {
     if (poisoned_)
         throw std::runtime_error("GPU plan is poisoned; recreate handle");
     const auto start = std::chrono::steady_clock::now();
     stage_bgr(image, rotate);
-    submit_readback(bgr_command_, output, model_.task == "rec");
+    submit_readback(bgr_command_, output, model_.task == "rec", prefix);
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
-void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc) {
+void Plan::submit_readback(VkCommandBuffer cmd, float* output, bool ctc, VkCommandBuffer prefix) {
     check(vkResetFences(context_.device, 1, &fence_), "reset graph fence");
     if (!cmd)
         throw std::runtime_error("CTC plan not available");
     VkSubmitInfo si{VK_STRUCTURE_TYPE_SUBMIT_INFO};
-    si.commandBufferCount = 1;
-    si.pCommandBuffers = &cmd;
+    // Prefix ends with transfer -> compute visibility; one fence covers both.
+    const std::array<VkCommandBuffer, 2> commands{prefix, cmd};
+    si.commandBufferCount = prefix ? 2 : 1;
+    si.pCommandBuffers = prefix ? commands.data() : &cmd;
     VkResult result = vkQueueSubmit(context_.queue, 1, &si, fence_);
     if (result == VK_SUCCESS)
         result = vkWaitForFences(context_.device, 1, &fence_, VK_TRUE, context_.graph_wait_timeout_ns);
@@ -1182,7 +1192,8 @@ void GraphEngine::reserve_shared_source(uint64_t bytes, const std::vector<Buffer
         }
     }
 }
-double GraphEngine::run_det_gpu_bgr(const BgrView& image, uint32_t oh, uint32_t ow, float* output, uint64_t capacity) {
+double GraphEngine::run_det_gpu_bgr(const BgrView& image, uint32_t oh, uint32_t ow, float* output, uint64_t capacity,
+                                    VkCommandBuffer prefix) {
     std::lock_guard<std::mutex> guard(mutex_);
     if (model_.task != "det" || !context_.gpu_crop_preprocess || !image.gpu_buffer ||
         !image.gpu_buffer->belongs_to(context_))
@@ -1191,7 +1202,7 @@ double GraphEngine::run_det_gpu_bgr(const BgrView& image, uint32_t oh, uint32_t 
     if (!output || capacity < elements(plan_->output_shape()))
         throw std::length_error("output capacity too small");
     plan_->bind_gpu_source(image.gpu_buffer);
-    return plan_->run_gpu_bgr(image, output);
+    return plan_->run_gpu_bgr(image, output, false, prefix);
 }
 void GraphEngine::prepare(uint32_t h, uint32_t w, uint64_t min_upload) {
     if (batch_poisoned_)

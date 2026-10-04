@@ -17,7 +17,10 @@ class GpuCropBatch {
     using Reserve = std::function<void(uint64_t, const std::vector<Buffer*>&)>;
     GpuCropBatch(std::shared_ptr<Context>, uint64_t budget, Reserve);
     ~GpuCropBatch();
-    double upload(const BgrView&);
+    double upload(const BgrView&, bool defer = false);
+    // Record upload without submitting; the same-queue DET consumer owns the
+    // single combined fence wait. Nothing is in flight before this callback.
+    double consume_upload(const std::function<double(VkCommandBuffer)>&);
     BgrView image() const;
     double crop(const std::vector<lw_detection_box>&, std::vector<BgrView>&);
     void release_capacity(); // resource rejection must not pin an unusable high-watermark
@@ -30,7 +33,7 @@ class GpuCropBatch {
     static Mapping mapping(const lw_detection_box&);
     uint64_t retained_bytes(uint64_t, const std::array<uint64_t, 8>&) const;
     void reset_commands();
-    void submit(const char*);
+    void submit(VkCommandBuffer, const char*);
     void close() noexcept;
     std::shared_ptr<Context> context_;
     uint64_t budget_, image_capacity_{};
@@ -40,6 +43,9 @@ class GpuCropBatch {
     std::array<std::unique_ptr<Buffer>, 8> crops_;
     std::array<uint64_t, 8> crop_capacity_{};
     VkCommandPool pool_{};
+    VkCommandPool upload_pool_{};
+    VkCommandBuffer upload_command_{};
+    bool upload_pending_{};
     VkDescriptorPool descriptors_{};
     VkCommandBuffer command_{};
     VkFence fence_{};

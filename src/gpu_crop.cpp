@@ -25,10 +25,13 @@ GpuCropBatch::GpuCropBatch(std::shared_ptr<Context> c, uint64_t budget, Reserve 
         VkCommandPoolCreateInfo pc{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
         pc.queueFamilyIndex = context_->queue_family;
         check(vkCreateCommandPool(context_->device, &pc, nullptr, &pool_), "crop command pool");
+        check(vkCreateCommandPool(context_->device, &pc, nullptr, &upload_pool_), "upload command pool");
         VkCommandBufferAllocateInfo ac{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-        ac.commandPool = pool_;
+        ac.commandPool = upload_pool_;
         ac.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         ac.commandBufferCount = 1;
+        check(vkAllocateCommandBuffers(context_->device, &ac, &upload_command_), "upload command");
+        ac.commandPool = pool_;
         check(vkAllocateCommandBuffers(context_->device, &ac, &command_), "crop command");
         VkDescriptorPoolSize size{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 24};
         VkDescriptorPoolCreateInfo dp{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
@@ -55,10 +58,13 @@ void GpuCropBatch::close() noexcept {
         vkDestroyFence(context_->device, fence_, nullptr);
     if (pool_)
         vkDestroyCommandPool(context_->device, pool_, nullptr);
+    if (upload_pool_)
+        vkDestroyCommandPool(context_->device, upload_pool_, nullptr);
     if (descriptors_)
         vkDestroyDescriptorPool(context_->device, descriptors_, nullptr);
     fence_ = VK_NULL_HANDLE;
     pool_ = VK_NULL_HANDLE;
+    upload_pool_ = VK_NULL_HANDLE;
     descriptors_ = VK_NULL_HANDLE;
 }
 void GpuCropBatch::reset_commands() {
@@ -75,12 +81,11 @@ uint64_t GpuCropBatch::retained_bytes(uint64_t image, const std::array<uint64_t,
         throw std::length_error("max_workspace_bytes exceeded by shared image/crops");
     return total;
 }
-void GpuCropBatch::submit(const char* operation) {
-    check(vkEndCommandBuffer(command_), "end shared image command");
+void GpuCropBatch::submit(VkCommandBuffer command, const char* operation) {
     check(vkResetFences(context_->device, 1, &fence_), "reset shared image fence");
     VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
     submit.commandBufferCount = 1;
-    submit.pCommandBuffers = &command_;
+    submit.pCommandBuffers = &command;
     auto status = vkQueueSubmit(context_->queue, 1, &submit, fence_);
     if (status == VK_SUCCESS)
         status = vkWaitForFences(context_->device, 1, &fence_, VK_TRUE, UINT64_C(30000000000));
@@ -89,12 +94,14 @@ void GpuCropBatch::submit(const char* operation) {
         check(status, operation); // A timeout is not cancellation; destruction waits idle.
     }
 }
-double GpuCropBatch::upload(const BgrView& image) {
+double GpuCropBatch::upload(const BgrView& image, bool defer) {
     validate_bgr(image.pixels, image.bytes, image.width, image.height, image.stride);
     if (image.gpu_buffer)
         throw std::invalid_argument("original image must be host BGR pixels");
     if (poisoned_)
         throw std::runtime_error("GPU crop failed; recreate OCR handle");
+    if (upload_pending_)
+        throw std::logic_error("previous deferred upload was not consumed");
     const auto start = std::chrono::steady_clock::now();
     const uint64_t span = uint64_t(image.height - 1) * image.stride + uint64_t(image.width) * 3;
     if (span > UINT32_MAX - 35)
@@ -140,25 +147,46 @@ double GpuCropBatch::upload(const BgrView& image) {
         metadata_ = std::make_unique<Buffer>(*context_, metadata_bytes, true);
     const std::array<uint32_t, 8> header{image.width, image.height, image.stride, 0, 0, 0, 0, 0};
     staging_->write_parts(header.data(), 32, image.pixels, static_cast<size_t>(span), (4 - span % 4) % 4);
-    // Reuse the owner's command pool/fence and copy only the current image,
-    // not a previous large image's capacity. No per-frame temporary pool/fence.
-    reset_commands();
+    // Upload has its own pool and is completed by the DET consumer's fence.
+    // Copy only the current image, never a previous large image's capacity.
+    check(vkResetCommandPool(context_->device, upload_pool_, 0), "reset upload command pool");
     VkCommandBufferBeginInfo begin{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
-    check(vkBeginCommandBuffer(command_, &begin), "begin shared image upload");
+    check(vkBeginCommandBuffer(upload_command_, &begin), "begin shared image upload");
     VkMemoryBarrier barrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
     barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
-    vkCmdPipelineBarrier(command_, VK_PIPELINE_STAGE_HOST_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+    vkCmdPipelineBarrier(upload_command_, VK_PIPELINE_STAGE_HOST_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                          VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, &barrier, 0, nullptr, 0, nullptr);
     VkBufferCopy copy{0, 0, needed};
-    vkCmdCopyBuffer(command_, staging_->handle, image_->handle, 1, &copy);
+    vkCmdCopyBuffer(upload_command_, staging_->handle, image_->handle, 1, &copy);
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(command_, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 1, &barrier,
-                         0, nullptr, 0, nullptr);
-    submit("submit/wait shared image upload");
+    vkCmdPipelineBarrier(upload_command_, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 1,
+                         &barrier, 0, nullptr, 0, nullptr);
+    check(vkEndCommandBuffer(upload_command_), "end shared image upload");
+    if (defer)
+        upload_pending_ = true;
+    else
+        submit(upload_command_, "submit/wait shared image upload");
     source_ = {nullptr, span, image.width, image.height, image.stride, image_.get()};
     return elapsed(start);
+}
+double GpuCropBatch::consume_upload(const std::function<double(VkCommandBuffer)>& consumer) {
+    if (!upload_pending_ || poisoned_)
+        throw std::logic_error("no deferred upload to consume");
+    try {
+        const auto ms = consumer(upload_command_);
+        upload_pending_ = false; // Consumer fence completed both commands.
+        return ms;
+    } catch (const std::length_error&) {
+        // Resource/capacity rejection occurs before submission. Discard safely.
+        upload_pending_ = false;
+        throw;
+    } catch (...) {
+        // Timeout is not cancellation. Retain buffers and wait idle on teardown.
+        poisoned_ = true;
+        throw;
+    }
 }
 BgrView GpuCropBatch::image() const {
     if (!image_ || poisoned_)
@@ -166,6 +194,8 @@ BgrView GpuCropBatch::image() const {
     return source_;
 }
 void GpuCropBatch::release_capacity() {
+    if (upload_pending_)
+        throw std::logic_error("cannot release a pending upload");
     std::vector<Buffer*> replaced{image_.get()};
     for (auto& crop : crops_)
         replaced.push_back(crop.get());
@@ -227,7 +257,7 @@ GpuCropBatch::Mapping GpuCropBatch::mapping(const lw_detection_box& box) {
 }
 double GpuCropBatch::crop(const std::vector<lw_detection_box>& boxes, std::vector<BgrView>& output) {
     output.clear();
-    if (boxes.empty() || boxes.size() > 8 || !image_ || poisoned_)
+    if (boxes.empty() || boxes.size() > 8 || !image_ || poisoned_ || upload_pending_)
         throw std::invalid_argument("GPU crop requires ready image and 1..8 boxes");
     std::vector<Mapping> maps;
     auto capacity = crop_capacity_;
@@ -307,7 +337,8 @@ double GpuCropBatch::crop(const std::vector<lw_detection_box>& boxes, std::vecto
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     vkCmdPipelineBarrier(command_, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 1,
                          &barrier, 0, nullptr, 0, nullptr);
-    submit("submit/wait GPU crop");
+    check(vkEndCommandBuffer(command_), "end GPU crop");
+    submit(command_, "submit/wait GPU crop");
     for (size_t i = 0; i < boxes.size(); ++i) {
         auto w = maps[i].shape[2], h = maps[i].shape[3];
         output.push_back({nullptr, uint64_t(w) * h * 3, w, h, w * 3, crops_[i].get()});

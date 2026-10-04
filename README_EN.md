@@ -337,6 +337,8 @@ The independently owned result survives engine destruction; query/copy JSON does
 not rerun inference. Destroy results explicitly. Never destroy engines/results
 while another call uses them. See [OCR API contract](docs/OCR-API.md).
 
+The latest local [pointwise bias optimization](docs/POINTWISE-BIAS-OPTIMIZATION.md) reduces paired full OCR latency by 3.5–8.4% on RTX 4060 and the warmed 100-image changing stream by 2.5–5.1%, with exact item equality. FP32, DET960 and public interfaces stay unchanged. This post-release development snapshot does not overwrite the v1.0.1 release; gains on other devices are not guaranteed.
+
 ## Support the project
 
 If this project helps you, optional donations support open-source maintenance.
