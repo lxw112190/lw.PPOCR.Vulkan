@@ -2,6 +2,8 @@
 
 测试日期：2026-10-02；RTX 4060 Laptop GPU / Windows 10 x64。
 
+本页保留该日期原始数据，不代表最新开发 DLL。2026-10-07 的 HardSwish 融合后复测见 [最新报告](HARDSWISH-OPTIMIZATION.md)；三模型仍未超过已有 TRT plans。
+
 ## 结论
 
 目前 **TensorRT 更快，Vulkan 尚未超过这个 TensorRT 项目**。主对比使用 Demo 的 REC batch=4、predictor=4；三模型 TensorRT 相对 Vulkan 的速度约为 **1.45× / 1.55× / 2.22×**。

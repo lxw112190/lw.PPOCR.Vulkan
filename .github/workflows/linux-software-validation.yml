@@ -75,6 +75,9 @@ jobs:
           ./build/ci/lwvk_det_gpu_preprocess_probe 0
           ./build/ci/lwvk_text_gpu_preprocess_probe 0
           ./build/ci/lwvk_gpu_crop_probe 0
+          ./build/ci/lwvk_depthwise_probe 0
+          ./build/ci/lwvk_gelu_probe 0
+          ./build/ci/lwvk_pointwise_batch_probe 0 --quick
           ./build/ci/lwvk_vocab_pointwise_probe 0
           ./build/ci/lwvk_short_pointwise_probe 0 --quick
       - name: Tiny DET reference using software Vulkan (not GPU performance)

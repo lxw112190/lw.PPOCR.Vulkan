@@ -16,6 +16,7 @@ p.add_argument("--output", type=Path, required=True)
 p.add_argument("--host-only", action="store_true")
 p.add_argument("--device", type=int, default=0)
 p.add_argument("--repeat", type=int, default=1)
+p.add_argument("--model", choices=("tiny","small","medium"), default="tiny")
 p.add_argument("--gpu-det-preprocess", action="store_true", help="explicitly opt child process into the DET experiment")
 p.add_argument("--gpu-text-preprocess", action="store_true", help="explicitly opt child process into CLS/REC preprocessing")
 p.add_argument("--gpu-crop-preprocess", action="store_true", help="shared original image and GPU perspective crops")
@@ -28,6 +29,8 @@ if a.gpu_crop_preprocess and not (a.gpu_det_preprocess and a.gpu_text_preprocess
 package, output = a.package.resolve(), a.output.resolve()
 output.mkdir(parents=True, exist_ok=True)
 prefix = "host" if a.host_only else f"device{a.device}"
+if a.model != "tiny":
+    prefix += "-" + a.model
 report, screenshot = output/f"winforms-{prefix}.json", output/f"winforms-{prefix}.png"
 # Do not let stale results hide a missing output from this run.
 for previous in (report, screenshot):
@@ -35,7 +38,7 @@ for previous in (report, screenshot):
         previous.unlink()
 exe = package/"lw.PPOCR.Vulkan.WinFormsDemo.exe"
 args = [str(exe), "--smoke-host" if a.host_only else "--smoke", "--device", str(a.device),
-    "--report", str(report), "--screenshot", str(screenshot),"--smoke-repeat",str(a.repeat)]
+    "--report", str(report), "--screenshot", str(screenshot),"--smoke-repeat",str(a.repeat),"--smoke-model",a.model]
 env=os.environ.copy()
 for key in list(env):
     if key.upper().startswith(('VK_','LWVK_')) or key.upper() in ('VULKAN_SDK','VK_SDK_PATH','PATH'):
@@ -64,6 +67,7 @@ assert result["ok"] and screenshot.is_file()
 assert result["mode"] == ("host-only" if a.host_only else "physical-vulkan")
 if not a.host_only:
     assert result["device"] == a.device and result["full_items"] == 16
+    assert result["model"] == a.model
     assert result["title"] == result["roi_text"] == "纯臻营养护发素"
     assert result['lazy_details']=='JSON and grid passed'
     assert len(result['measurements'])==a.repeat

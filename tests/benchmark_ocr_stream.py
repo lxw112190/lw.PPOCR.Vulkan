@@ -18,6 +18,7 @@ def main():
     p.add_argument('--before',type=Path,required=True);p.add_argument('--after',type=Path,required=True)
     p.add_argument('--corpus',type=Path,required=True);p.add_argument('--device',type=int,default=1)
     p.add_argument('--passes',type=int,default=2);p.add_argument('--report',type=Path,required=True)
+    p.add_argument('--reverse-initialization',action='store_true',help='Create the after engine first to check allocation-order bias')
     a=p.parse_args();assert 1<=a.passes<=10
     if any(os.environ.get(x)=='1' for x in ('LWVK_GPU_PROFILE','LWVK_HOST_PROFILE')):
         p.error('disable diagnostic profiling for timing')
@@ -27,7 +28,9 @@ def main():
         with Image.open(path) as image:images.append(np.ascontiguousarray(np.asarray(image.convert('RGB'))[:,:,::-1]))
     libs=[load(a.before),load(a.after)];rows=[]
     for model in ('tiny','small','medium'):
-        engines=[OCR(lib,ROOT/'models/onnx'/('ppocrv6-'+model),a.device) for lib in libs]
+        engines=[None,None]
+        for which in ((1,0) if a.reverse_initialization else (0,1)):
+            engines[which]=OCR(libs[which],ROOT/'models/onnx'/('ppocrv6-'+model),a.device)
         try:
             passes=[];expected=[None]*100
             for phase in range(a.passes):
@@ -46,6 +49,7 @@ def main():
             for engine in engines:engine.close()
     report=dict(passed=True,device=a.device,before_sha256=hashlib.sha256(a.before.read_bytes()).hexdigest(),
         after_sha256=hashlib.sha256(a.after.read_bytes()).hexdigest(),comparisons=rows,
+        reverse_initialization=a.reverse_initialization,
         gpu_det_preprocess=os.environ.get('LWVK_GPU_DET_PREPROCESS','unset (library default)'),gpu_text_preprocess=os.environ.get('LWVK_GPU_TEXT_PREPROCESS','unset (library default)'),
         gpu_crop_preprocess=os.environ.get('LWVK_GPU_CROP_PREPROCESS','unset (library default)'),
         method='100 predecoded images; alternating old/new order; no per-image warmup; pass 0 includes first-use plans, pass 1 reverses image order; FP32, DET960, CLS enabled; excludes model initialization and GUI',

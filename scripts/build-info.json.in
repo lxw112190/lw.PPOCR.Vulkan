@@ -14,5 +14,6 @@
   "sanitizers": "@LWVK_SANITIZERS@",
   "experimental_coop": "@LWVK_EXPERIMENTAL_COOP@",
   "experimental_rec_lanes": "@LWVK_EXPERIMENTAL_REC_LANES@",
-  "experimental_short_rec": "@LWVK_EXPERIMENTAL_SHORT_REC@"
+  "experimental_short_rec": "@LWVK_EXPERIMENTAL_SHORT_REC@",
+  "experimental_rec_layer_major": "@LWVK_EXPERIMENTAL_REC_LAYER_MAJOR@"
 }

@@ -345,6 +345,14 @@ New tooling separates first use, warm calls, changing image sizes, idle calls an
 
 This is development after v1.0.1, not replacement of a published artifact. Deterministic outputs and steady RSS are not ground-truth accuracy or proof of no leaks.
 
+## Opt-in Medium REC optimization
+
+The default-OFF `LWVK_EXPERIMENTAL_REC_LAYER_MAJOR` research build combines up to four Medium text-line FP32 projections on NVIDIA, reusing weights and bounded command caches. Other models/devices and constrained workspaces retain the serial path. Local fixed-sample full OCR improves by about 12–17%, while warmed changing-image streams improve by about 4–5%. Activation/driver memory increases; this is not enabled in release packages. A 1,000-call mixed-image soak and Medium WinForms checks passed. **It still does not outperform the existing TensorRT plans**; FP32 and DET960 are unchanged. See [conditions, source build and raw evidence](docs/MEDIUM-REC-OPTIMIZATION.md).
+
+## Default-path optimization: HardSwish fusion and TRT recheck
+
+The default development path adds qualified canonical pointwise/depthwise HardSwish epilogues without changing FP32, DET960 or result fields. Local warmed 100-image changing streams improve by roughly 0.6–2.5%, mostly from a 0.4–0.5 ms CLS reduction; Medium full-OCR gains remain small. Regressing wide-REC variants were removed. All three models remain slower than the existing FP16-enabled TRT plans; no crossover is claimed. See [measurements, resource/GT scoring and reproduction](docs/HARDSWISH-OPTIMIZATION.md). This unpublished snapshot does not overwrite v1.0.1 artifacts.
+
 ## Support the project
 
 If this project helps you, optional donations support open-source maintenance.

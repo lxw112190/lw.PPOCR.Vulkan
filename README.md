@@ -316,6 +316,14 @@ python examples/python/detect_image.py --library build/local/Release/lw.PPOCR.Vu
 
 这是 v1.0.1 之后的开发工作，不覆盖已发布附件，也不把结果一致或 RSS 平稳表述为真实准确率/无泄漏证明。
 
+## Medium 专项优化候选
+
+新增默认 OFF 的 `LWVK_EXPERIMENTAL_REC_LAYER_MAJOR` 研究构建：在 NVIDIA 上为 Medium REC 合并最多四条文字行的大通道 FP32 投影，复用权重与有界命令缓存；工作区不足、其他模型/设备仍走原路径。固定 sample 整图约降低 12%～17%，100 张变尺寸流热身轮约降低 4%～5%，但会增加激活/驱动内存，暂不进入正式默认包。1000 次混合图长测与 Medium WinForms 验证通过；**仍未超过既有 TensorRT**，不降低 FP32/DET960。测试条件、源码构建和原始数据见 [Medium 报告](docs/MEDIUM-REC-OPTIMIZATION.md)。
+
+## 默认开发优化：HardSwish 融合与 TRT 复测
+
+默认路径增加安全的 pointwise/深度卷积 HardSwish epilogue，保持 FP32、DET960 和结果字段不变。本机 100 张变尺寸流热身轮耗时降低约 0.6%～2.5%，CLS 阶段约减少 0.4～0.5 ms；Medium 整图收益有限。两种长 REC 退化内核已撤回。当前三模型仍慢于既有 FP16-enabled TRT，**不宣称已经反超**。原始对照、资源/合成 GT 评分与复现见 [本轮报告](docs/HARDSWISH-OPTIMIZATION.md)。这是未发布开发快照，不覆盖 v1.0.1 附件。
+
 ## 捐赠支持
 
 如果项目对你有帮助，欢迎自愿扫码支持开源维护。感谢你的使用、反馈和支持！

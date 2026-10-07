@@ -30,6 +30,18 @@ def digest(items):
                                     allow_nan=False).encode('utf-8')).hexdigest()
 
 
+def system_memory_snapshot():
+    """Read-only host pressure, not a causal diagnosis or an OCR error gate."""
+    try:
+        value = psutil.virtual_memory()
+        return dict(system_total_bytes=value.total, system_available_bytes=value.available,
+                    system_memory_percent=value.percent, system_memory_error=None)
+    except Exception as error:
+        # Missing observations must stay unknown, never be mistaken for zero pressure.
+        return dict(system_total_bytes=None, system_available_bytes=None,
+                    system_memory_percent=None, system_memory_error=str(error))
+
+
 def summarize(rows):
     if not rows:
         return {'calls': 0}
@@ -103,6 +115,7 @@ def main():
     expected = {}
     def checkpoint(phase, iteration):
         row = dict(phase=phase, iteration=iteration, **ram(process), threads=process.num_threads())
+        row.update(system_memory_snapshot())
         if hasattr(process, 'num_handles'):
             row['handles'] = process.num_handles()
         report['checkpoints'].append(row)

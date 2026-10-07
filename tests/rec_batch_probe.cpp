@@ -17,7 +17,12 @@ struct RecBatchProbe {
     static size_t plans(const GraphEngine& e) {
         return e.rec_batch_plans_.size();
     }
+    static size_t joint_commands(const GraphEngine& e) {
+        return e.rec_joint_cache_.size();
+    }
     static bool bounded_plans(const GraphEngine& e) {
+        if (e.rec_joint_cache_.size() > 8)
+            return false;
 #ifdef LWVK_EXPERIMENTAL_REC_LANES
         return plans(e) <= 32; // Unchanged, non-default research fork.
 #else
@@ -58,13 +63,16 @@ struct RecBatchProbe {
 #ifdef LWVK_EXPERIMENTAL_REC_LANES
         return e.rec_batch_effective_lanes_;
 #else
-        return e.rec_batch_io_.empty() ? 0 : 1;
+        return e.rec_batch_io_.empty() ? 0 : e.rec_layer_effective_;
 #endif
     }
     static uint32_t requested_lanes(const GraphEngine& e) {
 #ifdef LWVK_EXPERIMENTAL_REC_LANES
         return static_cast<uint32_t>(e.context_.rec_queues.size());
+#elif defined(LWVK_EXPERIMENTAL_REC_LAYER_MAJOR)
+        return e.model_.rec_layer_eligible && e.context_.properties.vendorID == 0x10de ? 4 : 1;
 #else
+        (void)e;
         return 1;
 #endif
     }
@@ -200,7 +208,12 @@ int main(int argc, char** argv) {
             for (uint32_t slot = 0; slot < 8; ++slot)
                 require(lwvk::RecBatchProbe::cached(mixed, slot, mixed_images[i].width) == cached[i][slot],
                         "returning width recreated cached plan");
+            require(lwvk::RecBatchProbe::bounded_plans(mixed), "joint command cache exceeded bound");
         }
+#ifdef LWVK_EXPERIMENTAL_REC_LAYER_MAJOR
+        if (lwvk::RecBatchProbe::requested_lanes(mixed) > 1)
+            require(lwvk::RecBatchProbe::joint_commands(mixed) == 8, "joint command LRU cap not exercised");
+#endif
         for (uint32_t width = 136; width <= 264; width += 8) {
             Image changing(width, 48, 7);
             mixed.recognize_batch(std::vector<lwvk::BgrView>(8, changing.view()), std::vector<uint8_t>(8), output);

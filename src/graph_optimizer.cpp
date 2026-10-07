@@ -197,4 +197,43 @@ uint32_t fold_silu_epilogue(std::vector<Node>& nodes, const std::vector<Tensor>&
     nodes = std::move(result);
     return fused;
 }
+uint32_t fold_conv_hardswish(std::vector<Node>& nodes, const std::vector<Tensor>& tensors, uint32_t output) {
+    std::vector<uint32_t> uses(tensors.size());
+    for (const auto& node : nodes)
+        for (auto id : node.inputs)
+            ++uses.at(id);
+    ++uses.at(output);
+    std::vector<Node> result;
+    uint32_t fused = 0;
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        auto node = nodes[i];
+        // Pointwise and scalar/vec4 depthwise kernels keep the original FP32
+        // accumulator and post-dot bias. No weights/normalization are changed.
+        const auto group = node.attrs.value("group", 1u);
+        if (node.op == "Conv" && node.inputs.size() >= 2 && node.inputs.size() <= 3 && uses.at(node.output) == 1 &&
+            !node.attrs.value("fused_relu", false) && !node.attrs.value("fused_gelu", false) &&
+            !node.attrs.value("fused_silu", false) && !node.attrs.value("fused_sigmoid", false) &&
+            !node.attrs.value("fused_hardswish", false) && i + 1 < nodes.size()) {
+            const auto& weights = tensors.at(node.inputs[1]);
+            const auto& next = nodes[i + 1];
+            const bool depthwise = group > 1 && weights.shape[0] == group && weights.shape[1] == 1;
+            const bool pointwise =
+                group == 1 && weights.shape[1] % 4 == 0 && weights.shape[1] > 0 && weights.shape[2] == 1 &&
+                weights.shape[3] == 1 &&
+                node.attrs.value("strides", std::vector<uint32_t>{1, 1}) == std::vector<uint32_t>{1, 1} &&
+                node.attrs.value("pads", std::vector<uint32_t>{0, 0, 0, 0}) == std::vector<uint32_t>{0, 0, 0, 0};
+            if (weights.constant && (depthwise || pointwise) && next.op == "HardSwish" &&
+                next.inputs == std::vector<uint32_t>{node.output} && next.attrs.value("alpha", 0.2f) == 1.0f / 6.0f &&
+                next.attrs.value("beta", 0.5f) == 0.5f) {
+                node.output = next.output;
+                node.attrs["fused_hardswish"] = true;
+                ++i;
+                ++fused;
+            }
+        }
+        result.push_back(std::move(node));
+    }
+    nodes = std::move(result);
+    return fused;
+}
 } // namespace lwvk

@@ -392,6 +392,8 @@ Model::Model(const std::filesystem::path& path) {
             fold_gelu(nodes, tensors, weights, output);
         fold_transpose_epilogue(nodes, tensors, output);
         fold_silu_epilogue(nodes, tensors, output);
+        if (!reference_kernels())
+            fold_conv_hardswish(nodes, tensors, output);
     }
 }
 Plan::Plan(Context& c, const Model& model, Buffer& constants, uint32_t h, uint32_t w, uint64_t max_bytes)
@@ -572,10 +574,11 @@ void Plan::attach(SharedWorkspace& workspace) {
     attach_buffers(workspace.arena.get(), workspace.upload.get(), workspace.readback.get(), workspace.ctc.get());
 }
 void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffer* ctc, bool bgr_only,
-                          Buffer* gpu_source) {
-    if (gpu_source_ != gpu_source) {
+                          Buffer* gpu_source, uint64_t arena_base) {
+    if (gpu_source_ != gpu_source || arena_base_ != arena_base) {
         close();
         gpu_source_ = gpu_source;
+        arena_base_ = arena_base;
     }
     if (command_)
         return;
@@ -584,6 +587,8 @@ void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffe
     readback_ = readback;
     ctc_readback_ = ctc;
     bgr_only_ = bgr_only;
+    if (arena_ && (arena_base_ > arena_->size || arena_bytes_ > arena_->size - arena_base_))
+        throw std::length_error("plan arena slice exceeds workspace");
     if (!arena_ || !upload_ || (!bgr_only && !readback_) || (ctc_bytes_ && !ctc_readback_))
         throw std::runtime_error("workspace not allocated");
     if (bgr_only && (model_.task != "rec" || !context_.gpu_text_preprocess))
@@ -651,6 +656,9 @@ void Plan::attach_buffers(Buffer* arena, Buffer* upload, Buffer* readback, Buffe
     }
 }
 void Plan::close() noexcept {
+    recorded_dispatches_.clear();
+    capturing_dispatches_ = false;
+    ++record_revision_;
     if (poisoned_)
         vkDeviceWaitIdle(context_.device); // timeout is not cancellation
     if (fence_) {
@@ -678,7 +686,14 @@ Plan::~Plan() {
 }
 VkDescriptorBufferInfo Plan::binding(uint32_t id) const {
     const auto& t = tensors_.at(id);
-    return {t.constant ? constants_.handle : arena_->handle, t.offset, t.bytes};
+    return {t.constant ? constants_.handle : arena_->handle, t.offset + (t.constant ? 0 : arena_base_), t.bytes};
+}
+void Plan::RecordedDispatch::emit(VkCommandBuffer command) const {
+    vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+    vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, layout, 0, 1, &set, 0, nullptr);
+    vkCmdPushConstants(command, layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, static_cast<uint32_t>(push.size() * 4),
+                       push.data());
+    vkCmdDispatch(command, groups, groups_y, 1);
 }
 void Plan::dispatch(const std::string& shader, const std::vector<VkDescriptorBufferInfo>& bindings,
                     const std::vector<uint32_t>& push, uint32_t groups, uint32_t groups_y) {
@@ -703,6 +718,11 @@ void Plan::dispatch(const std::string& shader, const std::vector<VkDescriptorBuf
         wr.pBufferInfo = &bindings[i];
     }
     vkUpdateDescriptorSets(context_.device, static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+    if (capturing_dispatches_)
+        recorded_dispatches_.push_back(
+            {pipe.handle, pipe.layout, set,
+             shader.rfind("conv_pointwise", 0) == 0 && push.size() == 4 && push[1] % 4 == 0 && push[2] % 4 == 0,
+             bindings, push, groups, groups_y});
     vkCmdBindPipeline(command_, VK_PIPELINE_BIND_POINT_COMPUTE, pipe.handle);
     vkCmdBindDescriptorSets(command_, VK_PIPELINE_BIND_POINT_COMPUTE, pipe.layout, 0, 1, &set, 0, nullptr);
     vkCmdPushConstants(command_, pipe.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, static_cast<uint32_t>(push.size() * 4),
@@ -727,6 +747,12 @@ void Plan::dispatch(const std::string& shader, const std::vector<VkDescriptorBuf
             VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
 }
 void Plan::record(const Model& model, bool ctc, bool bgr) {
+#ifdef LWVK_EXPERIMENTAL_REC_LAYER_MAJOR
+    capturing_dispatches_ =
+        bgr_only_ && model.rec_layer_eligible && context_.properties.vendorID == 0x10de && !context_.gpu_profile;
+    if (capturing_dispatches_)
+        recorded_dispatches_.clear();
+#endif
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     check(vkBeginCommandBuffer(command_, &bi), "begin graph recording");
     if (bgr_only_)
@@ -777,7 +803,8 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
             uint32_t flag = (n.inputs.size() == 3 ? 1u : 0u) | (n.attrs.value("fused_relu", false) ? 16u : 0u) |
                             (n.attrs.value("fused_gelu", false) ? 32u : 0u) |
                             (n.attrs.value("fused_sigmoid", false) ? 64u : 0u) |
-                            (n.attrs.value("fused_silu", false) ? 128u : 0u);
+                            (n.attrs.value("fused_silu", false) ? 128u : 0u) |
+                            (n.attrs.value("fused_hardswish", false) ? 256u : 0u);
             if (n.op == "ConvTranspose")
                 dispatch("convt2s2", {xb, wt, bias, yb, yb}, {y[3], y[2], y[1], x[1], x[3], flag}, linear(count));
             else if (n.attrs.value("group", 1u) == 1) {
@@ -787,8 +814,8 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                 // can change CTC repeat/blank choices and thus the mean score.
                 if (!reference && context_.cooperative_matrix && model.task != "cls" &&
                     (!cooperative_det_only_requested() || model.task == "det") && weight.packed_bytes &&
-                    !n.attrs.value("fused_silu", false) && y[2] * y[3] >= 32 && y[1] >= 128 && y[1] < 1024 &&
-                    x[1] >= 64)
+                    !n.attrs.value("fused_silu", false) && !n.attrs.value("fused_hardswish", false) &&
+                    y[2] * y[3] >= 32 && y[1] >= 128 && y[1] < 1024 && x[1] >= 64)
                     dispatch("conv_coop_gemm",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[3], y[2], y[1], x[1], k[0], k[1], s[0], s[1], p[0], p[1], x[3], x[2], flag},
@@ -926,16 +953,18 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                 VK_ACCESS_HOST_READ_BIT);
         check(vkEndCommandBuffer(command_), "end CTC recording");
         recording_profile_ = nullptr;
+        capturing_dispatches_ = false;
         return;
     }
     barrier(command_, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_SHADER_WRITE_BIT,
             VK_ACCESS_TRANSFER_READ_BIT);
-    VkBufferCopy copy{tensors_[output_].offset, 0, output_bytes_};
+    VkBufferCopy copy{arena_base_ + tensors_[output_].offset, 0, output_bytes_};
     vkCmdCopyBuffer(command_, arena_->handle, readback_->handle, 1, &copy);
     barrier(command_, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_ACCESS_HOST_READ_BIT);
     check(vkEndCommandBuffer(command_), "end graph recording");
     recording_profile_ = nullptr;
+    capturing_dispatches_ = false;
 }
 void Plan::profile_result(bool ctc) {
     auto& profile = ctc ? ctc_profile_ : profile_;
@@ -1066,6 +1095,12 @@ void GraphEngine::initialize(const std::string& required_task) {
         throw std::invalid_argument("workspace limit must be 4 KiB..1 GiB");
     if (!required_task.empty() && model_.task != required_task)
         throw std::invalid_argument("model task mismatch");
+    // Tune only the qualified large-channel Medium REC architecture, not Tiny/Small.
+    model_.rec_layer_eligible =
+        model_.task == "rec" && std::any_of(model_.nodes.begin(), model_.nodes.end(), [&](const auto& node) {
+            return node.op == "Conv" && node.attrs.value("group", 1u) == 1 &&
+                   model_.tensors.at(node.inputs.at(1)).shape == Shape{768, 1536, 1, 1};
+        });
     uint64_t size = 0, alignment = std::max<uint64_t>(16, context_.properties.limits.minStorageBufferOffsetAlignment);
     for (auto& t : model_.tensors)
         if (t.constant) {

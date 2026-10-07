@@ -1,0 +1,66 @@
+#version 450
+#extension GL_EXT_control_flow_attributes : require
+// Apache-2.0, lw.PPOCR.Vulkan 2026. FP32 pointwise projections for 2..4 lines.
+// Virtual row concatenation, no image copy or cross-line convolution/attention.
+// Each row retains the original sequential K/FMA, post-dot bias and epilogue.
+// All lanes reach both barriers; arena offsets are measured in float elements.
+layout(local_size_x = 128) in;
+layout(binding = 0, std430) readonly buffer X { vec4 x[]; };
+layout(binding = 1, std430) readonly buffer W { vec4 w[]; };
+layout(binding = 2, std430) readonly buffer B { vec4 b[]; };
+layout(binding = 3, std430) writeonly buffer O { vec4 o[]; };
+layout(push_constant) uniform PC {
+    uint N; uint K; uint flags; uint slots;
+    uvec4 rows; uvec4 input_offsets; uvec4 output_offsets;
+} p;
+shared float aa[1024];
+shared vec4 bb[1024];
+uvec2 locate(uint row) {
+    uint slot = 0;
+    while (slot + 1 < p.slots && row >= p.rows[slot]) { row -= p.rows[slot]; ++slot; }
+    return uvec2(slot, row);
+}
+void main() {
+    uint lid = gl_LocalInvocationID.x, m0 = gl_WorkGroupID.x * 32, n0 = gl_WorkGroupID.y * 128;
+    uint M = p.rows.x + p.rows.y + p.rows.z + p.rows.w;
+    uint mr = (lid / 32) * 8, nv = lid % 32, N4 = p.N / 4, K4 = p.K / 4;
+    uint a0 = m0 + lid / 8, a1 = a0 + 16;
+    uvec2 r0 = locate(a0), r1 = locate(a1);
+    uint x0 = p.input_offsets[r0.x] / 4 + r0.y * K4;
+    uint x1 = p.input_offsets[r1.x] / 4 + r1.y * K4;
+    vec4 r[8];
+    [[unroll]] for (uint j = 0; j < 8; ++j) r[j] = vec4(0);
+    for (uint k0 = 0; k0 < p.K; k0 += 32) {
+        uint k4 = k0 / 4 + lid % 8;
+        vec4 v0 = a0 < M && k4 < K4 ? x[x0 + k4] : vec4(0);
+        vec4 v1 = a1 < M && k4 < K4 ? x[x1 + k4] : vec4(0);
+        aa[lid * 4] = v0.x; aa[lid * 4 + 1] = v0.y;
+        aa[lid * 4 + 2] = v0.z; aa[lid * 4 + 3] = v0.w;
+        aa[(lid + 128) * 4] = v1.x; aa[(lid + 128) * 4 + 1] = v1.y;
+        aa[(lid + 128) * 4 + 2] = v1.z; aa[(lid + 128) * 4 + 3] = v1.w;
+        for (uint i = lid; i < 1024; i += 128) {
+            uint k = k0 + i / 32, n4 = n0 / 4 + i % 32;
+            bb[i] = k < p.K && n4 < N4 ? w[k * N4 + n4] : vec4(0);
+        }
+        barrier();
+        [[unroll]] for (uint k = 0; k < 32; ++k) {
+            vec4 v = bb[k * 32 + nv];
+            [[unroll]] for (uint j = 0; j < 8; ++j) r[j] += aa[(mr + j) * 32 + k] * v;
+        }
+        barrier();
+    }
+    uint n4 = n0 / 4 + nv;
+    if (n4 >= N4) return;
+    vec4 bias = (p.flags & 1u) != 0 ? b[n4] : vec4(0);
+    [[unroll]] for (uint j = 0; j < 8; ++j) {
+        uint m = m0 + mr + j;
+        vec4 v = r[j] + bias;
+        if ((p.flags & 16u) != 0) v = max(v, vec4(0));
+        if ((p.flags & 32u) != 0) v = lwvk_gelu(v);
+        if ((p.flags & 128u) != 0) v = lwvk_silu(v);
+        if (m < M) {
+            uvec2 destination = locate(m);
+            o[p.output_offsets[destination.x] / 4 + destination.y * N4 + n4] = v;
+        }
+    }
+}

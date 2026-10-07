@@ -66,10 +66,16 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
                 v = ((std::erf(v / std::sqrt(2.0f)) + 1.0f) * v) * .5f;
             if (p[12] & 128)
                 v = v * (1.0f / (1.0f + std::exp(-v)));
+            if (p[12] & 256)
+                v = v * std::clamp(v * (1.0f / 6.0f) + 0.5f, 0.0f, 1.0f);
             reference[m * n + j] = v;
         }
     auto uploaded = w;
-    if (shader_override == "conv_dense" || shader_override == "conv_gemm") {
+    if (shader_override == "conv_dw") {
+        for (uint32_t j = 0; j < n; ++j)
+            for (uint32_t k = 0; k < K; ++k)
+                uploaded[j * K + k] = w[k * np + j];
+    } else if (shader_override == "conv_dense" || shader_override == "conv_gemm") {
         for (uint32_t j = 0; j < n; ++j)
             for (uint32_t sp = 0; sp < kh * kw; ++sp)
                 for (uint32_t ci = 0; ci < c; ++ci)
@@ -145,7 +151,8 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
         if (depthwise) {
             const std::array<uint32_t, 12> push{{ow, oh, n, kh, kw, p[6], p[7], p[8], p[9], iw, ih, p[12]}};
             vkCmdPushConstants(cmd, pipeline.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 48, push.data());
-            vkCmdDispatch(cmd, (ow * oh * (n / 4) + 255) / 256, 1, 1);
+            const auto channels = shader == "conv_dw" ? n : n / 4;
+            vkCmdDispatch(cmd, (ow * oh * channels + 255) / 256, 1, 1);
         } else if (pointwise) {
             const std::array<uint32_t, 4> push{{ow * oh, n, c, p[12]}};
             vkCmdPushConstants(cmd, pipeline.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 16, push.data());
@@ -277,7 +284,7 @@ int main(int argc, char** argv) {
             double error = 0;
             unsigned count = 0;
             for (auto p : cases)
-                for (uint32_t flags : {0u, 1u, 16u, 17u, 32u, 33u, 128u, 129u}) {
+                for (uint32_t flags : {0u, 1u, 16u, 17u, 32u, 33u, 128u, 129u, 256u, 257u}) {
                     p[12] = flags;
                     std::vector<float> baseline, candidate;
                     error =
@@ -373,8 +380,29 @@ int main(int argc, char** argv) {
                 error = std::max(error, run_case(ctx, p, "conv_pointwise_smallm"));
                 ++count;
             }
+            // Every pointwise dispatch family supports the new canonical epilogue.
+            unsigned hard_count = 0;
+            for (uint32_t m : {1u, 17u, 65u})
+                for (uint32_t n : {64u, 128u})
+                    for (uint32_t bias : {0u, 1u}) {
+                        std::array<uint32_t, 13> p{{m, 1, n, 68, 1, 1, 1, 1, 0, 0, m, 1, 256u | bias}};
+                        std::vector<float> baseline;
+                        error = std::max(error, run_case(ctx, p, "conv_pointwise", &baseline));
+                        for (auto shader : {"conv_pointwise_tiled", "conv_pointwise_vector", "conv_pointwise_tiled64",
+                                            "conv_pointwise_wide", "conv_pointwise_vocab", "conv_pointwise_short",
+                                            "conv_pointwise_short8", "conv_pointwise_smallm"}) {
+                            std::vector<float> actual;
+                            error = std::max(error, run_case(ctx, p, shader, &actual));
+                            if (actual.size() != baseline.size() ||
+                                std::memcmp(actual.data(), baseline.data(), actual.size() * sizeof(float)) != 0)
+                                throw std::runtime_error("pointwise HardSwish FP32 bits/guard mismatch: " +
+                                                         std::string(shader));
+                            ++hard_count;
+                        }
+                    }
             std::cout << "{\"device_index\":" << index << ",\"device\":\"" << ctx.properties.deviceName
                       << "\",\"fp32_gelu_epilogues\":true,\"cases\":" << count
+                      << ",\"hardswish_comparisons\":" << hard_count
                       << ",\"max_absolute_error\":" << std::setprecision(9) << error << "}\n";
             return 0;
         }
@@ -388,8 +416,25 @@ int main(int argc, char** argv) {
             double error = 0;
             for (auto p : cases)
                 error = std::max(error, run_case(ctx, p));
+            // Scalar/vector HardSwish, bias, odd channel tails, stride and padding.
+            size_t hard_cases = 0;
+            for (auto shape : cases)
+                for (uint32_t bias : {0u, 1u}) {
+                    auto p = shape;
+                    p[12] = 256u | bias;
+                    std::vector<float> scalar, vector;
+                    error = std::max(error, run_case(ctx, p, "conv_dw", &scalar));
+                    error = std::max(error, run_case(ctx, p, "conv_dw4", &vector));
+                    if (scalar.size() != vector.size() ||
+                        std::memcmp(scalar.data(), vector.data(), scalar.size() * sizeof(float)) != 0)
+                        throw std::runtime_error("HardSwish scalar/vector FP32 bits/guard mismatch");
+                    p[2] = p[3] = 7;
+                    error = std::max(error, run_case(ctx, p, "conv_dw"));
+                    hard_cases += 3;
+                }
             std::cout << "{\"device_index\":" << index << ",\"device\":\"" << ctx.properties.deviceName
                       << "\",\"fp32_vector_depthwise\":true,\"cases\":" << cases.size()
+                      << ",\"hardswish_cases\":" << hard_cases << ",\"exact_hardswish_scalar_vector_bits\":true"
                       << ",\"max_absolute_error\":" << std::setprecision(9) << error << "}\n";
             return 0;
         }

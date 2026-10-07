@@ -53,7 +53,8 @@ namespace Lw.PPOCR.VulkanDemo {
             AutoScaleMode=AutoScaleMode.Font; StartPosition=FormStartPosition.CenterScreen;
             if(options.Smoke) {ShowInTaskbar=false;Opacity=0;}
             modelVariant.Items.AddRange(new object[]{"Tiny","Small","Medium"});
-            BuildLayout(); WireEvents(); modelVariant.SelectedIndex=0;
+            BuildLayout(); WireEvents(); modelVariant.SelectedIndex=options.Smoke && options.SmokeModel=="medium"?2:
+                options.Smoke && options.SmokeModel=="small"?1:0;
             Shown+=delegate {Start();}; FormClosing+=OnClosingForm;
         }
         private void BuildLayout() {
@@ -298,7 +299,7 @@ namespace Lw.PPOCR.VulkanDemo {
                 tabs.SelectedIndex=2;if(grid.Rows.Count!=16) throw new InvalidOperationException("Lazy grid mismatch");
                 tabs.SelectedIndex=0;SaveScreenshot();RunRecognition(delegate {
                     if(lastText!="纯臻营养护发素") throw new InvalidOperationException("ROI text mismatch: "+lastText);
-                    WriteReport(new {ok=true,version=Native.Utf8(Native.lwvk_version()),mode="physical-vulkan",device=options.Device,gpu=gpuDisplay,
+                    WriteReport(new {ok=true,version=Native.Utf8(Native.lwvk_version()),mode="physical-vulkan",device=options.Device,gpu=gpuDisplay,model=options.SmokeModel,
                         full_items=full.Output.items.Count,title=full.Output.items[0].text,roi_text=lastText,
                         editable_gpu="passed (selection / typed ID / invalid ID)",mouse_mapping="normal/reverse/resize passed",
                         image_pixels="original not painted",full_timing=full.Output.timing,

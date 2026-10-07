@@ -30,6 +30,7 @@ struct Model {
     std::vector<uint8_t> weights;
     uint32_t input{}, output{};
     std::string task;
+    bool rec_layer_eligible{};
     std::vector<std::string> dictionary;
 };
 struct SharedWorkspace {
@@ -64,7 +65,22 @@ class Plan {
   private:
     friend class GraphEngine;
     void stage_bgr(const BgrView&, bool rotate = false);
-    void attach_buffers(Buffer*, Buffer*, Buffer*, Buffer*, bool bgr_only = false, Buffer* gpu_source = nullptr);
+    void attach_buffers(Buffer*, Buffer*, Buffer*, Buffer*, bool bgr_only = false, Buffer* gpu_source = nullptr,
+                        uint64_t arena_base = 0);
+    uint64_t arena_base_{};
+    struct RecordedDispatch {
+        VkPipeline pipeline{};
+        VkPipelineLayout layout{};
+        VkDescriptorSet set{};
+        bool pointwise{};
+        std::vector<VkDescriptorBufferInfo> bindings;
+        std::vector<uint32_t> push;
+        uint32_t groups{}, groups_y{};
+        void emit(VkCommandBuffer) const;
+    };
+    std::vector<RecordedDispatch> recorded_dispatches_;
+    uint64_t record_revision_{};
+    bool capturing_dispatches_{};
     void bind_gpu_source(Buffer*);
     Buffer* gpu_source_{};
     bool bgr_only_{};
@@ -182,6 +198,30 @@ class GraphEngine {
     // Default serial path: independent 16-width LRUs for eight slots (128 max).
     // These retain metadata/commands, not separate activation arenas or logits.
     std::vector<RecBatchPlan> rec_batch_plans_;
+    struct RecJointCommand {
+        explicit RecJointCommand(Context& c) : context(c) {}
+        ~RecJointCommand() {
+            if (poisoned)
+                vkDeviceWaitIdle(context.device);
+            if (pool)
+                vkDestroyCommandPool(context.device, pool, nullptr);
+            if (descriptors)
+                vkDestroyDescriptorPool(context.device, descriptors, nullptr);
+        }
+        Context& context;
+        VkCommandPool pool{};
+        VkCommandBuffer command{};
+        VkDescriptorPool descriptors{};
+        std::vector<std::pair<const Plan*, uint64_t>> key;
+        uint32_t lanes{};
+        uint64_t stamp{};
+        bool poisoned{};
+    };
+    // Destroy the joint command before the descriptor sets and shared arena.
+    std::vector<std::unique_ptr<RecJointCommand>> rec_joint_cache_;
+    RecJointCommand* rec_joint_{};
+    uint64_t rec_layer_stride_{};
+    uint32_t rec_layer_effective_{1};
     bool batch_poisoned_{};
     Plan* plan_{};
     uint64_t stamp_{};
