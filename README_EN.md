@@ -339,6 +339,12 @@ while another call uses them. See [OCR API contract](docs/OCR-API.md).
 
 The latest local [pointwise bias optimization](docs/POINTWISE-BIAS-OPTIMIZATION.md) reduces paired full OCR latency by 3.5–8.4% on RTX 4060 and the warmed 100-image changing stream by 2.5–5.1%, with exact item equality. FP32, DET960 and public interfaces stay unchanged. This post-release development snapshot does not overwrite the v1.0.1 release; gains on other devices are not guaranteed.
 
+## Latest development qualification: short REC and latency modes
+
+New tooling separates first use, warm calls, changing image sizes, idle calls and a single-handle soak, with median/P95, RAM, WDDM process-memory, thread and handle observations. M8/M16 FP32 kernels help some isolated short REC shapes but did not establish a consistent full-OCR/changing-stream win. Research dispatch is **OFF in ordinary builds**. FP32, DET960, models and frozen v1 interfaces are unchanged. See [qualification and reproduction](docs/SHORT-REC-QUALIFICATION.md).
+
+This is development after v1.0.1, not replacement of a published artifact. Deterministic outputs and steady RSS are not ground-truth accuracy or proof of no leaks.
+
 ## Support the project
 
 If this project helps you, optional donations support open-source maintenance.

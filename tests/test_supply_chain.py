@@ -98,11 +98,12 @@ class SupplyChainTests(unittest.TestCase):
     def test_default_release_metadata_gate(self):
         info = dict(metadata_version=1, version=self.version, system='Windows',
                     processor='AMD64', pointer_bytes=8, configuration='Release',
-                    sanitizers='OFF', experimental_coop='OFF', experimental_rec_lanes='OFF')
+                    sanitizers='OFF', experimental_coop='OFF', experimental_rec_lanes='OFF', experimental_short_rec='OFF')
         sc.validate_release_build(info, self.version, 'windows-x64')
         for key, bad in (('version', '0.1.0'), ('system', 'Linux'), ('processor', 'ARM64'),
                          ('pointer_bytes', 4), ('configuration', 'Debug'), ('metadata_version', 2),
-                         ('sanitizers', 'ON'), ('experimental_coop', 'ON'), ('experimental_rec_lanes', 'ON')):
+                         ('sanitizers', 'ON'), ('experimental_coop', 'ON'), ('experimental_rec_lanes', 'ON'),
+                         ('experimental_short_rec', 'ON'), ('experimental_short_rec', None)):
             value = dict(info, **{key: bad})
             with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'metadata'):
                 sc.validate_release_build(value, self.version, 'windows-x64')

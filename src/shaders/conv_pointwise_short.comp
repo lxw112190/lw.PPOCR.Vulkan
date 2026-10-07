@@ -1,0 +1,50 @@
+#version 450
+#extension GL_EXT_control_flow_attributes : require
+// Apache-2.0, lw.PPOCR.Vulkan 2026. Short-row FP32 M16/N64/K32.
+// The build also derives M8 from this source (ROWS=2). Packed NHWC vec4
+// loads/stores keep the baseline K/FMA order, bias and activation epilogue.
+// N/K must be multiples of four. All lanes reach both shared-memory barriers.
+#define ROWS 4
+layout(local_size_x = 64) in;
+layout(binding = 0, std430) readonly buffer X { vec4 x[]; };
+layout(binding = 1, std430) readonly buffer W { vec4 w[]; };
+layout(binding = 2, std430) readonly buffer B { vec4 b[]; };
+layout(binding = 3, std430) writeonly buffer O { vec4 o[]; };
+layout(push_constant) uniform PC { uint M; uint N; uint K; uint flags; } p;
+shared float aa[ROWS * 4 * 32];
+shared vec4 bb[512];
+void main() {
+    uint lid = gl_LocalInvocationID.x, m0 = gl_WorkGroupID.x * (ROWS * 4), n0 = gl_WorkGroupID.y * 64;
+    uint mr = (lid / 16) * ROWS, nv = lid % 16, N4 = p.N / 4, K4 = p.K / 4;
+    vec4 r[ROWS];
+    [[unroll]] for (uint j = 0; j < ROWS; ++j) r[j] = vec4(0);
+    for (uint k0 = 0; k0 < p.K; k0 += 32) {
+        for (uint i = lid; i < ROWS * 32; i += 64) {
+            uint m = m0 + i / 8, k4 = k0 / 4 + i % 8;
+            vec4 v = (m < p.M && k4 < K4) ? x[m * K4 + k4] : vec4(0);
+            aa[i * 4] = v.x; aa[i * 4 + 1] = v.y;
+            aa[i * 4 + 2] = v.z; aa[i * 4 + 3] = v.w;
+        }
+        for (uint i = lid; i < 512; i += 64) {
+            uint k = k0 + i / 16, n4 = n0 / 4 + i % 16;
+            bb[i] = (k < p.K && n4 < N4) ? w[k * N4 + n4] : vec4(0);
+        }
+        barrier();
+        [[unroll]] for (uint k = 0; k < 32; ++k) {
+            vec4 v = bb[k * 16 + nv];
+            [[unroll]] for (uint j = 0; j < ROWS; ++j) r[j] += aa[(mr + j) * 32 + k] * v;
+        }
+        barrier();
+    }
+    uint n4 = n0 / 4 + nv;
+    if (n4 >= N4) return;
+    vec4 bias = (p.flags & 1u) != 0 ? b[n4] : vec4(0);
+    [[unroll]] for (uint j = 0; j < ROWS; ++j) {
+        vec4 v = r[j] + bias;
+        if ((p.flags & 16u) != 0) v = max(v, vec4(0));
+        if ((p.flags & 32u) != 0) v = lwvk_gelu(v);
+        if ((p.flags & 128u) != 0) v = lwvk_silu(v);
+        uint m = m0 + mr + j;
+        if (m < p.M) o[m * N4 + n4] = v;
+    }
+}

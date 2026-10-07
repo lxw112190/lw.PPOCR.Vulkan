@@ -60,7 +60,7 @@ jobs:
       - name: Build / host ABI tests
         shell: pwsh
         run: |
-          cmake -S . -B build/ci -G "Visual Studio 17 2022" -A x64 -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
+          cmake -S . -B build/ci -G "Visual Studio 17 2022" -A x64 -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF -DLWVK_EXPERIMENTAL_SHORT_REC=OFF
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build build/ci --config Release --parallel 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -155,7 +155,7 @@ jobs:
           python scripts/supply_chain.py --report build/reports/supply-chain.json
           python scripts/repository_preflight.py
           python tests/test_repository_preflight.py
-          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
+          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF -DLWVK_EXPERIMENTAL_SHORT_REC=OFF
           cmake --build build/ci --parallel 4
           ctest --test-dir build/ci --output-on-failure
           ./build/ci/lw-ppocr-vulkan-probe --allow-no-device

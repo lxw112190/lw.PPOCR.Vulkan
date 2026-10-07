@@ -63,7 +63,7 @@ jobs:
           python scripts/repository_preflight.py
           python tests/test_repository_preflight.py
           python scripts/contracts.py --check
-          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
+          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF -DLWVK_EXPERIMENTAL_SHORT_REC=OFF
           cmake --build build/ci --parallel 4
           ctest --test-dir build/ci --output-on-failure
       - name: GPU image shaders / exact bits / stride / recovery (software Vulkan)
@@ -76,6 +76,7 @@ jobs:
           ./build/ci/lwvk_text_gpu_preprocess_probe 0
           ./build/ci/lwvk_gpu_crop_probe 0
           ./build/ci/lwvk_vocab_pointwise_probe 0
+          ./build/ci/lwvk_short_pointwise_probe 0 --quick
       - name: Tiny DET reference using software Vulkan (not GPU performance)
         run: |
           ./build/ci/lw-ppocr-vulkan-probe

@@ -108,7 +108,7 @@ jobs:
           cmake -S . -B build/sanitize -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_C_COMPILER=clang-14 -DCMAKE_CXX_COMPILER=clang++-14 \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLWVK_SANITIZERS=ON \
-            -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF
+            -DLWVK_EXPERIMENTAL_COOP=OFF -DLWVK_EXPERIMENTAL_REC_LANES=OFF -DLWVK_EXPERIMENTAL_SHORT_REC=OFF
           cmake --build build/sanitize --parallel 2
       - name: Live enumeration with ordinary driver unload and leak checking
         run: build/sanitize/lw-ppocr-vulkan-probe

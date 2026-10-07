@@ -27,11 +27,12 @@ inline void snapshot_vulkan_modules() noexcept {
                     continue;
                 const auto base = static_cast<unsigned long long>(module->dlpi_addr);
                 const auto start = base + segment.p_vaddr;
-                std::fprintf(stderr, "LWVK_MODULE 0x%llx 0x%llx 0x%llx %s\n",
-                             start, start + segment.p_memsz, base, module->dlpi_name);
+                std::fprintf(stderr, "LWVK_MODULE 0x%llx 0x%llx 0x%llx %s\n", start, start + segment.p_memsz, base,
+                             module->dlpi_name);
             }
             return 0;
-        }, nullptr);
+        },
+        nullptr);
     std::fflush(stderr);
 #endif
 }

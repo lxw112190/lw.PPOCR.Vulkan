@@ -68,6 +68,14 @@ No production freeze, LTS or full security audit is claimed.
 
 ## After 1.0: ongoing validation and maintenance
 
+Latest local work: [short REC qualification and latency modes](SHORT-REC-QUALIFICATION.md).
+The M8/M16 FP32 research dispatch is OFF by default: isolated short REC gains
+did not translate to consistent full-OCR gains. Default/research three-model
+1000-call soaks each passed locally. Next priority is evidence-led idle-latency
+analysis and an authorized, human-labelled real-image corpus, not an unqualified
+default kernel or implicit GPU keepalive. Linux CI/target-package qualification
+must be rerun before announcing a new release.
+
 1. Wider correctness corpus, driver/device matrix and 1000..5000 full OCR stress.
 2. Linux physical GPU and service-account deployment checks; wider WinForms usage.
 3. GPU validation layers, sanitizer and fault recovery/shutdown tests.

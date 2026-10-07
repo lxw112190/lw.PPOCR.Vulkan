@@ -217,7 +217,7 @@ def validate_release_build(info, version, platform):
             info.get('system') != expected_system or info.get('pointer_bytes') != 8 or
             info.get('processor', '').lower() not in ('amd64', 'x86_64', 'x64') or
             info.get('configuration') != 'Release' or
-            any(info.get(k) != 'OFF' for k in ('sanitizers', 'experimental_coop', 'experimental_rec_lanes'))):
+            any(info.get(k) != 'OFF' for k in ('sanitizers', 'experimental_coop', 'experimental_rec_lanes', 'experimental_short_rec'))):
         raise ValueError('build metadata does not describe the default x64 Release artifact')
 
 

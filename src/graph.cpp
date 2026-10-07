@@ -2,6 +2,7 @@
 #include "onnx_import.hpp"
 #include "workspace_planner.hpp"
 #include "graph_optimizer.hpp"
+#include "rec_short_policy.hpp"
 #include "ocr_host.hpp"
 #include <algorithm>
 #include <fstream>
@@ -806,23 +807,38 @@ void Plan::record(const Model& model, bool ctc, bool bgr) {
                     const bool vocab =
                         wide_rec && !tiled_pointwise_disabled() && y[1] >= 4096 && y[1] % 4 != 0 && x[1] >= 64;
                     const bool small_m = y[2] * y[3] <= 4 && y[1] >= 64 && x[1] >= 64;
-                    dispatch(vocab     ? "conv_pointwise_vocab"
-                             : tile64  ? "conv_pointwise_tiled64"
-                             : small_m ? "conv_pointwise_smallm"
-                             : wide    ? "conv_pointwise_wide"
-                             : vector  ? "conv_pointwise_vector"
-                             : tiled   ? "conv_pointwise_tiled"
-                                       : "conv_pointwise",
+                    // Short REC helps isolated rows, not the changing OCR stream.
+                    // Keep the research dispatch OFF in normal release builds.
+                    const uint32_t rows = y[2] * y[3];
+#ifdef LWVK_EXPERIMENTAL_SHORT_REC
+                    const auto short_tile =
+                        rec_short_tile_rows(model.task == "rec", context_.properties.vendorID,
+                                            context_.properties.limits.maxComputeSharedMemorySize, rows, y[1], x[1],
+                                            reference || tiled_pointwise_disabled() || tile64);
+                    const bool short_rows = short_tile != 0;
+#else
+                    constexpr bool short_rows = false;
+#endif
+                    dispatch(vocab        ? "conv_pointwise_vocab"
+                             : tile64     ? "conv_pointwise_tiled64"
+                             : short_rows ? (rows <= 8 ? "conv_pointwise_short8" : "conv_pointwise_short")
+                             : small_m    ? "conv_pointwise_smallm"
+                             : wide       ? "conv_pointwise_wide"
+                             : vector     ? "conv_pointwise_vector"
+                             : tiled      ? "conv_pointwise_tiled"
+                                          : "conv_pointwise",
                              {xb, {constants_.handle, weight.packed_offset, weight.packed_bytes}, bias, yb},
                              {y[2] * y[3], y[1], x[1], flag},
-                             vocab     ? (y[2] * y[3] + 15) / 16
-                             : small_m ? (y[2] * y[3] * y[1] + 63) / 64
-                             : tile64  ? (y[2] * y[3] + 63) / 64
-                             : tiled   ? (y[2] * y[3] + 31) / 32
-                                       : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
-                             (wide || vocab) ? (y[1] + 127) / 128
-                             : tiled         ? (y[1] + 63) / 64
-                                             : 1);
+                             vocab        ? (y[2] * y[3] + 15) / 16
+                             : short_rows ? (rows + (rows <= 8 ? 7 : 15)) / (rows <= 8 ? 8 : 16)
+                             : small_m    ? (y[2] * y[3] * y[1] + 63) / 64
+                             : tile64     ? (y[2] * y[3] + 63) / 64
+                             : tiled      ? (y[2] * y[3] + 31) / 32
+                                          : linear(uint64_t((y[2] * y[3] + 3) / 4) * ((y[1] + 3) / 4)),
+                             short_rows        ? (y[1] + 63) / 64
+                             : (wide || vocab) ? (y[1] + 127) / 128
+                             : tiled           ? (y[1] + 63) / 64
+                                               : 1);
                 } else if (!reference && !tiled_gemm_disabled() && weight.packed_bytes && y[2] * y[3] >= 32 &&
                            y[1] >= 32)
                     // NHWC vec4 loads share address arithmetic across channels.

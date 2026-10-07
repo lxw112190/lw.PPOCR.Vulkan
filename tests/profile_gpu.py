@@ -77,10 +77,14 @@ def main():
     p.add_argument("--tile64",action="store_true",help="explicit experimental FP32 M64 pointwise tile; default off")
     p.add_argument("--validation",action="store_true",help="request Khronos validation layer; errors fail the diagnostic")
     p.add_argument("--report",type=Path)
+    p.add_argument("--rec-widths",type=int,nargs="+",help="diagnose short REC shapes as well as the usual wide rows")
+    p.add_argument("--rec-only",action="store_true",help="skip DET/CLS when investigating REC dispatch")
     p.add_argument("--case",help=argparse.SUPPRESS)
     a=p.parse_args()
     if a.coop_det_only and not a.coop:
         p.error("--coop-det-only requires --coop")
+    if a.rec_widths and any(w<32 or w>960 or w%8 for w in a.rec_widths):
+        p.error("REC widths must be multiples of 8 in 32..960")
     for stream in (sys.stdout,sys.stderr):
         if hasattr(stream,"reconfigure"):
             stream.reconfigure(encoding="utf-8",errors="backslashreplace")
@@ -91,7 +95,10 @@ def main():
         p.error("--report is required")
     reports=[]
     for variant in a.variants:
-        for task,height,width in CASES:
+        cases=[c for c in CASES if c[0]!="rec"]+[("rec",48,w) for w in (a.rec_widths or [320,960])]
+        if a.rec_only:
+            cases=[c for c in cases if c[0]=="rec"]
+        for task,height,width in cases:
             controls=[]
             records=[]
             for enabled in (False,True):

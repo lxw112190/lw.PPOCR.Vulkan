@@ -1,12 +1,14 @@
 # 开发指南 / Development guide
 
-核心是 C++17/Vulkan；第三方参考快照、官方模型与许可证单独保留。不要把技术预览当作 ABI 冻结或生产稳定版。
+核心是 C++17/Vulkan；第三方参考快照、官方模型与许可证单独保留。v1.0 起现有接口冻结；开发快照和默认关闭的实验不自动继承正式附件的验收资格。
+
+最新短行 REC 工程候选、默认关闭的资格决策、多场景延迟/6000 次长测与复现命令，见 [SHORT-REC-QUALIFICATION.md](SHORT-REC-QUALIFICATION.md)。`LWVK_EXPERIMENTAL_SHORT_REC=ON` 只用于独立研究构建，正式打包元数据必须为 `OFF`。不要仅凭单算子微基准启用默认，也不要把间隔调用与连续热态耗时混为一谈。
 
 ## 目录与关键边界
 
 | 目录/文件 | 职责 |
 |---|---|
-| `include/lw_ppocr_vulkan.h`、`src/api.cpp` | 实验性 C ABI；固定宽度类型、缓冲区长度、UTF-8 和异常转状态码 |
+| `include/lw_ppocr_vulkan.h`、`src/api.cpp` | 冻结 C ABI v1；固定宽度类型、缓冲区长度、UTF-8 和异常转状态码 |
 | `src/ocr_pipeline.cpp`、`src/ocr_host.cpp` | 完整 OCR、同句柄串行、DB/裁剪/CLS/REC、累计像素限制 |
 | `src/onnx_import.cpp` | 有消息与资源预算的 ONNX 解析，只支持已固定的模型 |
 | `src/graph.cpp`、`src/workspace_planner.hpp` | 图执行、张量生命周期、32 项尺寸计划 LRU、共享 arena/IO |

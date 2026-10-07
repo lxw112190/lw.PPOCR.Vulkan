@@ -9,6 +9,11 @@
 #include <iomanip>
 #include <stdexcept>
 using namespace lwvk;
+#ifdef LWVK_SHORT_POINTWISE_PROBE
+constexpr bool short_pointwise_probe = true;
+#else
+constexpr bool short_pointwise_probe = false;
+#endif
 #ifdef LWVK_VOCAB_POINTWISE_PROBE
 constexpr bool vocab_pointwise_probe = true;
 #else
@@ -89,10 +94,10 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
     };
     try {
         const auto shader = shader_override.empty() ? (depthwise ? "conv_dw4" : "conv_coop_gemm") : shader_override;
-        const bool pointwise = shader == "conv_pointwise" || shader == "conv_pointwise_tiled" ||
-                               shader == "conv_pointwise_tiled64" || shader == "conv_pointwise_vector" ||
-                               shader == "conv_pointwise_smallm" || shader == "conv_pointwise_wide" ||
-                               shader == "conv_pointwise_vocab";
+        const bool pointwise =
+            shader == "conv_pointwise" || shader == "conv_pointwise_tiled" || shader == "conv_pointwise_tiled64" ||
+            shader == "conv_pointwise_vector" || shader == "conv_pointwise_smallm" || shader == "conv_pointwise_wide" ||
+            shader == "conv_pointwise_vocab" || shader == "conv_pointwise_short" || shader == "conv_pointwise_short8";
         auto& pipeline = ctx.pipeline(shader, 4, depthwise ? 48 : pointwise ? 16 : 52);
         VkCommandPoolCreateInfo pc{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
         pc.queueFamilyIndex = ctx.queue_family;
@@ -144,7 +149,11 @@ static double run_case(Context& ctx, std::array<uint32_t, 13> p, const std::stri
         } else if (pointwise) {
             const std::array<uint32_t, 4> push{{ow * oh, n, c, p[12]}};
             vkCmdPushConstants(cmd, pipeline.layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 16, push.data());
-            if (shader == "conv_pointwise_vocab")
+            if (shader == "conv_pointwise_short8")
+                vkCmdDispatch(cmd, (ow * oh + 7) / 8, (n + 63) / 64, 1);
+            else if (shader == "conv_pointwise_short")
+                vkCmdDispatch(cmd, (ow * oh + 15) / 16, (n + 63) / 64, 1);
+            else if (shader == "conv_pointwise_vocab")
                 vkCmdDispatch(cmd, (ow * oh + 15) / 16, (n + 127) / 128, 1);
             else if (shader == "conv_pointwise_wide")
                 vkCmdDispatch(cmd, (ow * oh + 31) / 32, (n + 127) / 128, 1);
@@ -211,8 +220,40 @@ int main(int argc, char** argv) {
         uint32_t index = argc > 1 ? static_cast<uint32_t>(std::stoul(argv[1])) : 0;
         Context ctx(index);
         if (!depthwise && !gelu_probe && !vector_gemm_probe && !wide_pointwise_probe && !vocab_pointwise_probe &&
-            !ctx.cooperative_matrix)
+            !short_pointwise_probe && !ctx.cooperative_matrix)
             throw std::runtime_error("set LWVK_EXPERIMENTAL_COOP=1 for the opt-in probe");
+        if (short_pointwise_probe) {
+            unsigned count = 0;
+            double error = 0;
+            const bool quick = argc > 2 && std::string(argv[2]) == "--quick";
+            const std::vector<uint32_t> rows = quick ? std::vector<uint32_t>{5, 8, 9, 15, 16, 17, 31}
+                                                     : std::vector<uint32_t>{1, 5, 7, 8, 9, 15, 16, 17, 24, 31, 33};
+            const std::vector<std::array<uint32_t, 2>> channels =
+                quick ? std::vector<std::array<uint32_t, 2>>{{64, 64}, {68, 36}, {192, 768}}
+                      : std::vector<std::array<uint32_t, 2>>{{64, 64}, {68, 36}, {192, 768}, {768, 192}, {1536, 768}};
+            const std::vector<uint32_t> activations =
+                quick ? std::vector<uint32_t>{0, 1, 33, 129} : std::vector<uint32_t>{0, 1, 16, 17, 32, 33, 128, 129};
+            for (uint32_t m : rows)
+                for (const auto nk : channels)
+                    for (uint32_t flags : activations) {
+                        std::array<uint32_t, 13> p{{m, 1, nk[0], nk[1], 1, 1, 1, 1, 0, 0, m, 1, flags}};
+                        std::vector<float> baseline, candidate;
+                        error = std::max(
+                            error, run_case(ctx, p, m < 16 ? "conv_pointwise" : "conv_pointwise_vector", &baseline));
+                        for (const auto shader : {"conv_pointwise_short8", "conv_pointwise_short"}) {
+                            error = std::max(error, run_case(ctx, p, shader, &candidate));
+                            if (baseline.size() != candidate.size() ||
+                                std::memcmp(baseline.data(), candidate.data(), baseline.size() * sizeof(float)) != 0)
+                                throw std::runtime_error("short pointwise changed FP32 bits/guard: " +
+                                                         std::to_string(count));
+                            ++count;
+                        }
+                    }
+            std::cout << "{\"device_index\":" << index
+                      << ",\"short_pointwise\":true,\"exact_baseline_bits\":true,\"cases\":" << count
+                      << ",\"max_absolute_error_vs_cpu\":" << error << "}\n";
+            return 0;
+        }
         if (wide_pointwise_probe || vocab_pointwise_probe) {
             std::vector<std::array<uint32_t, 13>> cases{{{1, 1, 4, 4, 1, 1, 1, 1, 0, 0, 1, 1, 0},
                                                          {17, 1, 68, 36, 1, 1, 1, 1, 0, 0, 17, 1, 0},
