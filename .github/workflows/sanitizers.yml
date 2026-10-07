@@ -151,6 +151,7 @@ jobs:
         if: always()
         with:
           name: host-sanitizer-diagnostics-not-a-release-package
+          retention-days: 3
           path: |
             build/sanitize/Testing/Temporary/**
             build/sanitize/compile_commands.json

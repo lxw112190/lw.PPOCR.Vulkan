@@ -125,6 +125,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64-software-validated-full-ocr
+          retention-days: 7
           path: |
             dist/*.tar.gz
             dist/*.sha256
@@ -135,6 +136,7 @@ jobs:
         if: always()
         with:
           name: linux-software-vulkan-validation-diagnostics
+          retention-days: 3
           path: |
             build/ci/Testing/Temporary/**
             build/reports/**

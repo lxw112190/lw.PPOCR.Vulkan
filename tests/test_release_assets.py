@@ -2,6 +2,7 @@
 import hashlib
 import io
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -128,6 +129,23 @@ class ReleaseTests(unittest.TestCase):
             self.assertIn('          name: ' + artifact + '\n          path: release-assets\n', job)
             package = value.split('          name: ' + artifact + '\n', 1)[1].split('      - ', 1)[0]
             self.assertNotIn('build/reports', package)
+
+    def test_all_workflow_artifacts_have_bounded_retention(self):
+        # The same-run Release handoff remains required; do not hide quota errors.
+        uploads = 0
+        for path in sorted((ROOT / '.github/workflows').glob('*.yml')):
+            for step in path.read_text(encoding='utf-8').split('\n      - '):
+                if 'uses: actions/upload-artifact@' not in step:
+                    continue
+                uploads += 1
+                name = re.search(r'^          name: (.+)$', step, re.MULTILINE)
+                retention = re.search(r'^          retention-days: ([0-9]+)$', step, re.MULTILINE)
+                self.assertIsNotNone(name, path.name)
+                self.assertIsNotNone(retention, path.name)
+                expected = 7 if name.group(1).endswith('-full-ocr') else 3
+                self.assertEqual(int(retention.group(1)), expected, (path.name, name.group(1)))
+                self.assertNotIn('continue-on-error:', step, path.name)
+        self.assertGreater(uploads, 0)
 
 
 if __name__ == '__main__':

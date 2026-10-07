@@ -90,6 +90,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: windows-x64-full-ocr
+          retention-days: 7
           path: |
             dist/*.zip
             dist/*.sha256
@@ -97,6 +98,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: windows-host-diagnostics-not-a-release-package
+          retention-days: 3
           path: build/reports/**
           if-no-files-found: error
   linux:
@@ -181,6 +183,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: linux-x64-full-ocr
+          retention-days: 7
           path: |
             dist/*.tar.gz
             dist/*.sha256
@@ -188,6 +191,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: linux-host-diagnostics-not-a-release-package
+          retention-days: 3
           path: build/reports/**
           if-no-files-found: error
   release_assets:

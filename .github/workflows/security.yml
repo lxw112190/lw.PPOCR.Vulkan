@@ -27,6 +27,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: source-sbom-and-supply-chain-audit
+          retention-days: 3
           path: |
             SBOM.cdx.json
             build/reports/supply-chain.json

@@ -25,6 +25,33 @@ Windows 额外检查 WinForms 主机布局/框选映射，Linux 额外检查 ELF
 
 ## Release 附件自动上传
 
+### Actions 附件保留期与存储配额
+
+所有工作流显式设置短保留期：Windows/Linux 日常部署包、手动软件验证包为 **7 天**，
+主机/sanitizer/软件 Vulkan 诊断、SBOM 与供应链审计报告为 **3 天**。需要长期留存的验收
+报告须提前下载保存；正式下载仍以 Release 附件为准。这些期限只针对 Actions artifact，
+不会定时删除 Release 附件，也没有更改同一次运行的 Release 下载/校验/上传流程。
+
+出现 `Artifact storage quota has been hit` 时，失败在附件上传，不应误判为编译、OCR
+或审计失败。先下载仍需留存的旧附件，再到仓库 **Actions → 旧运行 → Artifacts** 删除
+不再需要的包/报告；删除不可恢复，不要盲目删除所有运行或未验收的唯一附件。按错误提示，
+用量重新计算可能需要 **6～12 小时**，清理后不要立即连续重跑大量任务。必要时查看账户
+Billing 的实际用量与限制；修改保留期不代替清理当前已占用的旧附件。
+
+参考：[GitHub 附件清理说明](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/remove-workflow-artifacts)、
+[Actions 存储与计费](https://docs.github.com/en/billing/concepts/product-billing/github-actions)。
+Actions cache 与 artifacts/Packages 配额分开，不通过删除 Vulkan SDK 或构建缓存解决
+artifact 配额问题。升级 upload-artifact 或忽略上传失败也不能解除存储限制；部署包缺失
+时 Release job 仍不能发布，原有检查/上传失败门禁不变。
+
+English: deployment artifacts expire after 7 days, diagnostic/audit artifacts after
+3 days. Download evidence before expiry. These settings do not remove Release assets
+or bypass same-run package verification. A quota error is an upload/storage failure:
+preserve needed evidence, manually remove obsolete artifacts, allow the quota refresh,
+then rerun. No automatic external deletion or billing change is performed.
+
+### 自动上传策略
+
 `build.yml` 新增 `release_assets` job，必须等 Windows 与 Linux 两个 job 全部成功。
 它只获得自身的 `contents: write` 权限，构建 job 仍只有 read 权限；使用 GitHub 自动提供的
 `GITHUB_TOKEN`，不需要另建 PAT 或把 token 放进仓库。该 job 不接收其他工作流/PR 的附件。
